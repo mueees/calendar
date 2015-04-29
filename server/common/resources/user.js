@@ -46,6 +46,7 @@ userSchema.statics.registerNewUser = function (email, password) {
     var deferred = Q.defer(),
         sha1 = crypto.createHash('sha1');
 
+    // todo: move to separate function
     sha1.update(password + email + password);
     password = sha1.digest('hex');
 
