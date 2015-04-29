@@ -1,0 +1,13 @@
+{
+  "services": {
+    "api": {
+      "port": 6001
+    },
+    "auth": {
+      "port": 6004
+    },
+    "web-client": {
+      "port": 6005
+    }
+  }
+}
