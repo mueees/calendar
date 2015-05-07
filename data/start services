@@ -1,0 +1,5 @@
+export NODE_ENV=development
+export NODE_PATH=/vagrant/server
+
+cd /vagrant/server/services/account/server
+pm2 start index.js --name account

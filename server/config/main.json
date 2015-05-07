@@ -3,7 +3,7 @@
     "api": {
       "port": 6001
     },
-    "auth": {
+    "account": {
       "port": 6004
     },
     "web-client": {
