@@ -2,7 +2,6 @@ var express = require('express'),
     route = require('./routes'),
     http = require('http'),
     bodyParser = require('body-parser'),
-    globalConfig = require('config'),
     authConfig = require('./config');
 
 var app = express();
