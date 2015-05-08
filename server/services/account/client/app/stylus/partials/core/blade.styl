@@ -1,0 +1,14 @@
+seed-blade
+  .content
+    background silver
+    color white
+    position fixed
+    top 0
+    bottom 0
+    width 250px
+    transition transform 0.3s
+
+    &.expanded
+      transform translateX(0);
+    &.collapsed
+      transform translateX(-250px);

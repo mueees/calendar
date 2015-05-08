@@ -1,4 +1,5 @@
 .idea
 .vagrant
+bin
 node_modules
 secret.json

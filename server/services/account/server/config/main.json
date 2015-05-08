@@ -1,0 +1,6 @@
+{
+  "service": {
+    "port": 6004,
+    "name": "Account"
+  }
+}

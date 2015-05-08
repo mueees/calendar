@@ -1,6 +1,6 @@
 var controller = {
     signUp: function (request, response, next) {
-        response.render('index', {
+        response.render('pages/signUp', {
             user: request.user || false
         });
     }
