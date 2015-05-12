@@ -12,7 +12,12 @@ app.use(bodyParser.json({type: 'application/x-www-form-urlencoded'}));
 app.set('views', __dirname + "/views");
 app.set('view engine', 'jade');
 
-app.use(express.static('../client/bin/'));
+if( process.env.NODE_ENV == "development" ){
+    app.use(express.static('../client/build/app/'));
+}else{
+    app.use(express.static('../client/bin/app/'));
+}
+
 
 //link database
 require("common/mongooseConnect").initConnection(authConfig);
