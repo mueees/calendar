@@ -13,11 +13,10 @@ app.set('views', __dirname + "/views");
 app.set('view engine', 'jade');
 
 if( process.env.NODE_ENV == "development" ){
-    app.use(express.static('../client/build/app/'));
+    app.use(express.static('../client/build/app'));
 }else{
-    app.use(express.static('../client/bin/app/'));
+    app.use(express.static('../client/bin/app'));
 }
-
 
 //link database
 require("common/mongooseConnect").initConnection(authConfig);
