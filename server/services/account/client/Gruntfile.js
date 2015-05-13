@@ -11,7 +11,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-bump');
     grunt.loadNpmTasks('grunt-svg-sprite');
     grunt.loadNpmTasks('grunt-spritesmith');
-    grunt.loadNpmTasks('grunt-contrib-requirejs');
+    /*grunt.loadNpmTasks('grunt-contrib-requirejs');*/
 
     var userConfig = require('./build.config.js');
 
@@ -94,6 +94,12 @@ module.exports = function (grunt) {
             ]
         },
         watch: {
+            app_js: {
+                files: [
+                    '<%= app_files.js %>'
+                ],
+                tasks: ['copy:app_js']
+            },
             assets: {
                 files: ['app/assets/**'],
                 tasks: ['clean:assets_build', 'copy:app_assets', 'copy:vendor_css', 'copy:vendor_fonts', 'stylus:dev']

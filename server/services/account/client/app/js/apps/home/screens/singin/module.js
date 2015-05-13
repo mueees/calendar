@@ -2,7 +2,7 @@ define([
     'app',
     'core/router/route.module'
 ], function (App, Router) {
-    App.module('Apps.Home.Index', {
+    App.module('Apps.Home.Signin', {
         startWithParent: true,
 
         define: function (Index, App, Backbone, Marionette, $, _) {
@@ -14,19 +14,19 @@ define([
                 },
 
                 appRoutes: {
-                    "home": "home"
+                    'signin': 'signin'
                 },
 
                 onRoute: function () {
-                    console.log('onRoute home');
+                    console.log('onRoute signin');
                 }
             });
 
             App.addInitializer(function () {
                 new R({
                     controller: {
-                        home: function () {
-                            console.log('This is home');
+                        signin: function () {
+                            console.log('This is signin');
                         }
                     }
                 });
