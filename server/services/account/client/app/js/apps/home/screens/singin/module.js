@@ -5,31 +5,35 @@ define([
     App.module('Apps.Home.Signin', {
         startWithParent: true,
 
-        define: function (Index, App, Backbone, Marionette, $, _) {
+        define: function (Signin, App, Backbone, Marionette, $, _) {
             var R = Router.BaseRouter.extend({
-                before: function () {
-                    if(Router.BaseRouter.prototype.before.apply(this, arguments)){
-                        App.startSubApp("Apps.Home.Signin", {});
-                    }
-                },
-
                 appRoutes: {
                     'signin': 'signin'
                 },
 
-                onRoute: function () {
-                    console.log('onRoute signin');
+                access: {
+                    "home": {
+                        auth: false
+                    }
+                },
+
+                controller: {
+                    signin: function () {
+                        App.startSubApp("Apps.Home.Signin", {});
+                    }
                 }
             });
 
+            Signin.on('start', function () {
+                console.log("Home Signin was started");
+            });
+
+            Signin.on('stop', function () {
+                console.log("Home Signin was stopped");
+            });
+
             App.addInitializer(function () {
-                new R({
-                    controller: {
-                        signin: function () {
-                            console.log('This is signin');
-                        }
-                    }
-                });
+                new R();
             });
         }
     });

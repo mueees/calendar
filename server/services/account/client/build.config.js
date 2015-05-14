@@ -24,6 +24,7 @@ module.exports = {
             'app/vendor/backbone/backbone.babysitter.js',
             'app/vendor/backbone/backbone.queryparam.js',
             'app/vendor/backbone/backbone.routefilter.js',
+            'app/vendor/backbone/backbone.mueRoutefilter.js',
             'app/vendor/backbone/backbone.server.js',
             'app/vendor/backbone/backbone.stickit.js',
             'app/vendor/backbone/backbone.syphon.js',

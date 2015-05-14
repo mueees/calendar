@@ -1,35 +1,50 @@
 define([
     'app',
-    'core/router/route.module'
+    'core/router/route.module',
+    'core/components/base/layout.view'
 ], function (App, Router) {
     App.module('Apps.Home.Index', {
-        startWithParent: true,
+        startWithParent: false,
 
         define: function (Index, App, Backbone, Marionette, $, _) {
             var R = Router.BaseRouter.extend({
-                before: function () {
-                    if(Router.BaseRouter.prototype.before.apply(this, arguments)){
-                        App.startSubApp("Apps.Home.Signin", {});
+                    appRoutes: {
+                        "home": "home"
+                    },
+
+                    access: {
+                        "home": {
+                            auth: true
+                        }
+                    },
+
+                    controller: {
+                        home: function () {
+                            App.startSubApp("Apps.Home.Index", {});
+                        }
                     }
-                },
+                }),
+                Controller = Marionette.Controller.extend({
+                    initialize: function () {
+                        new Marionette.Base.View.Layout({
+                            template: ''
+                        });
+                    }
+                }),
+                controller;
 
-                appRoutes: {
-                    "home": "home"
-                },
+            Index.on('start', function () {
+                console.log("Home Index was started");
+                controller = new Controller();
+            });
 
-                onRoute: function () {
-                    console.log('onRoute home');
-                }
+            Index.on('stop', function () {
+                console.log("Home Index was stopped");
+                controller.remove();
             });
 
             App.addInitializer(function () {
-                new R({
-                    controller: {
-                        home: function () {
-                            console.log('This is home');
-                        }
-                    }
-                });
+                new R();
             });
         }
     });

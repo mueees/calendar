@@ -10,7 +10,7 @@ requirejs.config({
         "backbone.babysitter": "../vendor/backbone//backbone.babysitter",
         "backbone.server": "../vendor/backbone/backbone.server",
         "backbone.queryparam": "../vendor/backbone/backbone.queryparam",
-        "backbone.routefilter": "../vendor/backbone/backbone.routefilter",
+        "backbone.routefilter": "../vendor/backbone/backbone.mueRoutefilter",
         "backbone.validation": "../vendor/backbone/backbone.validation",
         "backbone.stickit": "../vendor/backbone/backbone.stickit",
         "backbone.syphon": "../vendor/backbone/backbone.syphon",
