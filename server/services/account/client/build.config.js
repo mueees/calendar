@@ -7,8 +7,14 @@ module.exports = {
         js: [
             'app/js/**/*.js'
         ],
+        templates: [
+            'app/js/**/*.html'
+        ],
         stylus: {
             default: 'app/stylus/default.styl'
+        },
+        less: {
+            default: 'app/less/default.less'
         }
     },
 

@@ -3,7 +3,7 @@ define([
     'core/router/route.module'
 ], function (App, Router) {
     App.module('Apps.Home.Signin', {
-        startWithParent: true,
+        startWithParent: false,
 
         define: function (Signin, App, Backbone, Marionette, $, _) {
             var R = Router.BaseRouter.extend({
@@ -29,6 +29,7 @@ define([
             });
 
             Signin.on('stop', function () {
+                App.body.reset();
                 console.log("Home Signin was stopped");
             });
 

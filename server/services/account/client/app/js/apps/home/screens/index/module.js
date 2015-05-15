@@ -1,8 +1,9 @@
 define([
     'app',
     'core/router/route.module',
-    'core/components/base/layout.view'
-], function (App, Router) {
+    'core/components/menu/menu.module',
+    'core/resource/base'
+], function (App, Router, Menu, Resource) {
     App.module('Apps.Home.Index', {
         startWithParent: false,
 
@@ -14,7 +15,7 @@ define([
 
                     access: {
                         "home": {
-                            auth: true
+                            auth: false
                         }
                     },
 
@@ -24,23 +25,34 @@ define([
                         }
                     }
                 }),
-                Controller = Marionette.Controller.extend({
-                    initialize: function () {
-                        new Marionette.Base.View.Layout({
-                            template: ''
-                        });
-                    }
-                }),
-                controller;
+                menu;
 
             Index.on('start', function () {
-                console.log("Home Index was started");
-                controller = new Controller();
+                menu = new Menu.Base({
+                    region: App.body,
+                    model: new Resource.Base({
+                        items: [
+                            {
+                                name: 'Home',
+                                href: '#home'
+                            },
+                            {
+                                name: 'Signin',
+                                href: '#signin'
+                            },
+                            {
+                                name: 'Test',
+                                href: '#test'
+                            }
+                        ]
+                    })
+                });
+                menu.show();
             });
 
             Index.on('stop', function () {
+                App.body.reset();
                 console.log("Home Index was stopped");
-                controller.remove();
             });
 
             App.addInitializer(function () {

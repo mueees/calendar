@@ -9,9 +9,11 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-stylus');
     grunt.loadNpmTasks('grunt-jsvalidate');
     grunt.loadNpmTasks('grunt-bump');
-    grunt.loadNpmTasks('grunt-svg-sprite');
+    grunt.loadNpmTasks('grunt-contrib-less');
+
+    /*grunt.loadNpmTasks('grunt-svg-sprite');
     grunt.loadNpmTasks('grunt-spritesmith');
-    /*grunt.loadNpmTasks('grunt-contrib-requirejs');*/
+    grunt.loadNpmTasks('grunt-contrib-requirejs');*/
 
     var userConfig = require('./build.config.js');
 
@@ -85,6 +87,16 @@ module.exports = function (grunt) {
                 }
             }
         },
+        less: {
+            dev: {
+                options: {
+                    paths: ["assets/css"]
+                },
+                files: {
+                    "<%= build_dir %>/app/assets/css/default-<%= pkg.name %>-<%= pkg.version %>.css": '<%= app_files.less.default %>'
+                }
+            }
+        },
         clean: {
             build: [
                 '<%= build_dir %>'
@@ -96,17 +108,18 @@ module.exports = function (grunt) {
         watch: {
             app_js: {
                 files: [
-                    '<%= app_files.js %>'
+                    '<%= app_files.js %>',
+                    '<%= app_files.templates %>'
                 ],
                 tasks: ['copy:app_js']
             },
             assets: {
                 files: ['app/assets/**'],
-                tasks: ['clean:assets_build', 'copy:app_assets', 'copy:vendor_css', 'copy:vendor_fonts', 'stylus:dev']
+                tasks: ['clean:assets_build', 'copy:app_assets', 'copy:vendor_css', 'copy:vendor_fonts', 'less:dev']
             },
-            stylus: {
-                files: ['app/**/*.styl'],
-                tasks: ['stylus:dev']
+            less: {
+                files: ['app/**/*.less'],
+                tasks: ['less:dev']
             }
         },
         requirejs: {
@@ -130,7 +143,7 @@ module.exports = function (grunt) {
         'copy:app_js',
         'copy:app_assets',
 
-        'stylus:dev',
+        'less:dev',
 
         'copy:vendor_css',
         'copy:vendor_js',
