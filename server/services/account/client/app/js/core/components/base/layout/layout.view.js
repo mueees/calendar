@@ -7,11 +7,6 @@ define([
             Layout.BaseView = Marionette.ItemView.extend({
                 initialize: function (options) {
                     this.options = options;
-                    this.region = this.options.region;
-                },
-
-                show: function () {
-                    this.region.show(this.view);
                 }
             });
         }

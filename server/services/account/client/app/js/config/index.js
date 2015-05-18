@@ -14,6 +14,7 @@ requirejs.config({
         "backbone.validation": "../vendor/backbone/backbone.validation",
         "backbone.stickit": "../vendor/backbone/backbone.stickit",
         "backbone.syphon": "../vendor/backbone/backbone.syphon",
+        storage: '../vendor/storage/storage',
 
         underscore: "../vendor/underscore-1.8.3/underscore",
         jquery: "../vendor/jquery/dist/jquery",

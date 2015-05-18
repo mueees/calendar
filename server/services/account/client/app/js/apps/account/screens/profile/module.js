@@ -12,8 +12,8 @@ define([
                     },
 
                     access: {
-                        "home": {
-                            auth: false
+                        "profile": {
+                            auth: true
                         }
                     },
 
@@ -25,7 +25,7 @@ define([
                 });
 
             Profile.on('start', function () {
-                console.log("Profile was stopped");
+                console.log("Profile was started");
             });
 
             Profile.on('stop', function () {

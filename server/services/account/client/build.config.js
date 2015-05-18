@@ -35,7 +35,8 @@ module.exports = {
             'app/vendor/backbone/backbone.stickit.js',
             'app/vendor/backbone/backbone.syphon.js',
             'app/vendor/backbone/backbone.validation.js',
-            'app/vendor/backbone/backbone.wreqr.js'
+            'app/vendor/backbone/backbone.wreqr.js',
+            'app/vendor/storage/storage.js'
         ],
         css: [
             'app/vendor/bootstrap/dist/css/bootstrap.css'
