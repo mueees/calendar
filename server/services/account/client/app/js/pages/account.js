@@ -1,6 +1,8 @@
 require([
     'app',
 
+    'core/ajaxInterceptors/ajaxInterceptors.service',
+
     // ajax commands
     'kernel/resource/commands/index',
 

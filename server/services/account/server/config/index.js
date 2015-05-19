@@ -1,6 +1,6 @@
-var nconf = require("nconf");
-var path = require("path");
-var configFile;
+var nconf = require("nconf"),
+    path = require("path"),
+    configFile;
 
 var NODE_ENV = process.env.NODE_ENV;
 
@@ -12,10 +12,8 @@ if((NODE_ENV == 'development')){
     configFile = 'live.json'
 }
 
-nconf.file('main', {file: path.join(__dirname, 'main.json')});
-nconf.file('secret', {file: path.join(__dirname, 'secret.json')});
-nconf.file('configFile', {file: path.join(__dirname, configFile)});
-
-console.log(__dirname);
+nconf.file('account.main', {file: path.join(__dirname, 'main.json')});
+nconf.file('account.secret', {file: path.join(__dirname, 'secret.json')});
+nconf.file('account.configFile', {file: path.join(__dirname, configFile)});
 
 module.exports = nconf;

@@ -1,9 +1,9 @@
 define([
     'app',
     'kernel/components/router/BaseRouter.router',
-    'text!./layout.view.html',
-    'kernel/components/sign/sign.controller'
-], function (App, BaseRouter, layoutTemplate, SignupController) {
+    'kernel/components/sign/sign.controller',
+    './layout.view'
+], function (App, BaseRouter, SignupController, SignupLayout) {
     App.module('Apps.Account.Sign', {
         startWithParent: false,
 
@@ -34,13 +34,7 @@ define([
 
             var Controller = Marionette.Controller.extend({
                 initialize: function () {
-                    var SignupLayout = Marionette.LayoutView.extend({
-                            template: _.template(layoutTemplate),
-                            regions: {
-                                signup: '.signup'
-                            }
-                        }),
-                        layout = new SignupLayout(),
+                    var layout = new SignupLayout(),
                         signup = new SignupController({
                             region: layout.getRegion('signup')
                         });

@@ -12,8 +12,11 @@ if((NODE_ENV == 'development')){
     configFile = 'live.json'
 }
 
-nconf.file('main', {file: path.join(__dirname, 'main.json')});
-nconf.file('secret', {file: path.join(__dirname, 'secret.json')});
-nconf.file('configFile', {file: path.join(__dirname, configFile)});
+
+console.log(path.join(__dirname, 'main.json'));
+
+nconf.file('main.main', {file: path.join(__dirname, 'main.json')});
+nconf.file('main.secret', {file: path.join(__dirname, 'secret.json')});
+nconf.file('main.configFile', {file: path.join(__dirname, configFile)});
 
 module.exports = nconf;

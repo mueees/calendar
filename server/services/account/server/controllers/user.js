@@ -1,4 +1,8 @@
-var validator = require('validator');
+var validator = require('validator'),
+    async = require('async'),
+    HttpError = require('common/errors/HttpError'),
+    EmailAction = require('common/actions/email'),
+    User = require('common/resources/user');
 
 var controller = {
     signUp: function (request, response, next) {
@@ -8,9 +12,22 @@ var controller = {
             return next(new HttpError(400, "Invalid Email"));
         }
 
-        if( !validator.isLength(data.password, 5) ){
-            return next(new HttpError(400, "Password least than 5."));
+        if( !validator.isLength(data.password, 15) ){
+            return next(new HttpError(400, "Password less than 5."));
         }
+
+        User.isUserExist({
+            email: data.email
+        });
+
+        new EmailAction({
+            to: data.email,
+            template: 'views/email/confirmEmail.jade',
+            subject: "Confirmation account",
+            data: {
+                confirmationId: "test confirmation id"
+            }
+        }).execute();
     }
 };
 
