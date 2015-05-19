@@ -5,7 +5,7 @@ require([
     'kernel/resource/commands/index',
 
     // screens
-    'apps/account/screens/signup/module'
+    'apps/account/screens/sign/module'
 ], function (App) {
     App.start();
 });

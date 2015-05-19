@@ -9,10 +9,4 @@ var util = {
     }
 };
 
-util.getUUID = function () {
-
-};
-
-
-
 exports.util = util;

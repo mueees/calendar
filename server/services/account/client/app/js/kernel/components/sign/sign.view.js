@@ -1,12 +1,13 @@
 define([
-    'core/components/base/form/form.view',
-    'text!./signup.view.html'
+    'core/components/base/view/form.view',
+    'text!./sign.view.html'
 ], function (FormView, template) {
     return FormView.extend({
         template: _.template(template),
 
         triggers: {
-            "click .signup": "signup"
+            "click .signup": "signup",
+            "click .signin": "signin"
         },
 
         bindings: {

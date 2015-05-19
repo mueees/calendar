@@ -3,8 +3,12 @@ define([
     'marionette'
 ], function (Backbone, Marionette) {
     return Marionette.ItemView.extend({
+
+        className: 'mueForm',
+
         initialize: function () {
-            var _this = this;
+            Marionette.ItemView.prototype.initialize(this, arguments);
+
             _.bindAll(this, "valid", 'invalid');
 
             Backbone.Validation.configure({
@@ -12,8 +16,8 @@ define([
             });
 
             Backbone.Validation.bind(this, {
-                valid: _this.valid,
-                invalid: _this.invalid
+                valid: this.valid,
+                invalid: this.invalid
             });
         },
 
@@ -27,7 +31,7 @@ define([
                 messages = view.$('.messages');
 
             $section.removeClass('error-row');
-            messages.find('li[data-name="' + attr + '"]').remove();
+            messages.find('p[data-name="' + attr + '"]').remove();
         },
 
         invalid: function (view, attr, error) {
@@ -37,8 +41,8 @@ define([
 
             messages.addClass('error-messages');
             $section.addClass('error-row');
-            messages.find('li[data-name="' + attr + '"]').remove();
-            messages.append("<li data-name='" + attr + "'>" + error + "</li>");
+            messages.find('p[data-name="' + attr + '"]').remove();
+            messages.append("<p data-name='" + attr + "'>" + error + "</p>");
         },
 
         onBeforeClose: function () {

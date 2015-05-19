@@ -1,18 +1,17 @@
 define([
     'app',
     'kernel/components/router/BaseRouter.router',
-    'core/components/base/layout/layout.view',
     'text!./layout.view.html',
-    'kernel/components/signup/signup.controller'
-], function (App, BaseRouter, Layout, layoutTemplate, SignupController) {
-    App.module('Apps.Account.Signup', {
+    'kernel/components/sign/sign.controller'
+], function (App, BaseRouter, layoutTemplate, SignupController) {
+    App.module('Apps.Account.Sign', {
         startWithParent: false,
 
-        define: function (Signup, App, Backbone, Marionette, $, _) {
+        define: function (Sign, App, Backbone, Marionette, $, _) {
             var R = BaseRouter.extend({
                     appRoutes: {
-                        "": "signup",
-                        "signup": "signup"
+                        "": "redirect",
+                        "sign": "sign"
                     },
 
                     access: {
@@ -22,8 +21,12 @@ define([
                     },
 
                     controller: {
-                        signup: function () {
-                            App.startSubApp("Apps.Account.Signup", {});
+                        sign: function () {
+                            App.startSubApp("Apps.Account.Sign", {});
+                        },
+
+                        redirect: function () {
+                            App.navigate('#sign', {trigger: true});
                         }
                     }
                 }),
@@ -31,7 +34,7 @@ define([
 
             var Controller = Marionette.Controller.extend({
                 initialize: function () {
-                    var SignupLayout = Layout.extend({
+                    var SignupLayout = Marionette.LayoutView.extend({
                             template: _.template(layoutTemplate),
                             regions: {
                                 signup: '.signup'
@@ -43,22 +46,27 @@ define([
                         });
 
                     App.body.show(layout);
+
                     signup.show();
 
                     this.listenTo(signup, 'signup', function () {
-                        console.log('Done');
+                        console.log('Done signup');
+                    });
+
+                    this.listenTo(signup, 'signin', function () {
+                        console.log('Done signin');
                     });
                 }
             });
 
-            Signup.on('start', function () {
+            Sign.on('start', function () {
                 controller = new Controller();
-                console.log("Signup was started");
+                console.log("Sign was started");
             });
 
-            Signup.on('stop', function () {
+            Sign.on('stop', function () {
                 controller.destroy();
-                console.log("Signup was stopped");
+                console.log("Sign was stopped");
             });
 
             App.addInitializer(function () {

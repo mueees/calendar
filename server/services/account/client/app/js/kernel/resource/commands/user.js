@@ -1,18 +1,21 @@
 define([
-    'core/resource/command'
-], function (Commands) {
+    'core/resource/command',
+    'config/app'
+], function (Commands, config) {
+    var prefix = '/api/v' + config.api.version;
+
     Commands.register('signin', {
-        url: 'api/v1/signin',
+        url: prefix + '/signin',
         type: 'POST'
     });
 
     Commands.register('signup', {
-        url: 'api/v1/signup',
+        url: prefix + '/signup',
         type: 'POST'
     });
 
     Commands.register('logout', {
-        url: 'api/v1/logout',
+        url: prefix + '/logout',
         type: 'POST'
     });
 

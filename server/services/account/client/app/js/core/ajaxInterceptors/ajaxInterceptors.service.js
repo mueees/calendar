@@ -2,7 +2,6 @@ define([
     'jquery',
     'core/notify/notify.service'
 ], function ($, $mNotify) {
-
     function addPrefilter(preFilter) {
         $.ajaxPrefilter(preFilter);
     }
@@ -12,7 +11,9 @@ define([
     }
 
     addErrorInterceptor(function (event, jqxhr, settings, thrownError) {
-        $mNotify.notify(thrownError);
+        $mNotify.notify(thrownError, {
+            type: 'error'
+        });
     });
 
     return {
