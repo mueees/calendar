@@ -1,14 +1,15 @@
 define([
     'app',
-    'core/router/route.module',
+    'kernel/components/router/BaseRouter.router',
     'core/components/base/layout/layout.view',
-    'text!./layout.view.html'
-], function (App, Router, Layout, layoutTemplate) {
+    'text!./layout.view.html',
+    'kernel/components/signup/signup.controller'
+], function (App, BaseRouter, Layout, layoutTemplate, SignupController) {
     App.module('Apps.Account.Signup', {
         startWithParent: false,
 
         define: function (Signup, App, Backbone, Marionette, $, _) {
-            var R = Router.BaseRouter.extend({
+            var R = BaseRouter.extend({
                     appRoutes: {
                         "": "signup",
                         "signup": "signup"
@@ -30,11 +31,23 @@ define([
 
             var Controller = Marionette.Controller.extend({
                 initialize: function () {
-                    var layout = new Layout.BaseView({
-                        template: _.template(layoutTemplate)
-                    });
+                    var SignupLayout = Layout.extend({
+                            template: _.template(layoutTemplate),
+                            regions: {
+                                signup: '.signup'
+                            }
+                        }),
+                        layout = new SignupLayout(),
+                        signup = new SignupController({
+                            region: layout.getRegion('signup')
+                        });
 
                     App.body.show(layout);
+                    signup.show();
+
+                    this.listenTo(signup, 'signup', function () {
+                        console.log('Done');
+                    });
                 }
             });
 

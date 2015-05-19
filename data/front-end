@@ -1,0 +1,10 @@
+<name>.router
+<name>.controller
+<name>.view
+<name>.model
+<name>.collection
+
+
+
+$m<name> - service
+$mSecurity

@@ -1,7 +1,10 @@
 require([
     'app',
 
-    'apps/account/screens/profile/module',
+    // ajax commands
+    'kernel/resource/commands/index',
+
+    // screens
     'apps/account/screens/signup/module'
 ], function (App) {
     App.start();
