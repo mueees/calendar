@@ -11,8 +11,9 @@ define([
     }
 
     addErrorInterceptor(function (event, jqxhr, settings, thrownError) {
-        $mNotify.notify(thrownError, {
-            type: 'error'
+        $mNotify.notify({
+            text: thrownError,
+            type: 'danger'
         });
     });
 

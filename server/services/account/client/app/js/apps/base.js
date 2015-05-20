@@ -46,7 +46,7 @@ define([
     };
 
     App.addRegions({
-        body: "body"
+        body: "#body"
     });
 
     return App;
