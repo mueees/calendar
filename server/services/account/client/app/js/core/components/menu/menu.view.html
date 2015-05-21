@@ -1,0 +1,7 @@
+<div class="list-group">
+    <% _.each(items, function(item){ %>
+    <a href="#<%= item.href %>" class="list-group-item">
+        <%= item.name %>
+    </a>
+    <% }) %>
+</div>

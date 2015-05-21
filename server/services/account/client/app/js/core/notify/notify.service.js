@@ -8,8 +8,8 @@ define([
     var defaultOptions = {
         text: 'Default text',
         type: 'info',
-        autoHide: false,
-        hideTimeout: 2000
+        autoHide: true,
+        hideTimeout: 3000
     };
 
     function notify(options) {

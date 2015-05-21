@@ -3,9 +3,6 @@ define([
     'marionette'
 ], function (Backbone, Marionette) {
     return Marionette.ItemView.extend({
-
-        className: 'mueForm',
-
         initialize: function () {
             Marionette.ItemView.prototype.initialize(this, arguments);
 
