@@ -57,7 +57,7 @@ userSchema.statics.registerNewUser = function (email, password) {
     });
 
     user.save(function (err, user) {
-        if(err){
+        if (err) {
             deferred.reject(err);
             return;
         }
@@ -68,20 +68,8 @@ userSchema.statics.registerNewUser = function (email, password) {
     return deferred.promise;
 };
 
-userSchema.statics.isUserExist = function(email, cb){
-    this.find({email: email}, null, function(err, users){
-        if( err ){
-            logger.error(err);
-            cb("Server error");
-            return false;
-        }
-
-        if( users.length === 0 ){
-            cb(null, false);
-        }else{
-            cb(null, users[0]);
-        }
-    });
+userSchema.statics.isUserExist = function (email) {
+    return this.find({email: email}).exec();
 };
 
 var User = mongoose.model('users', userSchema);

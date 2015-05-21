@@ -8,26 +8,27 @@ var controller = {
     signUp: function (request, response, next) {
         var data = request.body;
 
-        if( !validator.isEmail(data.email) ) {
+        if (!validator.isEmail(data.email)) {
             return next(new HttpError(400, "Invalid Email"));
         }
 
-        if( !validator.isLength(data.password, 15) ){
+        if (!validator.isLength(data.password, 15)) {
             return next(new HttpError(400, "Password less than 5."));
         }
 
-        User.isUserExist({
-            email: data.email
-        });
+        /*User.isUserExist(data.email)
+            .then(function (users) {
+                console.log(users);
+            });*/
 
-        new EmailAction({
-            to: data.email,
-            template: 'views/email/confirmEmail.jade',
-            subject: "Confirmation account",
-            data: {
-                confirmationId: "test confirmation id"
-            }
-        }).execute();
+        /*new EmailAction({
+         to: data.email,
+         template: 'views/email/confirmEmail.jade',
+         subject: "Confirmation account",
+         data: {
+         confirmationId: "test confirmation id"
+         }
+         }).execute();*/
     }
 };
 

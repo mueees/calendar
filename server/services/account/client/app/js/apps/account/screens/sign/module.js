@@ -2,26 +2,55 @@ define([
     'app',
     'kernel/components/router/BaseRouter.router',
     'kernel/components/sign/sign.controller',
-    './layout.view'
-], function (App, BaseRouter, SignupController, SignupLayout) {
+    './layout.view',
+
+    'core/log/log.service',
+    'core/window-title/window-title.service'
+], function (App, BaseRouter, SignupController, SignupLayout, $mLog, $mTitle) {
     App.module('Apps.Account.Sign', {
         startWithParent: false,
 
         define: function (Sign, App, Backbone, Marionette, $, _) {
             var R = BaseRouter.extend({
                     appRoutes: {
-                        "": "redirect",
-                        "sign": "sign"
+                        '': 'redirect',
+                        sign: 'sign'
                     },
 
                     access: {
-                        "signup": {
+                        sign: {
                             auth: false
                         }
                     },
 
+                    resolve: {
+                        sign: [
+                            {
+                                name: 'resource1',
+                                fn: function () {
+                                    return {
+                                        name: 'mue'
+                                    };
+                                }
+                            },
+                            {
+                                name: 'resource2',
+                                fn: function () {
+                                    var def = $.Deferred();
+                                    def.resolve({
+                                        name: 'peter'
+                                    });
+                                    return def.promise();
+                                }
+                            }
+                        ]
+                    },
+
                     controller: {
-                        sign: function () {
+                        sign: function (resolve) {
+                            console.log(resolve.resource1);
+                            console.log(resolve.resource2);
+
                             App.startSubApp("Apps.Account.Sign", {});
                         },
 
@@ -30,7 +59,8 @@ define([
                         }
                     }
                 }),
-                controller;
+                controller,
+                l = $mLog.getLogger('Sign');
 
             var Controller = Marionette.Controller.extend({
                 initialize: function () {
@@ -50,17 +80,19 @@ define([
                     this.listenTo(signup, 'signin', function () {
                         console.log('Done signin');
                     });
+
+                    $mTitle.setTitle('Sign');
                 }
             });
 
             Sign.on('start', function () {
                 controller = new Controller();
-                console.log("Sign was started");
+                l.log("was started");
             });
 
             Sign.on('stop', function () {
                 controller.destroy();
-                console.log("Sign was stopped");
+                l.log("was stopped");
             });
 
             App.addInitializer(function () {

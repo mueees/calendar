@@ -17,7 +17,8 @@ define(['backbone', 'jquery'], function (Backbone, $) {
         // Create a reusable no operation func for the case where a before
         // or after filter is not set. Backbone or Underscore should have
         // a global one of these in my opinion.
-        var nop = function () {};
+        var nop = function () {
+        };
 
         // Extend the router prototype with a default before function,
         // a default after function, and a pave over of _bindRoutes.
@@ -35,7 +36,8 @@ define(['backbone', 'jquery'], function (Backbone, $) {
             // on the Backbone.history singleton once it's instantiated.
             route: function (route, name, callback) {
                 var self = this,
-                    access = this.access[name] || {};
+                    access = (this.access || {})[name] || {},
+                    resolve = (this.resolve || {})[name] || [];
 
                 // If there is no callback present for this route, then set it to
                 // be the name that was set in the routes property of the constructor,
@@ -71,17 +73,43 @@ define(['backbone', 'jquery'], function (Backbone, $) {
                         beforeResult = def.promise();
                     }
 
-                    beforeResult.then(function () {
-                        // If the callback exists, then call it. This means that the before
-                        // and after filters will be called whether or not an actual
-                        // callback function is supplied to handle a given route.
-                        if (callback) {
-                            callback.apply(this, arguments);
-                        }
+                    beforeResult
+                        .then(function () {
+                            var def = $.Deferred(),
+                                promises = [];
 
-                        // Call the after filter.
-                        self.after.apply(this, arguments);
-                    });
+                            if(resolve.length){
+                                $.each(resolve, function (i, item) {
+                                    promises.push(item.fn());
+                                });
+                            }
+
+                            $.when.apply($, promises).then(function () {
+                                var args = Array.prototype.slice.call(arguments),
+                                    data = {};
+
+                                $.each(resolve, function (i, item) {
+                                    data[item.name] = args[i];
+                                });
+
+                                def.resolve(data);
+                            }, function () {
+                                def.reject();
+                            });
+
+                            return def.promise();
+                        })
+                        .then(function () {
+                            // If the callback exists, then call it. This means that the before
+                            // and after filters will be called whether or not an actual
+                            // callback function is supplied to handle a given route.
+                            if (callback) {
+                                callback.apply(this, arguments);
+                            }
+
+                            // Call the after filter.
+                            self.after.apply(this, arguments);
+                        });
                 };
 
                 // Call our original route, replacing the callback that was originally

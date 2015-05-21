@@ -10,8 +10,10 @@ define([
     './controllers/proflie/profile.controller',
 
     // components
-    'core/components/menu/menu.view'
-], function (App, BaseRouter, DashboardLayout, ApplicationController, ProfileController, MenuView) {
+    'core/components/menu/menu.view',
+    'core/log/log.service',
+    'core/window-title/window-title.service'
+], function (App, BaseRouter, DashboardLayout, ApplicationController, ProfileController, MenuView, $mLog ,$mTitle) {
     App.module('Apps.Account.Dashboard', {
         startWithParent: false,
 
@@ -48,7 +50,8 @@ define([
                         }
                     }
                 }),
-                controller;
+                controller,
+                l = $mLog.getLogger('Dashboard');
 
             var Controller = Marionette.Object.extend({
                 initialize: function () {
@@ -79,7 +82,8 @@ define([
                     this.subController = new ProfileController({
                         region: this.layout.subController
                     });
-                    console.log('profile was started');
+                    $mTitle.setTitle('Dashboard: profile');
+                    l.log('profile was started');
                 },
 
                 application: function () {
@@ -87,7 +91,8 @@ define([
                     this.subController = new ApplicationController({
                         region: this.layout.subController
                     });
-                    console.log('application was started');
+                    $mTitle.setTitle('Dashboard: application');
+                    l.log('application was started');
                 },
 
                 closeSubController: function () {
@@ -99,12 +104,12 @@ define([
 
             Dashboard.on('start', function () {
                 controller = new Controller();
-                console.log("Dashboard was started");
+                l.log("was started");
             });
 
             Dashboard.on('stop', function () {
                 controller.destroy();
-                console.log("Dashboard was stopped");
+                l.log("was stopped");
             });
 
             App.addInitializer(function () {
