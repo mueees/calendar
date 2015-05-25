@@ -1,9 +1,10 @@
 define([
     'marionette',
-    'text!./layout.view.html'
-], function (Marionette,  layoutTemplate) {
+    'hbs',
+    'text!./layout.view.hbs'
+], function (Marionette,  hbs, layoutTemplate) {
     return Marionette.LayoutView.extend({
-        template: _.template(layoutTemplate),
+        template: hbs.compile(layoutTemplate),
         regions: {
             signup: '.signup'
         }

@@ -9,6 +9,7 @@ define([
         },
 
         defaultErrorHandler: function () {
+
         }
     });
 });

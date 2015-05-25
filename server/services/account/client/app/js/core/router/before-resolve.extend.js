@@ -1,13 +1,4 @@
 define(['backbone', 'jquery'], function (Backbone, $) {
-    /*! backbone.routefilter - v0.1.0 - 2012-09-10
-     * https://github.com/boazsender/backbone.routefilter
-     * Copyright (c) 2012 Boaz Sender; Licensed MIT */
-
-    /*! backbone.routefilter - v0.1.0 - 2012-08-29
-     * https://github.com/boazsender/backbone.routefilter
-     * Copyright (c) 2012 Boaz Sender; Licensed MIT */
-    /*global Backbone:false, _: false, console: false*/
-
     (function (Backbone, _) {
 
         // Save a reference to the original route method to be called
@@ -17,8 +8,7 @@ define(['backbone', 'jquery'], function (Backbone, $) {
         // Create a reusable no operation func for the case where a before
         // or after filter is not set. Backbone or Underscore should have
         // a global one of these in my opinion.
-        var nop = function () {
-        };
+        var nop = function () {};
 
         // Extend the router prototype with a default before function,
         // a default after function, and a pave over of _bindRoutes.

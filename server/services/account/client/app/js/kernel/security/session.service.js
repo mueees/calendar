@@ -7,7 +7,7 @@ define([
         storage.set(sessionName, {
             email: credentials.email,
             token: credentials.email,
-        })
+        });
     }
 
     function destroy() {
@@ -15,7 +15,7 @@ define([
     }
 
     function getSession(){
-        storage.get(sessionName);
+        return storage.get(sessionName);
     }
 
     return {

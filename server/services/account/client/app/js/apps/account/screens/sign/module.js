@@ -5,8 +5,11 @@ define([
     './layout.view',
 
     'core/log/log.service',
-    'core/window-title/window-title.service'
-], function (App, BaseRouter, SignupController, SignupLayout, $mLog, $mTitle) {
+    'core/window-title/window-title.service',
+    'core/url/url.service',
+    'core/notify/notify.service',
+    'kernel/security/security.service'
+], function (App, BaseRouter, SignupController, SignupLayout, $mLog, $mTitle, $mUrl, $mNotify, $mSecurity) {
     App.module('Apps.Account.Sign', {
         startWithParent: false,
 
@@ -19,7 +22,10 @@ define([
 
                     access: {
                         sign: {
-                            auth: false
+                            auth: false,
+                            redirectIfAuth: {
+                                fragment: 'dashboard/profile'
+                            }
                         }
                     },
 
@@ -78,7 +84,18 @@ define([
                     });
 
                     this.listenTo(signup, 'signin', function () {
-                        console.log('Done signin');
+                        var afterAuth = $mSecurity.getAfterAuth();
+
+                        $mNotify.notify({
+                            text: 'Signin success',
+                            type: 'success'
+                        });
+
+                        if (afterAuth) {
+                            App.navigate(afterAuth.fragment, {
+                                trigger: true
+                            });
+                        }
                     });
 
                     $mTitle.setTitle('Sign');
@@ -86,12 +103,14 @@ define([
             });
 
             Sign.on('start', function () {
+                App.body.reset();
                 controller = new Controller();
                 l.log("was started");
             });
 
             Sign.on('stop', function () {
                 controller.destroy();
+                App.body.reset();
                 l.log("was stopped");
             });
 

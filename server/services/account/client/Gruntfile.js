@@ -10,10 +10,11 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-jsvalidate');
     grunt.loadNpmTasks('grunt-bump');
     grunt.loadNpmTasks('grunt-contrib-less');
+    grunt.loadNpmTasks('grunt-contrib-requirejs');
 
     /*grunt.loadNpmTasks('grunt-svg-sprite');
     grunt.loadNpmTasks('grunt-spritesmith');
-    grunt.loadNpmTasks('grunt-contrib-requirejs');*/
+    */
 
     var userConfig = require('./build.config.js');
 
@@ -126,16 +127,20 @@ module.exports = function (grunt) {
             development: {
                 options: {
                     baseUrl: 'app/js',
-                    name: 'pages/index',
-                    include: ['ux-core'],
+                    name: 'pages/account',
                     out: 'out.js',
-                    optimize: 'none'
+                    optimize: 'none',
+                    mainConfigFile: "app/js/config/index.js"
                 }
             }
         }
     };
 
     grunt.initConfig(grunt.util._.extend(taskConfig, userConfig));
+
+    grunt.registerTask('require', [
+        'requirejs:development'
+    ]);
 
     grunt.registerTask("development", [
         'clean:build',
@@ -148,7 +153,6 @@ module.exports = function (grunt) {
         'copy:vendor_css',
         'copy:vendor_js',
         'copy:vendor_fonts'
-
     ]);
 
     grunt.registerTask('debug', 'Main task for development', function () {

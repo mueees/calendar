@@ -17,10 +17,9 @@
             'backbone.babysitter',
             'backbone.server',
             'backbone.queryparam',
-            'backbone.routefilter',
             'backbone.validation',
             'backbone.stickit',
-            'backbone.syphon',
+            'backbone.syphon'
         ], function (Backbone, _) {
             return (root.Marionette = root.Mn = factory(root, Backbone, _));
         });

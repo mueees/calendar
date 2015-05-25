@@ -27,10 +27,10 @@ define([
 
                     access: {
                         "profile": {
-                            auth: false
+                            auth: true
                         },
                         "profile/application": {
-                            auth: false
+                            auth: true
                         }
                     },
 
@@ -75,6 +75,8 @@ define([
                     });
 
                     this.layout.menu.show(this.menu);
+
+                    this.listenTo(this.layout, 'logout', this.logoutHandler);
                 },
 
                 profile: function () {
@@ -99,6 +101,12 @@ define([
                     if (this.subController) {
                         this.subController.destroy();
                     }
+                },
+
+                logoutHandler: function (e) {
+                    e.preventDefaults();
+
+                    // todo: implement logout
                 }
             });
 

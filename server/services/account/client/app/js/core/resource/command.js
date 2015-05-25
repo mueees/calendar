@@ -47,6 +47,7 @@ define([
 
             ajaxConfig.data = data;
 
+            // return promise
             return ajaxConfig;
         },
 

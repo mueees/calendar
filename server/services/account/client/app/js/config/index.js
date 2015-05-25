@@ -14,18 +14,32 @@ requirejs.config({
         "backbone.stickit": "../vendor/backbone/backbone.stickit",
         "backbone.syphon": "../vendor/backbone/backbone.syphon",
         storage: '../vendor/storage/storage',
+        'hbs' : '../vendor/handlebars-0.11.2/handlebars',
+        mockajax: '../vendor/jquery-mockjax-2.0.0-beta/mockajax',
 
         underscore: "../vendor/underscore-1.8.3/underscore",
         jquery: "../vendor/jquery/dist/jquery",
 
         text: '../vendor/requirejs/text'
     },
+
+    hbs : {
+        templateExtension : 'hbs',
+        disableI18n : true
+    },
+
+
     shim: {
         jquery: {
             exports: "jQuery"
         },
         underscore: {
             exports: "_"
+        },
+
+        mockajax: {
+            deps: ['jquery'],
+            exports: "jQuery"
         }
     }
 });
