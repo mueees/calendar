@@ -29,7 +29,6 @@ define([
         return signPage;
     }
 
-
     return {
         isAuth: isAuth,
         setAfterAuth: setAfterAuth,

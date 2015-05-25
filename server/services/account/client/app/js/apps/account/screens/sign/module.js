@@ -84,18 +84,10 @@ define([
                     });
 
                     this.listenTo(signup, 'signin', function () {
-                        var afterAuth = $mSecurity.getAfterAuth();
-
                         $mNotify.notify({
                             text: 'Signin success',
                             type: 'success'
                         });
-
-                        if (afterAuth) {
-                            App.navigate(afterAuth.fragment, {
-                                trigger: true
-                            });
-                        }
                     });
 
                     $mTitle.setTitle('Sign');

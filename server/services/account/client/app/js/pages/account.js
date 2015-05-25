@@ -9,7 +9,7 @@ require([
     //init
     'apps/account/init/index',
 
-    'core/fake-server/fake-server.service',
+    'kernel/fake-server/fake-server.service',
 
     // screens
     'apps/account/screens/sign/module',

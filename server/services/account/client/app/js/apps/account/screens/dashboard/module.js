@@ -12,8 +12,9 @@ define([
     // components
     'core/components/menu/menu.view',
     'core/log/log.service',
-    'core/window-title/window-title.service'
-], function (App, BaseRouter, DashboardLayout, ApplicationController, ProfileController, MenuView, $mLog ,$mTitle) {
+    'core/window-title/window-title.service',
+    'kernel/security/auth.service'
+], function (App, BaseRouter, DashboardLayout, ApplicationController, ProfileController, MenuView, $mLog ,$mTitle, $mAuth) {
     App.module('Apps.Account.Dashboard', {
         startWithParent: false,
 
@@ -21,15 +22,15 @@ define([
             var R = BaseRouter.extend({
                     appRoutes: {
                         'dashboard': 'redirect',
-                        "dashboard/profile": "profile",
-                        "dashboard/application": "application"
+                        'dashboard/profile': 'profile',
+                        'dashboard/application': 'application'
                     },
 
                     access: {
-                        "profile": {
+                        profile: {
                             auth: true
                         },
-                        "profile/application": {
+                        'profile/application': {
                             auth: true
                         }
                     },
@@ -40,12 +41,12 @@ define([
                         },
 
                         profile: function () {
-                            App.startSubApp("Apps.Account.Dashboard", {});
+                            App.startSubApp('Apps.Account.Dashboard', {});
                             controller.profile();
                         },
 
                         application: function () {
-                            App.startSubApp("Apps.Account.Dashboard", {});
+                            App.startSubApp('Apps.Account.Dashboard', {});
                             controller.application();
                         }
                     }
@@ -104,20 +105,19 @@ define([
                 },
 
                 logoutHandler: function (e) {
-                    e.preventDefaults();
-
-                    // todo: implement logout
+                    $mSecurity.logout();
+                    $mAuth.logout();
                 }
             });
 
             Dashboard.on('start', function () {
                 controller = new Controller();
-                l.log("was started");
+                l.log('was started');
             });
 
             Dashboard.on('stop', function () {
                 controller.destroy();
-                l.log("was stopped");
+                l.log('was stopped');
             });
 
             App.addInitializer(function () {

@@ -22,6 +22,8 @@ define([
     }
 
     function logout() {
+        $mSession.destroy();
+
         var command = Commands.get('logout');
         return $.when(command.execute());
     }
