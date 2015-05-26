@@ -1,9 +1,9 @@
 define([
     'marionette',
     'core/resource/base',
-    'kernel/security/auth.service',
+    'kernel/security/security.service',
     './sign.view'
-], function (Marionette, BaseModel, $mAuth, View) {
+], function (Marionette, BaseModel, $mSecurity, View) {
     var Model = BaseModel.extend({
         validation: {
             email: {
@@ -36,27 +36,19 @@ define([
         },
 
         signUpHandler: function () {
-            var me = this;
-
             if (this.model.isValid(true)) {
-                $mAuth.signup({
+                $mSecurity.signup({
                     email: this.model.get('email'),
                     password: this.model.get('password')
-                }).then(function () {
-                    me.trigger('signup');
                 });
             }
         },
 
         signInHandler: function () {
-            var me = this;
-
             if (this.model.isValid(true)) {
-                $mAuth.signin({
+                $mSecurity.signin({
                     email: this.model.get('email'),
                     password: this.model.get('password')
-                }).then(function () {
-                    me.trigger('signin');
                 });
             }
         }

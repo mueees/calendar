@@ -1,12 +1,15 @@
 define([
     'app',
     'kernel/components/router/BaseRouter.router',
+    './layout.view',
 
     'core/log/log.service',
     'core/window-title/window-title.service',
     'core/url/url.service',
-    'kernel/security/security.service'
-], function (App, BaseRouter, $mLog, $mTitle, $mUrl, $mSecurity) {
+    'kernel/security/security.service',
+    'kernel/resource/application',
+    'kernel/components/application-approval/application-approval.controller'
+], function (App, BaseRouter, ApprovalLayout, $mLog, $mTitle, $mUrl, $mSecurity, ApplicationModel, ApplicationApprovalController) {
     App.module('Apps.Account.Approval', {
         startWithParent: false,
 
@@ -17,11 +20,11 @@ define([
                     },
 
                     authError: function (route, name, access) {
+                        var total = $mUrl.getTotal();
+
                         $mSecurity.setAfterAuth({
                             fragment: 'approval',
-                            query: {
-                                applicationId: 'test'
-                            }
+                            query: total.query
                         });
                     },
 
@@ -34,11 +37,18 @@ define([
                     resolve: {
                         approval: [
                             {
-                                name: 'resource1',
+                                name: 'application',
                                 fn: function () {
-                                    return {
-                                        name: 'mue'
-                                    };
+                                    var def = $.Deferred(),
+                                        application = new ApplicationModel({
+                                            _id: $mUrl.getTotal().query.applicationid
+                                        });
+
+                                    application.fetch().then(function () {
+                                        def.resolve(application);
+                                    });
+
+                                    return def.promise();
                                 }
                             }
                         ]
@@ -46,7 +56,9 @@ define([
 
                     controller: {
                         approval: function (resolve) {
-                            App.startSubApp("Apps.Account.Approval", {});
+                            App.startSubApp("Apps.Account.Approval", {
+                                resolve: resolve
+                            });
                         }
                     }
                 }),
@@ -54,13 +66,31 @@ define([
                 l = $mLog.getLogger('Approval');
 
             var Controller = Marionette.Controller.extend({
-                initialize: function () {
-                    $mTitle.setTitle('Approval');
+                initialize: function (options) {
+                    var layout = new ApprovalLayout(),
+                        approval = new ApplicationApprovalController({
+                            application: options.resolve.application,
+                            region: layout.getRegion('approval')
+                        });
+
+                    App.body.show(layout);
+                    approval.show();
+
+                    this.listenTo(approval, 'approve', function (data) {
+                        window.open($mUrl.getTotal().query.redirect + '?token=' + data.token);
+                        $mSecurity.navigateAfterSign();
+                    });
+                    this.listenTo(approval, 'cancel', function () {
+                        window.open($mUrl.getTotal().query.redirect);
+                        $mSecurity.navigateAfterSign();
+                    });
+
+                    $mTitle.setTitle('Approval: ' + options.resolve.application.get('name'));
                 }
             });
 
-            Approval.on('start', function () {
-                controller = new Controller();
+            Approval.on('start', function (arg) {
+                controller = new Controller(arg);
                 l.log("was started");
             });
 

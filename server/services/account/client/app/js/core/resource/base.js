@@ -2,6 +2,8 @@ define([
     'backbone'
 ], function (Backbone) {
     return Backbone.Model.extend({
+        idAttribute: '_id',
+
         initialize: function (options) {
             options = options || {};
             this.bind("error", this.defaultErrorHandler);

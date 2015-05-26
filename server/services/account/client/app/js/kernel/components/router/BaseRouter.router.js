@@ -7,14 +7,20 @@ define([
 ], function (App, Marionette, $mSecurity) {
     return Marionette.AppRouter.extend({
         before: function (route, name, access) {
+            var isAuth = $mSecurity.isAuth();
+
             if (access.auth) {
-                if (!$mSecurity.isAuth()) {
+                if (!isAuth) {
+                    $mSecurity.setAfterAuth({
+                        fragment: route
+                    });
+
                     this.authError(route, name, access);
-                    this.navigateToSign(route, name, access);
+                    $mSecurity.navigateToSign(route, name, access);
 
                     return false;
                 }
-            } else if (access.redirectIfAuth) {
+            } else if (access.redirectIfAuth && isAuth) {
                 App.navigate('#' + access.redirectIfAuth.fragment, {
                     trigger: true
                 });
@@ -23,14 +29,6 @@ define([
             }
         },
 
-        authError: function (route, name, access) {
-
-        },
-
-        navigateToSign: function (route, name, access) {
-            App.navigate('#' + $mSecurity.getSignPage().fragment, {
-                trigger: true
-            });
-        }
+        authError: function (route, name, access) {}
     });
 });

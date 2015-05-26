@@ -8,8 +8,8 @@ define([
     'core/window-title/window-title.service',
     'core/url/url.service',
     'core/notify/notify.service',
-    'kernel/security/security.service'
-], function (App, BaseRouter, SignupController, SignupLayout, $mLog, $mTitle, $mUrl, $mNotify, $mSecurity) {
+    'core/channel/channel.service'
+], function (App, BaseRouter, SignupController, SignupLayout, $mLog, $mTitle, $mUrl, $mNotify, $mChannel) {
     App.module('Apps.Account.Sign', {
         startWithParent: false,
 
@@ -29,34 +29,8 @@ define([
                         }
                     },
 
-                    resolve: {
-                        sign: [
-                            {
-                                name: 'resource1',
-                                fn: function () {
-                                    return {
-                                        name: 'mue'
-                                    };
-                                }
-                            },
-                            {
-                                name: 'resource2',
-                                fn: function () {
-                                    var def = $.Deferred();
-                                    def.resolve({
-                                        name: 'peter'
-                                    });
-                                    return def.promise();
-                                }
-                            }
-                        ]
-                    },
-
                     controller: {
                         sign: function (resolve) {
-                            console.log(resolve.resource1);
-                            console.log(resolve.resource2);
-
                             App.startSubApp("Apps.Account.Sign", {});
                         },
 
@@ -76,19 +50,7 @@ define([
                         });
 
                     App.body.show(layout);
-
                     signup.show();
-
-                    this.listenTo(signup, 'signup', function () {
-                        console.log('Done signup');
-                    });
-
-                    this.listenTo(signup, 'signin', function () {
-                        $mNotify.notify({
-                            text: 'Signin success',
-                            type: 'success'
-                        });
-                    });
 
                     $mTitle.setTitle('Sign');
                 }

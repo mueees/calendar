@@ -13,8 +13,8 @@ define([
     'core/components/menu/menu.view',
     'core/log/log.service',
     'core/window-title/window-title.service',
-    'kernel/security/auth.service'
-], function (App, BaseRouter, DashboardLayout, ApplicationController, ProfileController, MenuView, $mLog ,$mTitle, $mAuth) {
+    'kernel/security/security.service'
+], function (App, BaseRouter, DashboardLayout, ApplicationController, ProfileController, MenuView, $mLog ,$mTitle, $mSecurity) {
     App.module('Apps.Account.Dashboard', {
         startWithParent: false,
 
@@ -27,10 +27,11 @@ define([
                     },
 
                     access: {
-                        profile: {
+                        'profile': {
                             auth: true
                         },
-                        'profile/application': {
+
+                        'application': {
                             auth: true
                         }
                     },
@@ -106,7 +107,6 @@ define([
 
                 logoutHandler: function (e) {
                     $mSecurity.logout();
-                    $mAuth.logout();
                 }
             });
 

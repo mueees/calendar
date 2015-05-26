@@ -8,7 +8,8 @@ define(['backbone', 'jquery'], function (Backbone, $) {
         // Create a reusable no operation func for the case where a before
         // or after filter is not set. Backbone or Underscore should have
         // a global one of these in my opinion.
-        var nop = function () {};
+        var nop = function () {
+        };
 
         // Extend the router prototype with a default before function,
         // a default after function, and a pave over of _bindRoutes.
@@ -28,6 +29,10 @@ define(['backbone', 'jquery'], function (Backbone, $) {
                 var self = this,
                     access = (this.access || {})[name] || {},
                     resolve = (this.resolve || {})[name] || [];
+
+                if (access.auth === undefined) {
+                    access.auth = false;
+                }
 
                 // If there is no callback present for this route, then set it to
                 // be the name that was set in the routes property of the constructor,
@@ -68,7 +73,7 @@ define(['backbone', 'jquery'], function (Backbone, $) {
                             var def = $.Deferred(),
                                 promises = [];
 
-                            if(resolve.length){
+                            if (resolve.length) {
                                 $.each(resolve, function (i, item) {
                                     promises.push(item.fn());
                                 });
