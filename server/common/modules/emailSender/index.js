@@ -36,13 +36,9 @@ _.extend(EmailSender.prototype, {
         var me = this,
             def = Q.defer();
 
-        console.log(this.mailOptions);
-
         this.smtpTransport.sendMail(this.mailOptions, function(err){
             if(err){
-                def.reject(err);
-                console.log(err);
-                return;
+                return; def.reject(err);
             }
 
             def.resolve();

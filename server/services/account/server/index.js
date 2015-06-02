@@ -3,11 +3,16 @@ var express = require('express'),
     http = require('http'),
     HttpError = require('common/errors/HttpError'),
     bodyParser = require('body-parser'),
-    authConfig = require('./config');
+    errorhandler = require('errorhandler'),
+    accountConfig = require('./config');
 
 var app = express();
 
-app.use(bodyParser.json());
+require('./auth');
+
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 app.use(bodyParser.json({type: 'application/x-www-form-urlencoded'}));
 
 app.set('views', __dirname + "/views");
@@ -21,9 +26,6 @@ if( process.env.NODE_ENV == "development" ){
 
 app.use(require("common/middlewares/sendHttpError"));
 
-//link database
-require("common/mongooseConnect").initConnection(authConfig);
-
 //routing
 route(app);
 
@@ -35,15 +37,13 @@ app.use(function(err, req, res, next){
     if( err instanceof HttpError ){
         res.sendHttpError(err);
     }else{
-        if( app.get("env") == "development" ){
-            express.errorHandler()(err, req, res, next);
-        }else{
-            express.errorHandler()(err, req, res, next);
-            res.send(500);
-        }
+        console.log('end error');
     }
 });
 
+//link database
+require("common/mongooseConnect").initConnection(accountConfig);
+
 var server = http.createServer(app);
-server.listen(authConfig.get("service:port"));
-console.log(authConfig.get("service:name") + ' server listening: ' + authConfig.get("service:port") + ' port');
+server.listen(accountConfig.get("service:port"));
+console.log(accountConfig.get("service:name") + ' server listening: ' + accountConfig.get("service:port") + ' port');

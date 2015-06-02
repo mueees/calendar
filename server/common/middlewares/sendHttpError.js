@@ -3,12 +3,14 @@ module.exports = function(req, res, next){
         if( req.headers['x-requested-with'] == "XMLHttpRequest" ){
             res.status( error.status );
             res.send({
-                error: error.message
+                message: error.message
             });
         } else {
             res.status( error.status );
+
             res.render('error', {
-                error: error.message
+                message: error.message,
+                status: error.status
             });
         }
     };
