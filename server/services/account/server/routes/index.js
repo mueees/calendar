@@ -11,6 +11,4 @@ module.exports = function (app) {
 
     /*USER*/
     app.post(prefix + '/signup', userController.signUp);
-
-
 };

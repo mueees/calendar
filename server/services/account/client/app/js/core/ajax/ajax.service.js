@@ -1,7 +1,8 @@
 define([
     'jquery',
-    'core/notify/notify.service'
-], function ($, $mNotify) {
+    'core/notify/notify.service',
+    'core/channel/channel.service'
+], function ($, $mNotify, $mChannel) {
     function addPrefilter(preFilter) {
         $.ajaxPrefilter(preFilter);
     }
@@ -10,10 +11,11 @@ define([
         $(document).ajaxError(interceptor);
     }
 
+    // auth error interceptor
     addErrorInterceptor(function (event, jqxhr, settings, thrownError) {
-        $mNotify.notify({
-            text: thrownError,
-            type: 'danger'
+        $mChannel.trigger('ajax:error', {
+            status: jqxhr.status,
+            response: JSON.parse(jqxhr.responseText)
         });
     });
 

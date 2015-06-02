@@ -28,6 +28,8 @@ define([
                         });
                     },
 
+                    resolveError: {},
+
                     access: {
                         approval: {
                             auth: true
@@ -46,6 +48,8 @@ define([
 
                                     application.fetch().then(function () {
                                         def.resolve(application);
+                                    }, function () {
+                                        def.reject();
                                     });
 
                                     return def.promise();

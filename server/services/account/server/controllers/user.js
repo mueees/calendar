@@ -16,10 +16,16 @@ var controller = {
             return next(new HttpError(400, "Password less than 5."));
         }
 
-        /*User.isUserExist(data.email)
-            .then(function (users) {
-                console.log(users);
-            });*/
+        User.isUserExist(data.email)
+            .then(User.registerNewUser)
+            .then(function () {
+
+            }, function () {
+
+            });
+
+
+        /**/
 
         /*new EmailAction({
          to: data.email,

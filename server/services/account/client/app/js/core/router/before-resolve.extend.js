@@ -28,6 +28,7 @@ define(['backbone', 'jquery'], function (Backbone, $) {
             route: function (route, name, callback) {
                 var self = this,
                     access = (this.access || {})[name] || {},
+                    resolveError = (this.resolveError || {})[name] || {},
                     resolve = (this.resolve || {})[name] || [];
 
                 if (access.auth === undefined) {
@@ -70,6 +71,8 @@ define(['backbone', 'jquery'], function (Backbone, $) {
 
                     beforeResult
                         .then(function () {
+                            // load resolve resources
+
                             var def = $.Deferred(),
                                 promises = [];
 
@@ -79,7 +82,7 @@ define(['backbone', 'jquery'], function (Backbone, $) {
                                 });
                             }
 
-                            $.when.apply($, promises).then(function () {
+                            $.when.apply($, promises).done(function () {
                                 var args = Array.prototype.slice.call(arguments),
                                     data = {};
 
@@ -88,8 +91,12 @@ define(['backbone', 'jquery'], function (Backbone, $) {
                                 });
 
                                 def.resolve(data);
-                            }, function () {
+                            }).fail(function () {
                                 def.reject();
+
+                                if ($.isFunction(resolveError)) {
+                                    resolveError();
+                                }
                             });
 
                             return def.promise();

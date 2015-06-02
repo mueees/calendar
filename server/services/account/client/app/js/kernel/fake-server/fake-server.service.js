@@ -47,5 +47,4 @@ define([
             token: 'token for external app'
         }
     });
-
 });
