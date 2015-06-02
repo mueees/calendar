@@ -41,10 +41,6 @@ define([
 
             _.extend(ajaxConfig, options);
 
-            if(ajaxConfig.type == "POST"){
-                data = JSON.stringify(data);
-            }
-
             ajaxConfig.data = data;
 
             // return promise

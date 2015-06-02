@@ -10,9 +10,7 @@ var app = express();
 
 require('./auth');
 
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
+app.use(bodyParser.urlencoded());
 app.use(bodyParser.json({type: 'application/x-www-form-urlencoded'}));
 
 app.set('views', __dirname + "/views");

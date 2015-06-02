@@ -1,0 +1,38 @@
+{
+	"id": "78bedaf4-ee0f-a0ae-e042-94907392bd9b",
+	"name": "application",
+	"description": "",
+	"order": [
+		"85e5297b-99b0-3509-6a26-0eebc82e9bde"
+	],
+	"folders": [],
+	"timestamp": 1433277680115,
+	"owner": "52324",
+	"remoteLink": "",
+	"public": false,
+	"createdAt": 1433277680115,
+	"updatedAt": 1433277680115,
+	"synced": false,
+	"requests": [
+		{
+			"id": "85e5297b-99b0-3509-6a26-0eebc82e9bde",
+			"headers": "",
+			"url": "http://localhost:6004/api/v{{api_version}}/application/{{application_id}}?access_token={{access_token}}",
+			"preRequestScript": "",
+			"pathVariables": {},
+			"method": "GET",
+			"data": [],
+			"dataMode": "params",
+			"version": 2,
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1433278007203,
+			"name": "Get Application",
+			"description": "",
+			"collectionId": "78bedaf4-ee0f-a0ae-e042-94907392bd9b",
+			"responses": [],
+			"synced": false
+		}
+	]
+}

@@ -95,7 +95,8 @@ userSchema.statics.isRightCredential = function (email, password, cb) {
         }
     ], function (err, user) {
         if(err){
-            return cb("Server error")
+            console.log(err);
+            return cb(err);
         }
 
         cb(null, user);

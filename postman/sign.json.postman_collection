@@ -1,0 +1,85 @@
+{
+	"id": "ace7a5ed-4967-e1e8-95e1-2ad4885497e0",
+	"name": "sign",
+	"description": "",
+	"order": [
+		"5cbf43a0-e844-77d2-2822-ab93f634318b",
+		"0ce7dde7-86ce-7d90-78f6-603fb659cab8"
+	],
+	"folders": [],
+	"timestamp": 1433264421564,
+	"owner": "52324",
+	"remoteLink": "",
+	"public": false,
+	"createdAt": 1433264421564,
+	"updatedAt": 1433264421564,
+	"synced": false,
+	"requests": [
+		{
+			"id": "0ce7dde7-86ce-7d90-78f6-603fb659cab8",
+			"headers": "",
+			"url": "http://localhost:6004/api/v{{api_version}}/signin",
+			"preRequestScript": "",
+			"pathVariables": {},
+			"method": "POST",
+			"data": [
+				{
+					"key": "email",
+					"value": "{{email}}",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "password",
+					"value": "{{password}}",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "urlencoded",
+			"version": 2,
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1433267755731,
+			"name": "signin",
+			"description": "",
+			"collectionId": "ace7a5ed-4967-e1e8-95e1-2ad4885497e0",
+			"responses": [],
+			"synced": false
+		},
+		{
+			"id": "5cbf43a0-e844-77d2-2822-ab93f634318b",
+			"headers": "Content-Type: application/x-www-form-urlencoded; charset=UTF-8\nX-Requested-With: XMLHttpRequest\n",
+			"url": "http://localhost:6004/api/v{{api_version}}/signup",
+			"preRequestScript": "",
+			"pathVariables": {},
+			"method": "POST",
+			"data": [
+				{
+					"key": "email",
+					"value": "{{email}}",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "password",
+					"value": "{{password}}",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "urlencoded",
+			"version": 2,
+			"tests": "",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1433272539157,
+			"name": "signup",
+			"description": "",
+			"collectionId": "ace7a5ed-4967-e1e8-95e1-2ad4885497e0",
+			"responses": [],
+			"synced": false
+		}
+	]
+}
