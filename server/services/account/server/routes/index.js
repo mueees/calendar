@@ -17,7 +17,11 @@ module.exports = function (app) {
     app.get(prefix + '/confirmuser', userController.confirmuser);
 
     /*APPLICATION*/
+    app.get(prefix + '/application/all',
+        passport.authenticate('bearer', {session: false}),
+        applicationController.getAll);
+
     app.get(prefix + '/application/:id',
-        passport.authenticate('bearer', { session: false }),
+        passport.authenticate('bearer', {session: false}),
         applicationController.getById);
 };

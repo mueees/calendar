@@ -13,9 +13,19 @@ define([
 
     // auth error interceptor
     addErrorInterceptor(function (event, jqxhr, settings, thrownError) {
+        var response;
+
+        try {
+            response = JSON.parse(jqxhr.responseText);
+        } catch(e){
+            response = {
+                message: 'Unknown error'
+            }
+        }
+
         $mChannel.trigger('ajax:error', {
             status: jqxhr.status,
-            response: JSON.parse(jqxhr.responseText)
+            response: response
         });
     });
 

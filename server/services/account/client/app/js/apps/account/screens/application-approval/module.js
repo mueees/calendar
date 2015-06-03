@@ -7,7 +7,7 @@ define([
     'core/window-title/window-title.service',
     'core/url/url.service',
     'kernel/security/security.service',
-    'kernel/resource/application',
+    'kernel/resource/application.model',
     'kernel/components/application-approval/application-approval.controller'
 ], function (App, BaseRouter, ApprovalLayout, $mLog, $mTitle, $mUrl, $mSecurity, ApplicationModel, ApplicationApprovalController) {
     App.module('Apps.Account.Approval', {

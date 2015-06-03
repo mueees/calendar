@@ -180,7 +180,7 @@ userSchema.methods.confirm = function(cb){
 };
 
 userSchema.methods.isConfirm = function () {
-    return (this.confirmationId) ? false : true;
+    return this.status == 200;
 };
 
 userSchema.methods.generateAccountToken = function (cb) {

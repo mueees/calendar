@@ -7,11 +7,11 @@ var applicationSchema = new Schema({
         type: 'String',
         default: 'New Application'
     },
-    public: {
+    publicKey: {
         type: 'String',
         require: true
     },
-    private: {
+    privateKey: {
         type: 'String',
         require: true
     }

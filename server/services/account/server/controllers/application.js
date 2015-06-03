@@ -8,8 +8,25 @@ var validator = require('validator'),
 var controller = {
     getById: function (request, response, next) {
         response.send({
-            name: 'blabla'
+            name: 'getById'
         });
+    },
+
+    getAll: function (request, response, next) {
+        response.send([
+            {
+                _id: '123',
+                name: 'test',
+                publicKey: 'this is public',
+                privateKey: 'this is private'
+            },
+            {
+                _id: '321',
+                name: 'tset',
+                publicKey: 'this is public',
+                privateKey: 'this is private'
+            }
+        ]);
     }
 };
 

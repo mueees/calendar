@@ -88,6 +88,8 @@ define([
                     });
                     $mTitle.setTitle('Dashboard: profile');
                     l.log('profile was started');
+
+                    this.subController.show();
                 },
 
                 application: function () {
@@ -97,6 +99,8 @@ define([
                     });
                     $mTitle.setTitle('Dashboard: application');
                     l.log('application was started');
+
+                    this.subController.show();
                 },
 
                 closeSubController: function () {

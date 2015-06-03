@@ -85,6 +85,7 @@ var controller = {
 
     signIn: function (request, response, next) {
         var data = request.body;
+
         if (!validator.isEmail(data.email)) {
             return next(new HttpError(400, "Invalid Email"));
         }

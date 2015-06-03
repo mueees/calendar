@@ -4,10 +4,19 @@ define([
     './auth.service',
     'core/notify/notify.service',
     'core/url/url.service',
-    'core/channel/channel.service'
-], function (App, storage, $mAuth, $mNotify, $mUrl, $mChannel) {
+    'core/channel/channel.service',
+    'core/ajax/ajax.service'
+], function (App, storage, $mAuth, $mNotify, $mUrl, $mChannel, $mAjax) {
     var afterAuth = null,
         signPage = null;
+
+    $mAjax.addPrefilter(function (options, originalOptions, xhr) {
+        var auth = isAuth();
+
+        if( auth ){
+            xhr.setRequestHeader('Authorization', 'Bearer ' + auth.token);
+        }
+    });
 
     $mChannel.on('ajax:error', errorHandler);
 
