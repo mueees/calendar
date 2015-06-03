@@ -2,8 +2,9 @@ define([
     'marionette',
     './layout.view',
 
-    'kernel/components/applications/list/list.controller'
-], function (Marionette, Layout, ApplicationList) {
+    'kernel/components/applications/list/list.controller',
+    'kernel/components/applications/new/new.controller'
+], function (Marionette, Layout, ApplicationList, NewApplication) {
     return Marionette.Object.extend({
         initialize: function (options) {
             Marionette.Object.prototype.initialize(this, arguments);
@@ -26,7 +27,11 @@ define([
         },
 
         onNewHandler: function () {
-            this.region.reset();
+            var newApplication = new NewApplication({
+                region: this.layout.getRegion('newApplication')
+            });
+
+            newApplication.show();
         },
 
         show: function () {

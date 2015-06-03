@@ -12,7 +12,8 @@ define([
         },
 
         regions: {
-            content: "[data-region='content']"
+            content: "[data-region='content']",
+            newApplication: "[data-region='newApplication']"
         }
     })
 });

@@ -1,3 +1,14 @@
-{{name}}
+<p data-link='toggleOpen'>{{name}}</p>
 <div class="mue-application-list-settings">
+    <div class="form-group">
+        <label>Public key</label>
+        <button class="btn btn-link" type="button" data-link='newPublicKey'>new</button>
+        <input type="email" class="form-control" id="exampleInputEmail1" value="{{publicKey}}" disabled>
+    </div>
+
+    <div class="form-group">
+        <label>Private key</label>
+        <button class="btn btn-link" type="button" data-link='newPrivateKey'>new</button>
+        <input type="email" class="form-control" id="exampleInputEmail1" value="{{privateKey}}" disabled>
+    </div>
 </div>

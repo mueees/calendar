@@ -8,7 +8,8 @@ module.exports = {
             'app/js/**/*.js'
         ],
         templates: [
-            'app/js/**/*.html'
+            'app/js/**/*.html',
+            'app/js/**/*.hbs'
         ],
         stylus: {
             default: 'app/stylus/default.styl'

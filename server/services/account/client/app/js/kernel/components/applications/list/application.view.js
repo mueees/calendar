@@ -11,7 +11,7 @@ define([
         className: 'list-group-item',
 
         events: {
-            'click': 'onClickHandler'
+            "click [data-link='toggleOpen']": 'onClickHandler'
         },
 
         initialize: function () {
