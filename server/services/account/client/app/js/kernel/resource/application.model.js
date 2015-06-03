@@ -8,7 +8,14 @@ define([
         defaults: {
             publicKey: '',
             privateKey: '',
-            name: ''
+            name: '',
+            description: ''
+        },
+
+        validation: {
+            name: {
+                required: true
+            }
         }
     });
 
