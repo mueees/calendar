@@ -1,6 +1,8 @@
 require([
     'app',
 
+    'core/ajax-loader/ajax-loader.service',
+
     'kernel/ajax/ajax.service',
 
     // ajax commands
@@ -9,7 +11,7 @@ require([
     //init
     'apps/account/init/index',
 
-    /*'kernel/fake-server/fake-server.service',*/
+    'kernel/fake-server/fake-server.service',
 
     // screens
     'apps/account/screens/sign/module',

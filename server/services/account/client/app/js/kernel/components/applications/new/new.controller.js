@@ -25,13 +25,14 @@ define([
         },
 
         onCreateHandler: function () {
-            this.region.reset();
+            var me = this;
 
-            if (this.model.isValid(true)) {
-                this.model.save();
+            if (this.application.isValid(true)) {
+                this.application.save().then(function () {
+                    me.trigger('create', me.application);
+                    me.region.reset();
+                });
             }
-
-            this.trigger('create', this.model);
         },
 
         show: function () {

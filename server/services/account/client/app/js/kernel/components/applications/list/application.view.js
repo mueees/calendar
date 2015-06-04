@@ -11,11 +11,22 @@ define([
         className: 'list-group-item',
 
         events: {
-            "click [data-link='toggleOpen']": 'onClickHandler'
+            "click [data-link='toggleOpen']": 'onClickHandler',
+            "click [data-link='newPrivateKey']": 'newPrivateKeyHandler'
+        },
+
+        ui: {
+            privateKey: "[name='privateKey']"
         },
 
         initialize: function () {
             this.isOpen = false;
+
+            this.listenTo(this.model, 'change:privateKey', this.privateKeyHandler)
+        },
+
+        privateKeyHandler: function () {
+            this.ui.privateKey.val(this.model.get('privateKey'));
         },
 
         onClickHandler: function () {
@@ -29,6 +40,10 @@ define([
             } else {
                 this.$el.removeClass('mue-application-item-open');
             }
+        },
+
+        newPrivateKeyHandler: function () {
+            this.model.newPrivateKey()
         }
     });
 });

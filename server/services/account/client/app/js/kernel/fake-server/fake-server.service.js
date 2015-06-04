@@ -6,7 +6,7 @@ define([
     // AUTH
 
     // user signup
-    $mFakeServer.setHandler({
+    /*$mFakeServer.setHandler({
         url: prefix + "/signup",
         status: 200,
         responseText: {}
@@ -46,5 +46,30 @@ define([
         responseText: {
             token: 'token for external app'
         }
+    });*/
+
+    // create application
+    $mFakeServer.setHandler({
+        url: prefix + "/application/create",
+        status: 200,
+        responseText: {
+            _id: getUUID(),
+            publicKey: 'publicKey',
+            privateKey: 'privateKey',
+            date_create: new Date()
+        }
     });
+
+    // generate new private key
+    $mFakeServer.setHandler({
+        url: prefix + "/application/privateKey",
+        status: 200,
+        responseText: {
+            privateKey: getUUID() + ''
+        }
+    });
+
+    function getUUID(){
+        return Math.random() + (new Date()).getTime();
+    }
 });

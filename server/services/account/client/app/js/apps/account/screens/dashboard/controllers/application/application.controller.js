@@ -18,12 +18,11 @@ define([
         },
 
         onListHandler: function () {
-            var region = this.layout.getRegion('content'),
-                applicationList = new ApplicationList({
-                    region: region
+            this.applicationList = new ApplicationList({
+                    region: this.layout.getRegion('content')
                 });
 
-            applicationList.show();
+            this.applicationList.show();
         },
 
         onNewHandler: function () {
@@ -32,6 +31,12 @@ define([
             });
 
             newApplication.show();
+
+            this.listenTo(newApplication, 'create', this.onNewApplicationHandler);
+        },
+
+        onNewApplicationHandler: function (application) {
+            this.applicationList.addApplication(application);
         },
 
         show: function () {

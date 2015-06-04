@@ -1,9 +1,7 @@
 define([
     'marionette',
-    'text!./list.view.html',
-
     './application.view'
-], function (Marionette, template, ApplicationView) {
+], function (Marionette, ApplicationView) {
     return Marionette.CollectionView.extend({
         childView: ApplicationView,
 

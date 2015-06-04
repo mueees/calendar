@@ -20,6 +20,10 @@ define([
 
         show: function () {
             this.region.show(this.view);
+        },
+
+        addApplication: function (application) {
+            this.applicationCollection.add(application);
         }
     });
 });

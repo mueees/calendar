@@ -1,14 +1,24 @@
 <p data-link='toggleOpen'>{{name}}</p>
 <div class="mue-application-list-settings">
+    <br/>
+
     <div class="form-group">
         <label>Public key</label>
-        <button class="btn btn-link" type="button" data-link='newPublicKey'>new</button>
-        <input type="email" class="form-control" id="exampleInputEmail1" value="{{publicKey}}" disabled>
+        <input type="text" class="form-control" value="{{publicKey}}" disabled>
     </div>
 
     <div class="form-group">
         <label>Private key</label>
-        <button class="btn btn-link" type="button" data-link='newPrivateKey'>new</button>
-        <input type="email" class="form-control" id="exampleInputEmail1" value="{{privateKey}}" disabled>
+        <button class="btn btn-link" type="button" data-link='newPrivateKey'>Generate new key</button>
+        <input type="text" class="form-control" name="privateKey" value="{{privateKey}}" disabled>
+    </div>
+
+    <div class="form-group">
+        <label>Redirect url</label>
+        <input type="text" name="redirectUrl" class="form-control"  value="{{redirectUrl}}">
+    </div>
+
+    <div class="form-group">
+        <button class="btn btn-danger" type="button" data-link='delete'>Delete</button>
     </div>
 </div>

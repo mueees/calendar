@@ -18,6 +18,9 @@ define([
             '[name=description]': {
                 observe: 'description'
             }
+            ,'[name=redirectUrl]': {
+                observe: 'redirectUrl'
+            }
         },
 
         className: 'panel panel-default'

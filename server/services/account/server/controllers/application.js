@@ -18,13 +18,17 @@ var controller = {
                 _id: '123',
                 name: 'test',
                 publicKey: 'this is public',
-                privateKey: 'this is private'
+                privateKey: 'this is private',
+                date_create: new Date(),
+                redirectUrl: 'http://google.com'
             },
             {
                 _id: '321',
                 name: 'tset',
                 publicKey: 'this is public',
-                privateKey: 'this is private'
+                privateKey: 'this is private',
+                date_create: new Date(),
+                redirectUrl: 'http://google.com'
             }
         ]);
     }
