@@ -4,7 +4,6 @@ var mongoose = require('mongoose'),
     heplers = require('common/helpers'),
     Q = require('q'),
     tokenSchema = require('./token'),
-    applicationSchema = require('./application'),
     Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
 
@@ -45,11 +44,6 @@ var userSchema = new Schema({
 
     token_account: {
         type: [tokenSchema],
-        default: []
-    },
-
-    applications: {
-        type: [applicationSchema],
         default: []
     }
 });
@@ -176,11 +170,52 @@ userSchema.methods.confirm = function(cb){
         }
 
         cb(null, user);
-    })
+    });
+};
+
+userSchema.methods.createApplication = function(name, description, cb){
+    var application = {
+        name: name,
+        description: description || '',
+        publicKey: heplers.util.getUUID(),
+        privateKey: heplers.util.getUUID()
+    };
+
+    this.applications.push(application);
+
+    this.save(function (err, user) {
+        if(err){
+            return cb('Server error');
+        }
+
+        cb(null, application);
+    });
 };
 
 userSchema.methods.isConfirm = function () {
     return this.status == 200;
+};
+
+userSchema.methods.removeApplication = function(id, cb){
+    User.update(
+        {
+            _id: this._id
+        },
+        {
+            $pull: {
+                'applications': {
+                    _id: id
+                }
+            }
+        },
+        function (err) {
+            if(err){
+                return cb('Server error');
+            }
+
+            cb(null);
+        }
+    );
 };
 
 userSchema.methods.generateAccountToken = function (cb) {

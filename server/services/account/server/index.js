@@ -3,6 +3,7 @@ var express = require('express'),
     http = require('http'),
     HttpError = require('common/errors/HttpError'),
     bodyParser = require('body-parser'),
+    oauthserver = require('./oauthserver'),
     errorhandler = require('errorhandler'),
     accountConfig = require('./config'),
     prefix = '/api/v' + accountConfig.get('api:version');
@@ -26,7 +27,7 @@ if (process.env.NODE_ENV == "development") {
 app.use(require("common/middlewares/sendHttpError"));
 
 //routing
-route(app);
+route(app, oauthserver);
 
 app.use(function (err, req, res, next) {
     if (typeof err == "number") {
@@ -37,6 +38,7 @@ app.use(function (err, req, res, next) {
         res.sendHttpError(err);
     } else {
         console.log('end error');
+        console.log(err);
     }
 });
 
