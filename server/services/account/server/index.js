@@ -1,7 +1,6 @@
 var express = require('express'),
     route = require('./routes'),
     http = require('http'),
-    oauth2 = require('./oauth2'),
     HttpError = require('common/errors/HttpError'),
     bodyParser = require('body-parser'),
     errorhandler = require('errorhandler'),
@@ -27,7 +26,7 @@ if (process.env.NODE_ENV == "development") {
 app.use(require("common/middlewares/sendHttpError"));
 
 //routing
-route(app, oauth2);
+route(app);
 
 app.use(function (err, req, res, next) {
     if (typeof err == "number") {
