@@ -26,6 +26,7 @@ module.exports = {
             'app/vendor/jquery/dist/jquery.js',
             'app/vendor/jquery-mockjax-2.0.0-beta/mockajax.js',
             'app/vendor/underscore-1.8.3/underscore.js',
+            'app/vendor/bootstrap/dist/js/bootstrap.js',
             'app/vendor/handlebars-0.11.2/handlebars.js',
             'app/vendor/marionette/marionette.js',
             'app/vendor/backbone/backbone.js',

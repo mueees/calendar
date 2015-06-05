@@ -14,6 +14,7 @@ requirejs.config({
         "backbone.stickit": "../vendor/backbone/backbone.stickit",
         "backbone.syphon": "../vendor/backbone/backbone.syphon",
         storage: '../vendor/storage/storage',
+        bootstrap: '../vendor/bootstrap/dist/js/bootstrap',
         'hbs' : '../vendor/handlebars-0.11.2/handlebars',
         mockajax: '../vendor/jquery-mockjax-2.0.0-beta/mockajax',
 
@@ -36,7 +37,7 @@ requirejs.config({
         underscore: {
             exports: "_"
         },
-
+        bootstrap: ['jquery'],
         mockajax: {
             deps: ['jquery'],
             exports: "jQuery"

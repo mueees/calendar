@@ -1,7 +1,8 @@
 define([
     'marionette',
     'hbs',
-    'text!./application.view.hbs'
+    'text!./application.view.hbs',
+    'bootstrap'
 ], function (Marionette, hbs, template) {
     return Marionette.ItemView.extend({
         template: hbs.compile(template),
@@ -12,6 +13,7 @@ define([
 
         events: {
             "click [data-link='toggleOpen']": 'onClickHandler',
+            "click [data-link='delete']": 'onDeleteHandler',
             "click [data-link='newPrivateKey']": 'newPrivateKeyHandler'
         },
 
@@ -23,6 +25,7 @@ define([
             this.isOpen = false;
 
             this.listenTo(this.model, 'change:privateKey', this.privateKeyHandler)
+            this.listenTo(this.model, 'change', this.anyChangeHandler);
         },
 
         privateKeyHandler: function () {
@@ -42,8 +45,16 @@ define([
             }
         },
 
+        anyChangeHandler: function () {
+            console.log('changed');
+        },
+
         newPrivateKeyHandler: function () {
             this.model.newPrivateKey()
+        },
+
+        onDeleteHandler: function () {
+
         }
     });
 });
