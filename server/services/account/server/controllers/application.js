@@ -11,11 +11,11 @@ var controller = {
         Application.find({
             _id: request.param("id")
         }, null, function (err, application) {
-            if(err){
+            if (err) {
                 return next(new HttpError(400, "Server error"));
             }
 
-            if(application){
+            if (application) {
                 response.send(application);
             } else {
                 return next(new HttpError(400, "Cannot find application."));
@@ -26,8 +26,17 @@ var controller = {
     getAll: function (request, response, next) {
         Application.find({
             userId: request.user._id
-        }, null, function (err, applications) {
-            if(err){
+        }, {
+            _id: true,
+            applicationId: true,
+            date_create: true,
+            description: true,
+            name: true,
+            privateKey: true,
+            redirectUrl: true,
+            status: true
+        }, function (err, applications) {
+            if (err) {
                 return next(new HttpError(400, err));
             }
 
@@ -38,16 +47,14 @@ var controller = {
     create: function (request, response, next) {
         var data = request.body;
 
-        if (!validator.isLength(data.name, 1)) {
+        if (!data.name || !data.name.length) {
             return next(new HttpError(400, "Name should exists."));
         }
 
-        Application.create({
-            userId: request.user._id,
-            name: data.name,
-            description: data.description
-        }, function (err,  application) {
-            if(err){
+        data.userId = request.user._id;
+
+        Application.create(data, function (err, application) {
+            if (err) {
                 return next(new HttpError(400, err));
             }
 
@@ -59,7 +66,7 @@ var controller = {
         Application.remove({
             _id: request.param("id")
         }, function (err) {
-            if(err){
+            if (err) {
                 return next(new HttpError(400, "Server error"));
             }
 

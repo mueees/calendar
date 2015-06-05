@@ -10,13 +10,9 @@ define([
         },
 
         defaults: {
-            publicKey: '',
-            privateKey: '',
-            date_create: '',
-            redirectUrl: '',
             name: '',
-            status: '200',
-            description: ''
+            description: '',
+            redirectUrl: ''
         },
 
         validation: {

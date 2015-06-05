@@ -49,7 +49,7 @@ define([
     });*/
 
     // create application
-    $mFakeServer.setHandler({
+    /*$mFakeServer.setHandler({
         url: prefix + "/application/create",
         status: 200,
         responseText: {
@@ -58,7 +58,7 @@ define([
             privateKey: 'privateKey',
             date_create: new Date()
         }
-    });
+    });*/
 
     // generate new private key
     $mFakeServer.setHandler({

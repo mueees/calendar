@@ -17,8 +17,8 @@ define([
             },
             '[name=description]': {
                 observe: 'description'
-            }
-            ,'[name=redirectUrl]': {
+            },
+            '[name=redirectUrl]': {
                 observe: 'redirectUrl'
             }
         },

@@ -16,6 +16,10 @@ var applicationSchema = new Schema({
         type: String,
         require: heplers.util.getUUID()
     },
+    redirectUrl: {
+        type: String,
+        require: true
+    },
     userId: {
         type: ObjectId,
         require: true
@@ -38,6 +42,7 @@ var applicationSchema = new Schema({
 
 applicationSchema.statics.create = function (data, cb) {
     data.applicationId = heplers.util.getUUID();
+    data.privateKey = heplers.util.getUUID();
 
     var application = new this(data);
 
