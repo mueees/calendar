@@ -1,12 +1,21 @@
 define([
+    'jquery',
     'core/modal/modal.service',
-    './prompt.view'
-], function ($mModal, PromptView) {
+    './prompt/prompt.view',
+    './confirm/confirm.view'
+], function ($, $mModal, PromptView, ConfirmView) {
     var defaultPrompt = {
         text: ''
     };
 
-    function prompt(options){
+    var defaultConfirm = {
+        accept: 'Ok',
+        decline: 'Cancel',
+        title: 'Question',
+        text: 'Default text'
+    };
+
+    function prompt(options) {
         var opt = _.extend(_.clone(defaultPrompt), options);
 
         var view = new PromptView({
@@ -18,7 +27,32 @@ define([
         return view;
     }
 
+    function confirm(options) {
+        var def = $.Deferred();
+
+        var opt = _.extend(_.clone(defaultConfirm), options);
+
+        var view = new ConfirmView({
+            model: new Backbone.Model(opt)
+        });
+
+        $mModal.show(view);
+
+        view.on('accept', function () {
+            view.trigger('closeWindow');
+            def.resolve();
+        });
+
+        view.on('decline destroy', function () {
+            view.trigger('closeWindow');
+            def.reject();
+        });
+
+        return def.promise();
+    }
+
     return {
-        prompt: prompt
+        prompt: prompt,
+        confirm: confirm
     }
 });

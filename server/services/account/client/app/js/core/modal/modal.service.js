@@ -4,19 +4,31 @@ define([
     var container;
 
     function setContainer(el) {
+        var me = this;
+
         container = el;
+
+        container.addClass('modal fade');
+
+        container.on('hidden.bs.modal', function () {
+            if (me.view) {
+                me.view.destroy();
+            }
+
+            container.html('');
+        });
     }
 
-    function show(view){
+    function show(view) {
         this.view = view;
 
         view.on("closeWindow", hide);
         container.append(view.render().$el);
-        view.$el.modal('show');
+        container.modal('show');
     }
 
-    function hide(){
-        this.view.$el.modal('hide');
+    function hide() {
+        container.modal('hide');
         this.view = null;
     }
 

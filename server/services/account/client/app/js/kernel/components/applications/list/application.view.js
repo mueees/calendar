@@ -54,8 +54,12 @@ define([
         },
 
         onDeleteHandler: function () {
-            $mDialog.prompt({
+            $mDialog.confirm({
                 text: 'Are you sure?'
+            }).then(function () {
+                console.log('done');
+            }, function () {
+                console.log('false');
             });
         }
     });
