@@ -8,13 +8,16 @@ define([
     }
 
     function show(view){
+        this.view = view;
+
         view.on("closeWindow", hide);
         container.append(view.render().$el);
-        container.modal('show');
+        view.$el.modal('show');
     }
 
     function hide(){
-        container.modal('hide');
+        this.view.$el.modal('hide');
+        this.view = null;
     }
 
     return {
