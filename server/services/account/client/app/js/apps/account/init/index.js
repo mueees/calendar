@@ -1,8 +1,9 @@
 define([
     'jquery',
     'core/notify/notify.service',
-    'kernel/security/security.service'
-], function ($, $mNotify, $mSecurity) {
+    'kernel/security/security.service',
+    'core/modal/modal.service'
+], function ($, $mNotify, $mSecurity, $mModal) {
     $mNotify.setContainer($('.mue-notify'));
 
     $mSecurity.setSignPage({
@@ -12,4 +13,6 @@ define([
     $mSecurity.setAfterAuth({
         fragment: 'dashboard/profile'
     });
+
+    $mModal.setContainer($('.mue-modal'));
 });

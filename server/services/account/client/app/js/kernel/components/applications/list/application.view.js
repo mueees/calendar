@@ -2,8 +2,8 @@ define([
     'marionette',
     'hbs',
     'text!./application.view.hbs',
-    'bootstrap'
-], function (Marionette, hbs, template) {
+    'core/dialog/dialog.service'
+], function (Marionette, hbs, template, $mDialog) {
     return Marionette.ItemView.extend({
         template: hbs.compile(template),
 
@@ -54,7 +54,9 @@ define([
         },
 
         onDeleteHandler: function () {
-
+            $mDialog.prompt({
+                text: 'Are you sure?'
+            });
         }
     });
 });

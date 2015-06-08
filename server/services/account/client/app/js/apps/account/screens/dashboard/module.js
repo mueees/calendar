@@ -13,8 +13,9 @@ define([
     'core/components/menu/menu.view',
     'core/log/log.service',
     'core/window-title/window-title.service',
-    'kernel/security/security.service'
-], function (App, BaseRouter, DashboardLayout, ApplicationController, ProfileController, MenuView, $mLog ,$mTitle, $mSecurity) {
+    'kernel/security/security.service',
+    'core/modal/modal.service'
+], function (App, BaseRouter, DashboardLayout, ApplicationController, ProfileController, MenuView, $mLog ,$mTitle, $mSecurity, $mModal) {
     App.module('Apps.Account.Dashboard', {
         startWithParent: false,
 
