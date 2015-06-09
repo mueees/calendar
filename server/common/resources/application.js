@@ -25,7 +25,15 @@ var applicationSchema = new Schema({
         require: true
     },
     privateKey: {
-        type: 'String',
+        type: String,
+        require: true
+    },
+    oauthKey: {
+        type: String,
+        require: true
+    },
+    domain: {
+        type: String,
         require: true
     },
     date_create: {
@@ -43,6 +51,7 @@ var applicationSchema = new Schema({
 applicationSchema.statics.create = function (data, cb) {
     data.applicationId = heplers.util.getUUID();
     data.privateKey = heplers.util.getUUID();
+    data.oauthKey = heplers.util.getUUID();
 
     var application = new this(data);
 

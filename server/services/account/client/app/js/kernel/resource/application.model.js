@@ -12,6 +12,7 @@ define([
 
         defaults: {
             name: '',
+            domain: '',
             description: '',
             redirectUrl: ''
         },
@@ -21,6 +22,9 @@ define([
                 required: true
             },
             redirectUrl: {
+                required: true
+            },
+            domain: {
                 required: true
             }
         },
