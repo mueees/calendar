@@ -4,8 +4,4 @@ var oauthserver = require('../modules/oauthserver'),
 
 var server = oauthserver.createServer();
 
-server.processError = function (number, message, next) {
-    next(new HttpError(number, message));
-};
-
 module.exports = server;

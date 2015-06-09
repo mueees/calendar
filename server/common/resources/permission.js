@@ -52,6 +52,15 @@ permissionSchema.statics.create = function (data, cb) {
     });
 };
 
+permissionSchema.methods.exchangeTicketToTokens = function (cb) {
+    this.isTicketExchanged = true;
+    this.access_token = heplers.util.getUUID();
+    this.refresh_token = heplers.util.getUUID();
+    this.date_exchange = new Date();
+
+    this.save(cb);
+};
+
 var Permission = mongoose.model('Permissions', permissionSchema);
 
 module.exports = Permission;
