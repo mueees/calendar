@@ -6,7 +6,11 @@ block content
 
 block js_scripts
     script(type='text/javascript' src='vendor/requirejs/require.js')
-    script(type='text/javascript').
-        require(['js/config/index'], function(){
-            require(['pages/account'], function(){})
-        });
+
+    if(production)
+        script(type='text/javascript' src='js/account-account-0.0.1.js')
+    else
+        script(type='text/javascript').
+            require(['js/config/index'], function(){
+                require(['pages/account'], function(){})
+            });

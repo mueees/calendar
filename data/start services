@@ -3,3 +3,10 @@ export NODE_PATH=/vagrant/server
 
 cd /vagrant/server/services/account/server
 pm2 start index.js --name account
+
+
+// PRODUCTION
+export NODE_ENV=production
+export NODE_PATH=/vagrant/server
+
+cd /vagrant/server/services/account/server

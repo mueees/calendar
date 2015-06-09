@@ -12,15 +12,12 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
 
-    /*grunt.loadNpmTasks('grunt-svg-sprite');
-    grunt.loadNpmTasks('grunt-spritesmith');
-    */
-
     var userConfig = require('./build.config.js');
 
     var taskConfig = {
         pkg: grunt.file.readJSON("package.json"),
         copy: {
+            // DEVELOPMENT
             app_assets: {
                 files: [
                     {
@@ -76,7 +73,30 @@ module.exports = function (grunt) {
                         flatten: true
                     }
                 ]
-            }
+            },
+
+            // COMPILE
+            app_assets_compile: {
+                files: [
+                    {
+                        src: ['**'],
+                        dest: '<%= compile_dir %>/app/assets',
+                        cwd: 'app/assets',
+                        expand: true,
+                        flatten: false
+                    }
+                ]
+            },
+            vendor_js_compile: {
+                files: [
+                    {
+                        src: ['<%= compile_files.js %>'],
+                        dest: '<%= compile_dir %>',
+                        cwd: '.',
+                        expand: true
+                    }
+                ]
+            },
         },
         stylus: {
             dev: {
@@ -96,6 +116,14 @@ module.exports = function (grunt) {
                 files: {
                     "<%= build_dir %>/app/assets/css/default-<%= pkg.name %>-<%= pkg.version %>.css": '<%= app_files.less.default %>'
                 }
+            },
+            compile: {
+                options: {
+                    paths: ["assets/css"]
+                },
+                files: {
+                    "<%= compile_dir %>/app/assets/css/default-<%= pkg.name %>-<%= pkg.version %>.css": '<%= app_files.less.default %>'
+                }
             }
         },
         clean: {
@@ -104,6 +132,9 @@ module.exports = function (grunt) {
             ],
             assets_build: [
                 '<%= build_dir %>/assets'
+            ],
+            compile: [
+                '<%= compile_dir %>'
             ]
         },
         watch: {
@@ -124,11 +155,11 @@ module.exports = function (grunt) {
             }
         },
         requirejs: {
-            development: {
+            account: {
                 options: {
                     baseUrl: 'app/js',
                     name: 'pages/account',
-                    out: 'out.js',
+                    out: '<%= compile_dir %>/app/js/account-<%= pkg.name %>-<%= pkg.version %>.js',
                     optimize: 'none',
                     mainConfigFile: "app/js/config/index.js"
                 }
@@ -153,6 +184,18 @@ module.exports = function (grunt) {
         'copy:vendor_css',
         'copy:vendor_js',
         'copy:vendor_fonts'
+    ]);
+
+    grunt.registerTask('compile', [
+        'clean:compile',
+
+        'copy:app_assets_compile',
+
+        'copy:vendor_js_compile',
+
+        'requirejs:account',
+
+        'less:compile'
     ]);
 
     grunt.registerTask('debug', 'Main task for development', function () {

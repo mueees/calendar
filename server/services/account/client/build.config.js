@@ -1,7 +1,6 @@
 module.exports = {
     build_dir: 'build',
     compile_dir: 'bin',
-    compile_dir_scripts_temp: 'bin/scripts/temp',
 
     app_files: {
         js: [
@@ -41,10 +40,14 @@ module.exports = {
             'app/vendor/backbone/backbone.wreqr.js',
             'app/vendor/storage/storage.js'
         ],
-        css: [
-            'app/vendor/bootstrap/dist/css/bootstrap.css'
-        ],
+        css: [],
         fonts: [],
         assets: []
+    },
+
+    compile_files: {
+        js: [
+            'app/vendor/requirejs/require.js'
+        ]
     }
 };

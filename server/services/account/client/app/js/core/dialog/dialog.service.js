@@ -11,7 +11,6 @@ define([
     var defaultConfirm = {
         accept: 'Ok',
         decline: 'Cancel',
-        title: 'Question',
         text: 'Default text'
     };
 

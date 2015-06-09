@@ -70,6 +70,7 @@ Server.prototype.auth = function (request, response, next) {
 Server.prototype.exchange = function (request, response, next) {
 
 };
+
 Server.prototype.refresh = function (request, response, next) {};
 
 module.exports = Server;
