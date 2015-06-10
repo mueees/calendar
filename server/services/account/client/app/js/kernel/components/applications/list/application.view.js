@@ -46,7 +46,7 @@ define([
         },
 
         anyChangeHandler: function () {
-            console.log('changed');
+
         },
 
         newPrivateKeyHandler: function () {
@@ -54,12 +54,14 @@ define([
         },
 
         onDeleteHandler: function () {
+            var me = this;
+
             $mDialog.confirm({
-                text: 'Are you sure?'
+                text: 'Do you want delete <strong>"' + this.model.get('name') + '"</strong> application ?',
+                accept: 'Delete'
             }).then(function () {
-                console.log('done');
-            }, function () {
-                console.log('false');
+                me.model.collection.remove(me.model);
+                me.model.remove();
             });
         }
     });

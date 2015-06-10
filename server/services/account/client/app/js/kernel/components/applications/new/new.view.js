@@ -15,6 +15,9 @@ define([
             '[name=name]': {
                 observe: 'name'
             },
+            '[name=domain]': {
+                observe: 'domain'
+            },
             '[name=description]': {
                 observe: 'description'
             },

@@ -25,6 +25,7 @@ if (process.env.NODE_ENV == "development") {
 }
 
 app.use(require("common/middlewares/sendHttpError"));
+app.use(require("common/middlewares/enviroment"));
 
 //routing
 route(app, oauthserver);

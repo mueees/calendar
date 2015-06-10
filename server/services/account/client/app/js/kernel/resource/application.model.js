@@ -6,11 +6,13 @@ define([
         urlRoot: '/api/v' + config.api.version + '/application/create',
 
         urls: {
-            privateKey: '/api/v' + config.api.version + '/application/privateKey'
+            privateKey: '/api/v' + config.api.version + '/application/privateKey',
+            remove: '/api/v' + config.api.version + '/application/remove'
         },
 
         defaults: {
             name: '',
+            domain: '',
             description: '',
             redirectUrl: ''
         },
@@ -20,6 +22,9 @@ define([
                 required: true
             },
             redirectUrl: {
+                required: true
+            },
+            domain: {
                 required: true
             }
         },
@@ -37,6 +42,15 @@ define([
             this.save(null, defaults);
 
             return this;
+        },
+
+        remove: function (options) {
+            var defaults = {
+                url: this.urls.remove + '/' + this.get('_id'),
+                type: 'POST'
+            };
+
+            return this.save(null, defaults);
         }
     });
 

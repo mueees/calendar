@@ -8,7 +8,7 @@ if((NODE_ENV == 'development')){
     configFile = 'development.json'
 }else if(NODE_ENV == 'test'){
     configFile = 'test.json'
-}else if(NODE_ENV == 'live'){
+}else if(NODE_ENV == 'production'){
     configFile = 'live.json'
 }
 
