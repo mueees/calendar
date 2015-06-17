@@ -22,8 +22,12 @@ function Server(options) {
 
     this.server = null;
 
+    this.ServerError = ServerError;
+
     this.initialize();
 }
+
+Server.ServerError = ServerError;
 
 util.inherits(Server, EventEmitter);
 

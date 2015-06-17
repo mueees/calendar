@@ -1,4 +1,6 @@
-var Server = require('common/service').Server,
+var service = require('common/service'),
+    Server = service.Server,
+    ServerError = service.ServerError,
     _ = require('underscore'),
     util = require('util');
 
@@ -9,7 +11,7 @@ var server = new Server({
 server.api({
     transform: function (s, cb) {
         setTimeout(function(){
-            cb(null, 'Answer: ' + s);
+            cb(new ServerError(500, 'Cannot find anything'));
         }, 450);
     },
 

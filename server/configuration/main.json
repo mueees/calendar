@@ -9,6 +9,13 @@
           "port": 7001
         }
       }
+    },
+    "oauth": {
+      "services": {
+        "oauth": {
+          "port": 7010
+        }
+      }
     }
   }
 }

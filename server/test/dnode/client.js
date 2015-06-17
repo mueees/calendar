@@ -2,15 +2,15 @@ var Client = require('common/service').Client,
     util = require('util');
 
 var client = new Client({
-    port: 3300
+    port: 3300,
+    collectStats: false
 });
 
 client.on('remote', function () {
-    setInterval(function () {
-        client.exec('transform', 'mue', function (err, result) {});
-    }, 2);
-
-    setInterval(function () {
-        console.log('Average Response Time: ' + client.getStats().averageResponseTime);
-    }, 5000);
+    client.exec('transform', 'mue', function (err, result) {
+        if (err) {
+            console.log(err.status);
+            console.log(err.message);
+        }
+    });
 });
