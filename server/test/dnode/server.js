@@ -1,9 +1,19 @@
-var dnode = require('dnode');
+var Server = require('common/service').Server,
+    _ = require('underscore'),
+    util = require('util');
 
-var server = dnode({
-    transform : function (s, cb) {
-        setTimeout(cb, 3300);
-    }
+var server = new Server({
+    port: 3300
 });
 
-server.listen(5004);
+server.api({
+    transform: function (s, cb) {
+        setTimeout(function(){
+            cb(null, 'Answer: ' + s);
+        }, 450);
+    },
+
+    getVersion: function (cb) {
+        cb(null, 1);
+    }
+});

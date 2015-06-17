@@ -1,5 +1,14 @@
 {
   "project": {
     "name": "Mue"
+  },
+  "applications": {
+    "seed": {
+      "services": {
+        "api": {
+          "port": 7001
+        }
+      }
+    }
   }
 }

@@ -1,22 +1,16 @@
-var dnode = require('dnode');
+var Client = require('common/service').Client,
+    util = require('util');
 
-var server,
-    stream = dnode.connect(5004, function (r) {
-        var i = 0;
+var client = new Client({
+    port: 3300
+});
 
-        setInterval(function(){
-            i++;
-            sendRequest();
-        }, 1);
+client.on('remote', function () {
+    setInterval(function () {
+        client.exec('transform', 'mue', function (err, result) {});
+    }, 2);
 
-
-        function sendRequest(){
-            var start = new Date();
-
-            r.transform('string', function (data) {
-                var time = (new Date()).getTime() - start;
-
-                console.log(time);
-            });
-        }
-    });
+    setInterval(function () {
+        console.log('Average Response Time: ' + client.getStats().averageResponseTime);
+    }, 5000);
+});
