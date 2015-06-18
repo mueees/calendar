@@ -3,12 +3,24 @@ var validator = require('validator'),
     Application = require('common/resources/application'),
     OauthError = require('./OauthError'),
     _ = require('underscore'),
+    expiredTime = 3600,
     async = require('async');
 
 function Server() {
 }
 
-Server.prototype.auth = function (data, callback) {
+_.extend(Server.prototype, {
+    auth: auth,
+    refresh: refresh,
+    exchange: exchange,
+    createApplication: createApplication,
+    removeApplication: removeApplication,
+    getAllApplications: getAllApplications,
+    getApplicationById: getApplicationById,
+    getPermission: getPermission
+});
+
+function auth(data, callback) {
     if (!data.applicationId || !data.applicationId.length) {
         return callback(new OauthError(400, 'Invalid application Id'));
     }
@@ -67,9 +79,9 @@ Server.prototype.auth = function (data, callback) {
 
         callback(null, permission.ticket);
     });
-};
+}
 
-Server.prototype.exchange = function (data, callback) {
+function exchange(data, callback) {
     if (!data.ticket || !data.ticket.length) {
         return callback(new OauthError(400, "Invalid ticket"));
     }
@@ -136,12 +148,12 @@ Server.prototype.exchange = function (data, callback) {
         callback(null, {
             access_token: permission.access_token,
             refresh_token: permission.refresh_token,
-            exchange: 3600
+            exchange: expiredTime
         });
     });
-};
+}
 
-Server.prototype.refresh = function (data, callback) {
+function refresh(data, callback) {
     if (!data.privateKey) {
         return callback(new OauthError(400, "Invalid private key"));
     }
@@ -205,13 +217,37 @@ Server.prototype.refresh = function (data, callback) {
 
         callback(null, {
             access_token: permission.access_token,
-            exchange: 3600
+            exchange: expiredTime
         });
     });
 
-};
+}
 
-Server.prototype.createApplication = function (data, callback) {
+function getPermissionByAccessToken(access_token, callback) {
+    if (!access_token) {
+        return callback(new OauthError(400, "Invalid Access Token"));
+    }
+
+    Permission.findOne({
+        access_token: access_token
+    }, null, function (err, permission) {
+        if (err) {
+            return callback(new OauthError(400, "Server error"));
+        }
+
+        if (!permission) {
+            return callback(new OauthError(400, "Invalid Access Token."));
+        }
+
+        if (permission.isExpired(expiredTime)) {
+            return callback(new OauthError(400, "Access token was expired. Please update it."));
+        }
+
+        callback(null, permission);
+    });
+}
+
+function createApplication(data, callback) {
     if (!data.name || !data.name.length) {
         return callback(new OauthError(400, "Name should exists."));
     }
@@ -234,9 +270,9 @@ Server.prototype.createApplication = function (data, callback) {
             description: application.description
         });
     });
-};
+}
 
-Server.prototype.getAllApplications = function (userId, callback) {
+function getAllApplications(userId, callback) {
     if (!userId || !userId.length) {
         return callback(new OauthError(400, 'Invalid user Id'));
     }
@@ -259,9 +295,9 @@ Server.prototype.getAllApplications = function (userId, callback) {
 
         callback(null, applications);
     });
-};
+}
 
-Server.prototype.removeApplication = function (applicationId, callback) {
+function removeApplication(applicationId, callback) {
     if (!applicationId || !applicationId.length) {
         return callback(new OauthError(400, 'Invalid application Id'));
     }
@@ -275,9 +311,9 @@ Server.prototype.removeApplication = function (applicationId, callback) {
 
         callback(null);
     });
-};
+}
 
-Server.prototype.getApplicationById = function (applicationId, callback) {
+function getApplicationById(applicationId, callback) {
     if (!applicationId || !applicationId.length) {
         return callback(new OauthError(400, 'Invalid application Id'));
     }
@@ -291,6 +327,6 @@ Server.prototype.getApplicationById = function (applicationId, callback) {
 
         callback(null, application);
     });
-};
+}
 
 module.exports = Server;

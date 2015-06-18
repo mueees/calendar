@@ -17,5 +17,12 @@
         }
       }
     }
+  },
+
+  "applications-api": {
+    "calendar": {
+      "api-prefix": "calendar",
+      "status" : true
+    }
   }
 }

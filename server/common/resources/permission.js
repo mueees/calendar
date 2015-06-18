@@ -68,6 +68,10 @@ permissionSchema.methods.refreshToken = function (cb) {
     this.save(cb);
 };
 
+permissionSchema.methods.isExpired = function (timeExpired) {
+    return ((new Date()).getTime() - this.date_exchange) < timeExpired;
+};
+
 var Permission = mongoose.model('Permissions', permissionSchema);
 
 module.exports = Permission;
