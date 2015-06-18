@@ -6,11 +6,17 @@ var api = {
         cb(null, seedConfig.get('version'));
     },
 
-    auth: function () {},
+    auth: function () {
 
-    exchange: function () {},
+    },
 
-    refresh: function () {}
+    exchange: function () {
+
+    },
+
+    refresh: function () {
+
+    }
 };
 
 module.exports = function (server) {

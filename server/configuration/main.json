@@ -12,7 +12,7 @@
     },
     "oauth": {
       "services": {
-        "oauth": {
+        "api": {
           "port": 7010
         }
       }

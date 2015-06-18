@@ -5,7 +5,8 @@ var validator = require('validator'),
     _ = require('underscore'),
     async = require('async');
 
-function Server(){}
+function Server() {
+}
 
 Server.prototype.auth = function (request, response, next) {
     var data = request.body;
@@ -19,15 +20,15 @@ Server.prototype.auth = function (request, response, next) {
             Application.findOne({
                 applicationId: data.applicationId
             }, function (err, application) {
-                if(err){
+                if (err) {
                     return cb('Server error');
                 }
 
-                if(!application){
+                if (!application) {
                     return cb('Cannot find application');
                 }
 
-                if(application.status == 400){
+                if (application.status == 400) {
                     return cb('Application was blocked');
                 }
 
@@ -38,7 +39,7 @@ Server.prototype.auth = function (request, response, next) {
             Permission.remove({
                 userId: request.user._id
             }, function (err) {
-                if(err){
+                if (err) {
                     return cb('Server error');
                 }
 
@@ -50,7 +51,7 @@ Server.prototype.auth = function (request, response, next) {
                 userId: request.user._id,
                 applicationId: application.applicationId
             }, function (err, permission) {
-                if(err){
+                if (err) {
                     return cb('Server error');
                 }
 
@@ -58,7 +59,7 @@ Server.prototype.auth = function (request, response, next) {
             });
         }
     ], function (err, permission) {
-        if(err){
+        if (err) {
             return next(new HttpError(400, err));
         }
 
@@ -89,11 +90,11 @@ Server.prototype.exchange = function (request, response, next) {
                 privateKey: data.privateKey,
                 applicationId: data.applicationId
             }, null, function (err, application) {
-                if(err){
+                if (err) {
                     return cb('Server error');
                 }
 
-                if(!application){
+                if (!application) {
                     return cb('Invalid application id or secret key');
                 }
 
@@ -105,15 +106,15 @@ Server.prototype.exchange = function (request, response, next) {
                 ticket: data.ticket,
                 applicationId: data.applicationId
             }, null, function (err, permission) {
-                if(err){
+                if (err) {
                     return cb('Server error');
                 }
 
-                if(!permission){
+                if (!permission) {
                     return cb('Invalid ticket or application id');
                 }
 
-                if(permission.isTicketExchanged) {
+                if (permission.isTicketExchanged) {
                     return cb('Ticket was already exchanged');
                 }
 
@@ -122,7 +123,7 @@ Server.prototype.exchange = function (request, response, next) {
         },
         function (application, permission, cb) {
             permission.exchangeTicketToTokens(function (err) {
-                if(err){
+                if (err) {
                     return cb("Server error");
                 }
 
@@ -130,7 +131,7 @@ Server.prototype.exchange = function (request, response, next) {
             });
         }
     ], function (err, permission) {
-        if(err){
+        if (err) {
             return next(new HttpError(400, err));
         }
 
@@ -153,28 +154,63 @@ Server.prototype.refresh = function (request, response, next) {
         return next(new HttpError(400, "Invalid refresh token"));
     }
 
+    if (!data.applicationId || !data.applicationId.length) {
+        return next(new HttpError(400, "Invalid application id"));
+    }
+
     async.waterfall([
         function (cb) {
-            Permission.findOne({
-                refresh_token: data.refresh_token
-            }, null, function (err, permission) {
-                if(err){
+            // todo: this is legacy code, need move to model method
+
+            Application.findOne({
+                privateKey: data.privateKey,
+                applicationId: data.applicationId
+            }, null, function (err, application) {
+                if (err) {
                     return cb('Server error');
                 }
 
-                if(!permission){
-                    return cb('Invalid ticket or application id');
+                if (!application) {
+                    return cb('Invalid application id or secret key');
                 }
 
-                if(permission.isTicketExchanged) {
-                    return cb('Ticket was already exchanged');
+                cb(null, application);
+            });
+        },
+        function (application, cb) {
+            Permission.findOne({
+                refresh_token: data.refresh_token,
+                applicationId: data.applicationId
+            }, null, function (err, permission) {
+                if (err) {
+                    return cb('Server error');
+                }
+
+                if (!permission) {
+                    return cb('Invalid refresh token or application id');
                 }
 
                 cb(null, application, permission);
             });
-        }
-    ], function () {
+        },
+        function (application, permission, cb) {
+            permission.refreshToken(function (err) {
+                if (err) {
+                    return cb("Server error");
+                }
 
+                cb(null, permission);
+            });
+        }
+    ], function (err, permission) {
+        if (err) {
+            return next(new HttpError(400, err));
+        }
+
+        response.send({
+            access_token: permission.access_token,
+            exchange: 3600
+        });
     });
 
 };

@@ -9,7 +9,7 @@ if((NODE_ENV == 'development')){
 }else if(NODE_ENV == 'test'){
     configFile = 'test.json'
 }else if(NODE_ENV == 'production'){
-    configFile = 'live.json'
+    configFile = 'production.json'
 }
 
 nconf.file('main.main', {file: path.join(__dirname, 'main.json')});

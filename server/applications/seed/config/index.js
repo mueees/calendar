@@ -12,8 +12,8 @@ if((NODE_ENV == 'development')){
     configFile = 'production.json'
 }
 
-nconf.file('main.main', {file: path.join(__dirname, 'main.json')});
-nconf.file('main.secret', {file: path.join(__dirname, 'secret.json')});
-nconf.file('main.configFile', {file: path.join(__dirname, configFile)});
+nconf.file('seed.main', {file: path.join(__dirname, 'main.json')});
+nconf.file('seed.secret', {file: path.join(__dirname, 'secret.json')});
+nconf.file('seed.configFile', {file: path.join(__dirname, configFile)});
 
 module.exports = nconf;

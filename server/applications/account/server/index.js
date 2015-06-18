@@ -43,7 +43,7 @@ app.use(function (err, req, res, next) {
     }
 });
 
-//link database
+// connect to database
 require("common/mongooseConnect").initConnection(accountConfig);
 
 var server = http.createServer(app);

@@ -4,21 +4,17 @@ var mongoose = require('mongoose'),
     heplers = require('common/helpers');
 
 var permissionSchema = new Schema({
-    userId: {
-        type: ObjectId,
-        require: true
-    },
-    applicationId: {
-        type: String,
-        require: true
-    },
     ticket: {
         type: String,
         default: heplers.util.getUUID()
     },
-    isTicketExchanged: {
-        type: Boolean,
-        default: false
+    date_create: {
+        type: Date,
+        default: new Date()
+    },
+    userId: {
+        type: ObjectId,
+        require: true
     },
     access_token: {
         type: String,
@@ -32,9 +28,13 @@ var permissionSchema = new Schema({
         type: Date,
         default: null
     },
-    date_create: {
-        type: Date,
-        default: new Date()
+    applicationId: {
+        type: String,
+        require: true
+    },
+    isTicketExchanged: {
+        type: Boolean,
+        default: false
     }
 });
 
@@ -56,6 +56,13 @@ permissionSchema.methods.exchangeTicketToTokens = function (cb) {
     this.isTicketExchanged = true;
     this.access_token = heplers.util.getUUID();
     this.refresh_token = heplers.util.getUUID();
+    this.date_exchange = new Date();
+
+    this.save(cb);
+};
+
+permissionSchema.methods.refreshToken = function (cb) {
+    this.access_token = heplers.util.getUUID();
     this.date_exchange = new Date();
 
     this.save(cb);
