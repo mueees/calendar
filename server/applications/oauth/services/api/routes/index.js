@@ -15,7 +15,7 @@ var api = {
 
     refresh: oauthserver.refresh,
 
-    getPermissionByAccessToken: getPermissionByAccessToken,
+    getPermissionByAccessToken: oauthserver.getPermissionByAccessToken,
 
     createApplication: oauthserver.createApplication,
 

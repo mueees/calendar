@@ -2,7 +2,7 @@ var express = require('express'),
     route = require('./routes'),
     http = require('http'),
     bodyParser = require('body-parser'),
-    proxyConfig = require('config');
+    proxyConfig = require('./config');
 
 var app = express();
 
@@ -13,5 +13,5 @@ app.use(bodyParser.json({type: 'application/json'}));
 route(app);
 
 var server = http.createServer(app);
-server.listen(config.get("services:api:port"));
+server.listen(proxyConfig.get("port"));
 console.log(proxyConfig.get('name') + " server listening: " + proxyConfig.get("port"));

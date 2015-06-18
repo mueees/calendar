@@ -18,11 +18,11 @@
       }
     }
   },
-
   "applications-api": {
-    "calendar": {
-      "api-prefix": "calendar",
-      "status" : true
+    "test": {
+      "api-prefix": "test",
+      "status": true,
+      "port": 8001
     }
   }
 }

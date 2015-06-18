@@ -17,7 +17,7 @@ _.extend(Server.prototype, {
     removeApplication: removeApplication,
     getAllApplications: getAllApplications,
     getApplicationById: getApplicationById,
-    getPermission: getPermission
+    getPermissionByAccessToken: getPermissionByAccessToken
 });
 
 function auth(data, callback) {
@@ -328,5 +328,7 @@ function getApplicationById(applicationId, callback) {
         callback(null, application);
     });
 }
+
+
 
 module.exports = Server;

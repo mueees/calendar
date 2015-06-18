@@ -1,9 +1,15 @@
+// DEVELOPMENT
 export NODE_ENV=development
 export NODE_PATH=/vagrant/server
 
-cd /vagrant/server/applications/account/server
-pm2 start index.js --name account
+cd /vagrant/server/applications/oauth/services/api
+pm2 start index.js --name oauth
 
+cd /vagrant/server/applications/test/services/api
+pm2 start index.js --name test
+
+cd /vagrant/server/applications/proxy-api
+pm2 start index.js --name proxy
 
 // PRODUCTION
 export NODE_ENV=production
@@ -11,10 +17,7 @@ export NODE_PATH=/vagrant/server
 
 cd /vagrant/server/applications/account/server
 
-
 // Start vagrant
 cd mue\project\calendar
 vagrant up
-
-cd mue\project\calendar
 vagrant ssh
