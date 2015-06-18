@@ -3,7 +3,6 @@ var express = require('express'),
     http = require('http'),
     HttpError = require('common/errors/HttpError'),
     bodyParser = require('body-parser'),
-    oauthserver = require('./oauthserver'),
     errorhandler = require('errorhandler'),
     accountConfig = require('./config'),
     prefix = '/api/v' + accountConfig.get('api:version');
@@ -28,7 +27,7 @@ app.use(require("common/middlewares/sendHttpError"));
 app.use(require("common/middlewares/enviroment"));
 
 //routing
-route(app, oauthserver);
+route(app);
 
 app.use(function (err, req, res, next) {
     if (typeof err == "number") {

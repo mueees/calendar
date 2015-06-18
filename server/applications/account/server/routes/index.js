@@ -7,14 +7,16 @@ var rootController = require('../controllers/root'),
 
 var prefix = '/api/v' + accountConfig.get('api:version');
 
-module.exports = function (app, oauthserver) {
+module.exports = function (app) {
 
     /*HOME*/
     app.get('/', rootController.home);
 
     /*USER*/
     app.post(prefix + '/signup', userController.signUp);
+
     app.post(prefix + '/signin', userController.signIn);
+
     app.get(prefix + '/confirmuser', userController.confirmuser);
 
     /*APPLICATION*/
@@ -37,11 +39,11 @@ module.exports = function (app, oauthserver) {
     /*OAUTH 2*/
     app.post(prefix + '/oauth/auth',
         passport.authenticate('bearer', {session: false}),
-        oauthserver.auth);
+        oauthController.auth);
 
     app.post(prefix + '/oauth/exchange',
-        oauthserver.exchange);
+        oauthController.exchange);
 
     app.post(prefix + '/oauth/refresh',
-        oauthserver.refresh);
+        oauthController.refresh);
 };

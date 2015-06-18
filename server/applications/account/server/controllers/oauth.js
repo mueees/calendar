@@ -1,178 +1,75 @@
 var validator = require('validator'),
     async = require('async'),
     HttpError = require('common/errors/HttpError'),
-    _ = require('underscore'),
-    User = require('common/resources/user');
+    oauthClient = require('../clients/oauth'),
+    _ = require('underscore');
 
 var controller = {
     auth: function (request, response, next) {
         var data = request.body;
 
-        if (!validator.isLength(data.publicKey, 1)) {
-            return next(new HttpError(400, "Invalid public key"));
+        if (!validator.isLength(data.applicationId, 1)) {
+            return next(new HttpError(400, "Invalid application Id"));
         }
 
-        async.waterfall([
-                function (cb) {
-                    User.getApplicationByPublicKey(data.publicKey, cb);
-                },
-                function (application, cb) {
-                    if (!application) {
-                        cb('Cannot find application');
-                    } else {
-                        var grant = _.find(application.grants, function (grant) {
-                            return grant.userId == request.user._id
-                        });
+        data.userId = request.user._id;
 
-                        if (grant) {
-                            grant.access_token = '';
-                            grant.refrsh_token = '';
-                            grant.expired = '';
-                            grant.auth_code = {
-                                code: 'test',
-                                isExchanged: false
-                            };
-                        } else {
-                            application.grants.push({
-                                userId: request.user._id,
-                                auth_code: {
-                                    code: 'test',
-                                    isExchanged: false
-                                },
-                                access_token: '',
-                                refresh_token: '',
-                                expired: new Date()
-                            });
-                        }
-
-                        application.save(function (err) {
-                            if (err) {
-                                return cb('Server error');
-                            }
-
-                            cb(null, application);
-                        });
-                    }
-                }
-            ],
-            function (err, application) {
-                if (err) {
-                    return next(new HttpError(400, err));
-                }
-
-                response.redirect(application.redirectUrl);
+        oauthClient.exec('auth', data, function (err, ticket) {
+            if (err) {
+                return next(new HttpError(400, err.message));
             }
-        );
+
+            response.send({
+                ticket: ticket
+            });
+        });
     },
 
     exchange: function (request, response, next) {
         var data = request.body;
 
-        if (!validator.isLength(data.auth_code, 1)) {
-            return next(new HttpError(400, "Cannot find auth code"));
+        if (!data.ticket || !data.ticket.length) {
+            return next(new HttpError(400, "Invalid ticket"));
         }
 
-        if (!validator.isLength(data.privateKey, 1)) {
-            return next(new HttpError(400, "Cannot find private key"));
+        if (!data.privateKey || !data.privateKey.length) {
+            return next(new HttpError(400, "Invalid private key"));
         }
 
-        async.waterfall([
-            function (cb) {
-                User.getApplicationByPrivateKey(data.privateKey, cb);
-            },
-            function (application, cb) {
-                if (!application) {
-                    cb('Invalid private key');
-                } else {
-                    cb(null, application);
-                }
-            },
-            function (application, cb) {
-                var grant = _.find(application.grants, function (grant) {
-                    return grant.auth_code.code == data.auth_code;
-                });
+        if (!data.applicationId || !data.applicationId.length) {
+            return next(new HttpError(400, "Invalid application id"));
+        }
 
-                if (!grant) {
-                    cb('You do not have permit for this user');
-                } else {
-                    if (grant.auth_code.isExchanged) {
-                        cb('Auth code was already exchanged');
-                    } else {
-                        grant.auth_code.isExchanged = true;
-                        grant.access_token = 'access';
-                        grant.refresh_token = 'refresh';
-                        grant.exchanged = new Date();
-
-                        grant.save(function (err) {
-                            if (err) {
-                                return cb('Server error');
-                            }
-
-                            cb(null, grant);
-                        });
-                    }
-                }
-            }
-        ], function (err, grant) {
+        oauthClient.exec('exchange', data, function (err, tokens) {
             if (err) {
-                return next(new HttpError(400, err));
+                return next(new HttpError(400, err.message));
             }
 
-            response.send({
-                access_token: grant.access_token,
-                refresh_token: grant.refresh_token,
-                expired: 3600
-            });
+            response.send(tokens);
         });
     },
 
     refresh: function (request, response, next) {
         var data = request.body;
 
-        if (!validator.isLength(data.refresh_token, 1)) {
-            return next(new HttpError(400, "Cannot find refresh token"));
+        if (!data.privateKey) {
+            return next(new HttpError(400, "Invalid private key"));
         }
 
-        if (!validator.isLength(data.privateKey, 1)) {
-            return next(new HttpError(400, "Cannot find private key"));
+        if (!data.refresh_token) {
+            return next(new HttpError(400, "Invalid refresh token"));
         }
 
-        async.waterfall([
-            function (cb) {
-                User.getApplicationByPrivateKey(data.privateKey, cb);
-            },
-            function (application, cb) {
-                if (!application) {
-                    cb('Cannot find application');
-                } else {
-                    var grant = _.find(application.grants, function (grant) {
-                        return grant.refresh_token == data.refresh_token;
-                    });
+        if (!data.applicationId || !data.applicationId.length) {
+            return next(new HttpError(400, "Invalid application id"));
+        }
 
-                    if (!grant) {
-                        cb('You do not have permit for this user');
-                    } else {
-                        grant.access_token = 'access2';
-
-                        grant.save(function (err) {
-                            if (err) {
-                                return cb('Server error');
-                            }
-
-                            cb(null, grant);
-                        });
-                    }
-                }
-            }
-        ], function (err, grant) {
+        oauthClient.exec('refresh', data, function (err, tokens) {
             if (err) {
-                return next(new HttpError(400, err));
+                return next(new HttpError(400, err.message));
             }
 
-            response.send({
-                access_token: grant.access_token,
-                expired: 3600
-            });
+            response.send(tokens);
         });
     }
 };

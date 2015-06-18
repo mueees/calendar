@@ -1,22 +1,27 @@
-var seedController = require('../controllers/seed'),
-    seedConfig = require('../../../config');
+var oauthserver = require('../modules/oauthserver'),
+    oauthConfig = require('../../../config');
 
 var api = {
-    getVersion: function (cb) {
-        cb(null, seedConfig.get('version'));
+    getServiceInfo: function (cb) {
+        cb(null, {
+            name: oauthConfig.get('name'),
+            version: oauthConfig.get('version')
+        });
     },
 
-    auth: function () {
+    auth: oauthserver.auth,
 
-    },
+    exchange: oauthserver.exchange,
 
-    exchange: function () {
+    refresh: oauthserver.refresh,
 
-    },
+    createApplication: oauthserver.createApplication,
 
-    refresh: function () {
+    getAllApplications: oauthserver.getAllApplications,
 
-    }
+    removeApplication: oauthserver.removeApplication,
+
+    getApplicationById: oauthserver.getApplicationById
 };
 
 module.exports = function (server) {

@@ -36,7 +36,7 @@ _.extend(Server.prototype, {
         this.server = dnode(this._api);
         this.server.listen(this.port);
 
-        console.log("Server listen " + this.port + " port");
+        console.log("Service Server listen " + this.port + " port");
     },
 
     // add new api methods

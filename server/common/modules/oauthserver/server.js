@@ -1,18 +1,20 @@
 var validator = require('validator'),
     Permission = require('common/resources/permission'),
     Application = require('common/resources/application'),
-    HttpError = require('common/errors/HttpError'),
+    OauthError = require('./OauthError'),
     _ = require('underscore'),
     async = require('async');
 
 function Server() {
 }
 
-Server.prototype.auth = function (request, response, next) {
-    var data = request.body;
-
+Server.prototype.auth = function (data, callback) {
     if (!data.applicationId || !data.applicationId.length) {
-        return next(new HttpError(400, "Invalid application Id"));
+        return callback(new OauthError(400, 'Invalid application Id'));
+    }
+
+    if (!data.userId || !data.userId.length) {
+        return callback(new OauthError(400, 'Invalid user Id'));
     }
 
     async.waterfall([
@@ -37,7 +39,7 @@ Server.prototype.auth = function (request, response, next) {
         },
         function (application, cb) {
             Permission.remove({
-                userId: request.user._id
+                userId: data.userId
             }, function (err) {
                 if (err) {
                     return cb('Server error');
@@ -48,7 +50,7 @@ Server.prototype.auth = function (request, response, next) {
         },
         function (application, cb) {
             Permission.create({
-                userId: request.user._id,
+                userId: data.userId,
                 applicationId: application.applicationId
             }, function (err, permission) {
                 if (err) {
@@ -60,28 +62,24 @@ Server.prototype.auth = function (request, response, next) {
         }
     ], function (err, permission) {
         if (err) {
-            return next(new HttpError(400, err));
+            return callback(new OauthError(400, err));
         }
 
-        response.send({
-            ticket: permission.ticket
-        });
+        callback(null, permission.ticket);
     });
 };
 
-Server.prototype.exchange = function (request, response, next) {
-    var data = request.body;
-
+Server.prototype.exchange = function (data, callback) {
     if (!data.ticket || !data.ticket.length) {
-        return next(new HttpError(400, "Invalid ticket"));
+        return callback(new OauthError(400, "Invalid ticket"));
     }
 
     if (!data.privateKey || !data.privateKey.length) {
-        return next(new HttpError(400, "Invalid private key"));
+        return callback(new OauthError(400, "Invalid private key"));
     }
 
     if (!data.applicationId || !data.applicationId.length) {
-        return next(new HttpError(400, "Invalid application id"));
+        return callback(new OauthError(400, "Invalid application id"));
     }
 
     async.waterfall([
@@ -132,10 +130,10 @@ Server.prototype.exchange = function (request, response, next) {
         }
     ], function (err, permission) {
         if (err) {
-            return next(new HttpError(400, err));
+            return callback(new OauthError(400, err));
         }
 
-        response.send({
+        callback(null, {
             access_token: permission.access_token,
             refresh_token: permission.refresh_token,
             exchange: 3600
@@ -143,19 +141,17 @@ Server.prototype.exchange = function (request, response, next) {
     });
 };
 
-Server.prototype.refresh = function (request, response, next) {
-    var data = request.body;
-
+Server.prototype.refresh = function (data, callback) {
     if (!data.privateKey) {
-        return next(new HttpError(400, "Invalid private key"));
+        return callback(new OauthError(400, "Invalid private key"));
     }
 
     if (!data.refresh_token) {
-        return next(new HttpError(400, "Invalid refresh token"));
+        return callback(new OauthError(400, "Invalid refresh token"));
     }
 
     if (!data.applicationId || !data.applicationId.length) {
-        return next(new HttpError(400, "Invalid application id"));
+        return callback(new OauthError(400, "Invalid application id"));
     }
 
     async.waterfall([
@@ -204,15 +200,97 @@ Server.prototype.refresh = function (request, response, next) {
         }
     ], function (err, permission) {
         if (err) {
-            return next(new HttpError(400, err));
+            return callback(new OauthError(400, err));
         }
 
-        response.send({
+        callback(null, {
             access_token: permission.access_token,
             exchange: 3600
         });
     });
 
+};
+
+Server.prototype.createApplication = function (data, callback) {
+    if (!data.name || !data.name.length) {
+        return callback(new OauthError(400, "Name should exists."));
+    }
+
+    if (!data.userId || !data.userId.length) {
+        return callback(new OauthError(400, "User Id should exists."));
+    }
+
+    Application.create(data, function (err, application) {
+        if (err) {
+            return callback(new OauthError(400, err));
+        }
+
+        callback(null, {
+            name: application.name,
+            applicationId: application.applicationId,
+            privateKey: application.privateKey,
+            oauthKey: application.oauthKey,
+            date_create: application.date_create,
+            description: application.description
+        });
+    });
+};
+
+Server.prototype.getAllApplications = function (userId, callback) {
+    if (!userId || !userId.length) {
+        return callback(new OauthError(400, 'Invalid user Id'));
+    }
+
+    Application.find({
+        userId: userId
+    }, {
+        _id: true,
+        applicationId: true,
+        date_create: true,
+        description: true,
+        name: true,
+        privateKey: true,
+        redirectUrl: true,
+        status: true
+    }, function (err, applications) {
+        if (err) {
+            return callback(new OauthError(400, err));
+        }
+
+        callback(null, applications);
+    });
+};
+
+Server.prototype.removeApplication = function (applicationId, callback) {
+    if (!applicationId || !applicationId.length) {
+        return callback(new OauthError(400, 'Invalid application Id'));
+    }
+
+    Application.remove({
+        _id: applicationId
+    }, function (err) {
+        if (err) {
+            return callback(new OauthError(400, "Server error"));
+        }
+
+        callback(null);
+    });
+};
+
+Server.prototype.getApplicationById = function (applicationId, callback) {
+    if (!applicationId || !applicationId.length) {
+        return callback(new OauthError(400, 'Invalid application Id'));
+    }
+
+    Application.findOne({
+        _id: applicationId
+    }, null, function (err, application) {
+        if (err) {
+            return next(new OauthError(400, "Server error"));
+        }
+
+        callback(null, application);
+    });
 };
 
 module.exports = Server;

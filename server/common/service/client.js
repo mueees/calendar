@@ -8,10 +8,13 @@ var defaultOptions = {
     port: null,
     reconnect: true,
     reconnectTime: 2000,
-    collectStats: true
+    collectStats: false,
+    log: false
 };
 
 function Client(options) {
+    var me = this;
+
     this.options = _.extend(defaultOptions, options);
 
     if (!this.options.port) {
@@ -37,6 +40,12 @@ function Client(options) {
 
     // connect to _remote server
     this._connect();
+
+    if (this.options.collectStats) {
+        setInterval(function () {
+            me.log(me.getStats())
+        }, 2000);
+    }
 }
 
 util.inherits(Client, events.EventEmitter);
@@ -48,7 +57,7 @@ _.extend(Client.prototype, {
         this.connection = dnode.connect(this.port);
 
         this.connection.on('remote', function (remote) {
-            console.log('Connect was established');
+            console.log('Service Client has established connection with remote server:' + me.port);
 
             me._remote = remote;
             me.emit('remote');
@@ -98,6 +107,12 @@ _.extend(Client.prototype, {
         }
     },
 
+    log: function (message) {
+        if (this.options.log) {
+            console.log(message);
+        }
+    },
+
     exec: function (methodName) {
         var args = [].splice.call(arguments, 0),
             originalCallback = args.pop(),
@@ -107,9 +122,9 @@ _.extend(Client.prototype, {
         args.splice(0, 1);
 
         if (!this._remote) {
-            originalCallback('Does not have connection with _remote service');
+            originalCallback(new ClientError(500, 'Does not have connection with remote service'));
         } else if (!this._remote[methodName]) {
-            throw new ClientError(1, "Doesn't have " + methodName + " method");
+            originalCallback(new ClientError(500, "Doesn't have " + methodName + " method"));
         } else {
             if (this.options.collectStats) {
                 var startRequest = new Date(),
@@ -133,6 +148,8 @@ _.extend(Client.prototype, {
             }
 
             // execute request
+            this.log('execute method ' + methodName);
+
             this._remote[methodName].apply(this, args);
         }
     },

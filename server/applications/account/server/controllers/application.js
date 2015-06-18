@@ -1,22 +1,25 @@
-var validator = require('validator'),
-    async = require('async'),
+var async = require('async'),
     HttpError = require('common/errors/HttpError'),
-    configuration = require("configuration"),
-    _ = require("underscore"),
-    User = require('common/resources/user'),
-    Application = require('common/resources/application');
+    oauthClient = require('../clients/oauth'),
+    _ = require("underscore");
 
 var controller = {
     getById: function (request, response, next) {
-        Application.find({
-            _id: request.param("id")
-        }, null, function (err, application) {
+        oauthClient.exec('getApplicationById', request.param("id"), function (err, application) {
             if (err) {
-                return next(new HttpError(400, "Server error"));
+                return next(new HttpError(400, err.message));
             }
 
             if (application) {
-                response.send(application);
+                response.send({
+                    applicationId: application.applicationId,
+                    date_create: application.date_create,
+                    description: application.description,
+                    name: application.name,
+                    privateKey: application.privateKey,
+                    redirectUrl: application.redirectUrl,
+                    status: application.status
+                });
             } else {
                 return next(new HttpError(400, "Cannot find application."));
             }
@@ -24,23 +27,24 @@ var controller = {
     },
 
     getAll: function (request, response, next) {
-        Application.find({
-            userId: request.user._id
-        }, {
-            _id: true,
-            applicationId: true,
-            date_create: true,
-            description: true,
-            name: true,
-            privateKey: true,
-            redirectUrl: true,
-            status: true
-        }, function (err, applications) {
+        oauthClient.exec('getAllApplications', request.user._id, function (err, applications) {
             if (err) {
-                return next(new HttpError(400, err));
+                return next(new HttpError(400, err.message));
             }
 
-            response.send(applications);
+            var apps = _.map(applications, function (application) {
+                return {
+                    applicationId: application.applicationId,
+                    date_create: application.date_create,
+                    description: application.description,
+                    name: application.name,
+                    privateKey: application.privateKey,
+                    redirectUrl: application.redirectUrl,
+                    status: application.status
+                }
+            });
+
+            response.send(apps);
         });
     },
 
@@ -53,9 +57,9 @@ var controller = {
 
         data.userId = request.user._id;
 
-        Application.create(data, function (err, application) {
+        oauthClient.exec('createApplication', data, function (err, application) {
             if (err) {
-                return next(new HttpError(400, err));
+                return next(new HttpError(400, err.message));
             }
 
             response.send(application);
@@ -63,11 +67,9 @@ var controller = {
     },
 
     remove: function (request, response, next) {
-        Application.remove({
-            _id: request.param("id")
-        }, function (err) {
+        oauthClient.exec('removeApplication', applicationId, function (err) {
             if (err) {
-                return next(new HttpError(400, "Server error"));
+                return next(new HttpError(400, err.message));
             }
 
             response.send({});

@@ -2,8 +2,6 @@
   "name": "Oauth",
   "version": 1,
   "services": {
-    "api": {
-
-    }
+    "api": {}
   }
 }
