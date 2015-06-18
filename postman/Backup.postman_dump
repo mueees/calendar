@@ -1,0 +1,369 @@
+{
+	"version": 1,
+	"collections": [
+		{
+			"id": "40f0ae9a-3409-01e7-0993-4fb060427e48",
+			"name": "oauth",
+			"description": "",
+			"order": [
+				"2f7b2769-b22e-2e9b-999f-8924efbb4a14",
+				"9957d157-e791-5fe5-121b-43fc23438b7e",
+				"2bd69a66-47e3-2004-ed7f-cf609c968581"
+			],
+			"folders": [],
+			"timestamp": 1433448075755,
+			"synced": false,
+			"remote_id": 0,
+			"owner": 0,
+			"sharedWithTeam": false,
+			"subscribed": false,
+			"remoteLink": "",
+			"public": false,
+			"write": true,
+			"requests": [
+				{
+					"id": "2bd69a66-47e3-2004-ed7f-cf609c968581",
+					"headers": "X-Requested-With: XMLHttpRequest\n",
+					"url": "http://localhost:6004/api/v1/oauth/refresh",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "POST",
+					"data": [
+						{
+							"key": "applicationId",
+							"value": "b8383f50-4ed7-8dd3-e9c9-c1e4170ec286",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "refresh_token",
+							"value": "d77a5724-02e7-7e88-46a8-8e7f2a3b6792",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "privateKey",
+							"value": "ba25876f-510c-9619-5968-efcf57fbc071",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "urlencoded",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1434605418389,
+					"name": "Refresh token",
+					"description": "",
+					"collectionId": "40f0ae9a-3409-01e7-0993-4fb060427e48",
+					"responses": []
+				},
+				{
+					"id": "2f7b2769-b22e-2e9b-999f-8924efbb4a14",
+					"headers": "Authorization: Bearer {{access_token}}\nX-Requested-With: XMLHttpRequest\n",
+					"url": "http://localhost:6004/api/v{{api_version}}/oauth/auth",
+					"pathVariables": {},
+					"preRequestScript": "",
+					"method": "POST",
+					"collectionId": "40f0ae9a-3409-01e7-0993-4fb060427e48",
+					"data": [
+						{
+							"key": "applicationId",
+							"value": ":id",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "urlencoded",
+					"name": "Auth (get ticket)",
+					"description": "",
+					"descriptionFormat": "html",
+					"time": 1433448186638,
+					"version": 2,
+					"responses": [],
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"collectionOwner": 0,
+					"synced": false,
+					"owner": 0
+				},
+				{
+					"id": "9957d157-e791-5fe5-121b-43fc23438b7e",
+					"headers": "X-Requested-With: XMLHttpRequest\n",
+					"url": "http://localhost:6004/api/v1/oauth/exchange",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "POST",
+					"data": [
+						{
+							"key": "applicationId",
+							"value": "b8383f50-4ed7-8dd3-e9c9-c1e4170ec286",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "ticket",
+							"value": "c01a2992-c16f-717f-b327-7c4813159005",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "privateKey",
+							"value": "ba25876f-510c-9619-5968-efcf57fbc071",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "urlencoded",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1434604775360,
+					"name": "Exchange",
+					"description": "",
+					"collectionId": "40f0ae9a-3409-01e7-0993-4fb060427e48",
+					"responses": []
+				}
+			]
+		},
+		{
+			"id": "78bedaf4-ee0f-a0ae-e042-94907392bd9b",
+			"name": "application",
+			"description": "",
+			"order": [
+				"85e5297b-99b0-3509-6a26-0eebc82e9bde",
+				"977bf7f5-b2f2-5433-5125-1310a733cf28",
+				"7b0ee37a-3c46-48a9-7f33-ade706405f58",
+				"f8523790-8431-4257-6fc0-96c0653e9e1d"
+			],
+			"folders": [],
+			"timestamp": 1433277680115,
+			"owner": 0,
+			"remoteLink": "",
+			"public": false,
+			"createdAt": 1433277680115,
+			"updatedAt": 1433277680115,
+			"synced": false,
+			"sharedWithTeam": false,
+			"subscribed": false,
+			"hasRequests": true,
+			"requests": [
+				{
+					"id": "7b0ee37a-3c46-48a9-7f33-ade706405f58",
+					"headers": "Authorization: Bearer {{access_token}}\nX-Requested-With: XMLHttpRequest\n",
+					"url": "http://localhost:6004/api/v{{api_version}}/application/create",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "POST",
+					"data": [
+						{
+							"key": "name",
+							"value": "{{name_application}}",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "description",
+							"value": "{{description_application}}",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "urlencoded",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1433356824149,
+					"name": "Create application",
+					"description": "",
+					"collectionId": "78bedaf4-ee0f-a0ae-e042-94907392bd9b",
+					"responses": [],
+					"synced": false,
+					"owner": 0
+				},
+				{
+					"id": "85e5297b-99b0-3509-6a26-0eebc82e9bde",
+					"headers": "Authorization: Bearer {{access_token}}\nX-Requested-With: XMLHttpRequest\n",
+					"url": "http://localhost:6004/api/v{{api_version}}/application/556f47a9c43d178816f9dd93",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "GET",
+					"data": [],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1433356801351,
+					"name": "Get Application",
+					"description": "",
+					"collectionId": "78bedaf4-ee0f-a0ae-e042-94907392bd9b",
+					"responses": [],
+					"synced": false,
+					"owner": 0
+				},
+				{
+					"id": "977bf7f5-b2f2-5433-5125-1310a733cf28",
+					"headers": "Authorization: Bearer {{access_token}}\nX-Requested-With: XMLHttpRequest\n",
+					"url": "http://localhost:6004/api/v{{api_version}}/application/all",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "GET",
+					"data": [],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1433356809975,
+					"name": "Get all applications",
+					"description": "",
+					"collectionId": "78bedaf4-ee0f-a0ae-e042-94907392bd9b",
+					"responses": [],
+					"synced": false,
+					"owner": 0
+				},
+				{
+					"id": "f8523790-8431-4257-6fc0-96c0653e9e1d",
+					"headers": "Authorization: Bearer {{access_token}}\nX-Requested-With: XMLHttpRequest\n",
+					"url": "http://localhost:6004/api/v{{api_version}}/application/remove/:id",
+					"preRequestScript": "",
+					"pathVariables": {
+						"id": ""
+					},
+					"method": "POST",
+					"data": [],
+					"dataMode": "urlencoded",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1433356832332,
+					"name": "Remove application",
+					"description": "",
+					"collectionId": "78bedaf4-ee0f-a0ae-e042-94907392bd9b",
+					"responses": [],
+					"synced": false,
+					"owner": 0
+				}
+			]
+		},
+		{
+			"id": "ace7a5ed-4967-e1e8-95e1-2ad4885497e0",
+			"name": "sign",
+			"description": "",
+			"order": [
+				"5cbf43a0-e844-77d2-2822-ab93f634318b",
+				"0ce7dde7-86ce-7d90-78f6-603fb659cab8"
+			],
+			"folders": [],
+			"timestamp": 1433264421564,
+			"owner": 0,
+			"remoteLink": "",
+			"public": false,
+			"createdAt": 1433264421564,
+			"updatedAt": 1433264421564,
+			"synced": false,
+			"sharedWithTeam": false,
+			"subscribed": false,
+			"hasRequests": true,
+			"requests": [
+				{
+					"id": "0ce7dde7-86ce-7d90-78f6-603fb659cab8",
+					"headers": "",
+					"url": "http://localhost:6004/api/v{{api_version}}/signin",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "POST",
+					"data": [
+						{
+							"key": "email",
+							"value": "{{email}}",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "urlencoded",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1434604425983,
+					"name": "signin",
+					"description": "",
+					"collectionId": "ace7a5ed-4967-e1e8-95e1-2ad4885497e0",
+					"responses": []
+				},
+				{
+					"id": "5cbf43a0-e844-77d2-2822-ab93f634318b",
+					"headers": "Content-Type: application/x-www-form-urlencoded; charset=UTF-8\nX-Requested-With: XMLHttpRequest\n",
+					"url": "http://localhost:6004/api/v{{api_version}}/signup",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "POST",
+					"data": [
+						{
+							"key": "email",
+							"value": "{{email}}",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "urlencoded",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1433272539157,
+					"name": "signup",
+					"description": "",
+					"collectionId": "ace7a5ed-4967-e1e8-95e1-2ad4885497e0",
+					"responses": [],
+					"synced": false,
+					"owner": 0
+				}
+			]
+		}
+	],
+	"environments": [
+		{
+			"id": "e02da9e1-c25a-4d68-e828-c67b2ab8e1ab",
+			"name": "task_manager:process_defenition",
+			"values": [
+				{
+					"key": "process-definition-name",
+					"value": "mue1",
+					"type": "text",
+					"name": "process-definition-name",
+					"enabled": true
+				},
+				{
+					"key": "rx-application-id",
+					"value": "com.bmc.arsys.rx.task-manager",
+					"type": "text",
+					"name": "rx-application-id",
+					"enabled": true
+				}
+			],
+			"timestamp": 1424855898207
+		}
+	],
+	"headerPresets": [],
+	"globals": []
+}
