@@ -23,9 +23,9 @@ var controller = {
                 User.isUserExist(data.email, cb);
             },
             function (user, cb) {
-                if( user ){
+                if (user) {
                     return cb("User with same email already registered");
-                }else{
+                } else {
                     cb(null);
                 }
             },
@@ -33,7 +33,7 @@ var controller = {
                 User.signup(data.email, data.password, cb);
             }
         ], function (err, user) {
-            if(err) {
+            if (err) {
                 return next(new HttpError(400, err));
             }
 
@@ -58,7 +58,7 @@ var controller = {
     confirmuser: function (request, response, next) {
         var confirmationId = request.query.confirmationId;
 
-        if(!confirmationId){
+        if (!confirmationId) {
             return next(new HttpError(400, {
                 message: 'Cannot find confirmation id'
             }));
@@ -69,13 +69,13 @@ var controller = {
                 User.isHaveConfirmationId(confirmationId, cb);
             },
             function (user, cb) {
-                if(!user){
+                if (!user) {
                     return cb("Doesn't have user with this confirmation id");
                 }
                 user.confirm(cb);
             }
         ], function (err) {
-            if(err){
+            if (err) {
                 return next(new HttpError(400, err));
             }
 
@@ -99,14 +99,14 @@ var controller = {
                 User.isRightCredential(data.email, data.password, cb);
             },
             function (user, cb) {
-                if(!user.isConfirm()){
+                if (!user.isConfirm()) {
                     return cb("Please confirm account. Check your email");
                 }
 
                 user.generateAccountToken(cb);
             }
         ], function (err, token) {
-            if(err) {
+            if (err) {
                 return next(new HttpError(400, err));
             }
 

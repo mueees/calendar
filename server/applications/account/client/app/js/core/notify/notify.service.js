@@ -31,7 +31,7 @@ define([
         }
     }
 
-    function clear(){
+    function clear() {
         if (container) {
             container.html('');
         }
@@ -41,7 +41,7 @@ define([
         container = el;
     }
 
-    function setDefaultOptions(options){
+    function setDefaultOptions(options) {
         defaultOptions = _.extend(defaultOptions, options);
     }
 

@@ -19,8 +19,8 @@ define([
 
         onListHandler: function () {
             this.applicationList = new ApplicationList({
-                    region: this.layout.getRegion('content')
-                });
+                region: this.layout.getRegion('content')
+            });
 
             this.applicationList.show();
         },

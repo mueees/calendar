@@ -2,6 +2,99 @@
 	"version": 1,
 	"collections": [
 		{
+			"id": "3d4bf4c5-1b82-a133-3d7b-393396d4d6d4",
+			"name": "Test app",
+			"description": "",
+			"order": [
+				"daf3a974-c414-e736-5325-1782bcbc873f",
+				"89492379-79c3-ad8c-fba7-fb80563b748b",
+				"a2d27967-810d-22fc-13c9-7ffe7895b13c"
+			],
+			"folders": [],
+			"timestamp": 1434715670919,
+			"synced": false,
+			"remote_id": 0,
+			"owner": 0,
+			"sharedWithTeam": false,
+			"subscribed": false,
+			"remoteLink": "",
+			"public": false,
+			"write": true,
+			"requests": [
+				{
+					"id": "89492379-79c3-ad8c-fba7-fb80563b748b",
+					"headers": "Authorization: Bearer bd180143-b559-09c6-d6c6-b79c4a9f6a75\nX-Requested-With: XMLHttpRequest\n",
+					"url": "http://localhost:6005/api/test/application/echo",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "POST",
+					"data": [
+						{
+							"key": "eacho",
+							"value": "yeah!",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1434719128305,
+					"name": "Echo",
+					"description": "",
+					"collectionId": "3d4bf4c5-1b82-a133-3d7b-393396d4d6d4",
+					"responses": []
+				},
+				{
+					"id": "a2d27967-810d-22fc-13c9-7ffe7895b13c",
+					"headers": "Authorization: Bearer bd180143-b559-09c6-d6c6-b79c4a9f6a75\nX-Requested-With: XMLHttpRequest\n",
+					"url": "http://localhost:6005/api/test/application/echo",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "GET",
+					"data": [
+						{
+							"key": "eacho",
+							"value": "yeah!",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1434719230175,
+					"name": "Echo",
+					"description": "",
+					"collectionId": "3d4bf4c5-1b82-a133-3d7b-393396d4d6d4",
+					"responses": []
+				},
+				{
+					"id": "daf3a974-c414-e736-5325-1782bcbc873f",
+					"headers": "Authorization: Bearer bd180143-b559-09c6-d6c6-b79c4a9f6a75\nX-Requested-With: XMLHttpRequest\n",
+					"url": "http://localhost:6005/api/test/application/version",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "GET",
+					"data": [],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1434716375658,
+					"name": "Get Version",
+					"description": "",
+					"collectionId": "3d4bf4c5-1b82-a133-3d7b-393396d4d6d4",
+					"responses": []
+				}
+			]
+		},
+		{
 			"id": "40f0ae9a-3409-01e7-0993-4fb060427e48",
 			"name": "oauth",
 			"description": "",
@@ -141,15 +234,14 @@
 			],
 			"folders": [],
 			"timestamp": 1433277680115,
-			"owner": 0,
-			"remoteLink": "",
-			"public": false,
-			"createdAt": 1433277680115,
-			"updatedAt": 1433277680115,
 			"synced": false,
+			"remote_id": 0,
+			"owner": 0,
 			"sharedWithTeam": false,
 			"subscribed": false,
-			"hasRequests": true,
+			"remoteLink": "",
+			"public": false,
+			"write": true,
 			"requests": [
 				{
 					"id": "7b0ee37a-3c46-48a9-7f33-ade706405f58",

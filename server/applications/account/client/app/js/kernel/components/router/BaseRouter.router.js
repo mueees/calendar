@@ -29,6 +29,7 @@ define([
             }
         },
 
-        authError: function (route, name, access) {}
+        authError: function (route, name, access) {
+        }
     });
 });

@@ -3,7 +3,7 @@ var passport = require('passport'),
     BearerStrategy = require('passport-http-bearer').Strategy;
 
 passport.use(new BearerStrategy(
-    function(token, done) {
+    function (token, done) {
         User.getUserByAccountToken(token, function (err, user) {
             if (err) {
                 return done(err);

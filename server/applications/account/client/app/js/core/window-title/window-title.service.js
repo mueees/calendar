@@ -1,9 +1,9 @@
 define([], function () {
-    function setTitle(title){
+    function setTitle(title) {
         window.document.title = title;
     }
 
-    function getTitle(){
+    function getTitle() {
         return window.document.title;
     }
 

@@ -48,15 +48,15 @@ var HGESTURES = {
     hmTransformstart: 'transformstart',
     hmTransform: 'transform',
     hmTransformend: 'transformend'
-  };
+};
 
 var VERBOSE = false;
 
-angular.forEach(HGESTURES, function(eventName, directiveName) {
-    angular.module('angular-gestures').directive(directiveName, ['$parse', '$log', '$timeout', 'hammerDefaultOpts', function($parse, $log, $timeout, hammerDefaultOpts) {
-        return function(scope, element, attr) {
+angular.forEach(HGESTURES, function (eventName, directiveName) {
+    angular.module('angular-gestures').directive(directiveName, ['$parse', '$log', '$timeout', 'hammerDefaultOpts', function ($parse, $log, $timeout, hammerDefaultOpts) {
+        return function (scope, element, attr) {
             var handler;
-            attr.$observe(directiveName, function(value) {
+            attr.$observe(directiveName, function (value) {
                 var callback = $parse(value);
                 var opts = $parse(attr[directiveName + 'Opts'])(scope, {});
                 var defaultOpts = angular.copy(hammerDefaultOpts);
@@ -64,47 +64,47 @@ angular.forEach(HGESTURES, function(eventName, directiveName) {
                 angular.extend(defaultOpts, opts);
 
                 if (angular.isUndefined(element.hammertime)) {
-                  element.hammer = new Hammer.Manager(element[0], defaultOpts);
-                  scope.$on('$destroy', function() {
-                    element.hammer.off(eventName);
-                    element.hammer.destroy();
-                  });
+                    element.hammer = new Hammer.Manager(element[0], defaultOpts);
+                    scope.$on('$destroy', function () {
+                        element.hammer.off(eventName);
+                        element.hammer.destroy();
+                    });
                 }
 
-                handler = function(event) {
-                  if (VERBOSE) {
-                    $log.debug('angular-gestures: ', eventName, event);
-                  }
-                  var callbackHandler = function () {
-                    var cb = callback(scope, { $event : event});
-                    if (typeof cb === 'function') {
-                      cb.call(scope, event);
+                handler = function (event) {
+                    if (VERBOSE) {
+                        $log.debug('angular-gestures: ', eventName, event);
                     }
-                  };
+                    var callbackHandler = function () {
+                        var cb = callback(scope, {$event: event});
+                        if (typeof cb === 'function') {
+                            cb.call(scope, event);
+                        }
+                    };
 
-                  if (scope.$root.$$phase === '$apply' ||
-                    scope.$root.$$phase === '$digest') {
-                    callbackHandler();
-                  } else {
-                    scope.$apply(callbackHandler);
-                  }
+                    if (scope.$root.$$phase === '$apply' ||
+                        scope.$root.$$phase === '$digest') {
+                        callbackHandler();
+                    } else {
+                        scope.$apply(callbackHandler);
+                    }
 
                 };
                 // register actual event
                 element.hammer.on(eventName, handler);
-              });
-          };
-      }]);
-  });
+            });
+        };
+    }]);
+});
 
 angular.module('angular-gestures').provider('hammerDefaultOpts', function HammerDefaultOptsProvider() {
     var opts = {};
 
-    this.set = function(value) {
+    this.set = function (value) {
         opts = value;
-      };
+    };
 
-    this.$get = function() {
+    this.$get = function () {
         return opts;
-      };
-  });
+    };
+});

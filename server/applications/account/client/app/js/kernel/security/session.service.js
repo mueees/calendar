@@ -14,7 +14,7 @@ define([
         storage.set(sessionName, null);
     }
 
-    function getSession(){
+    function getSession() {
         return storage.get(sessionName);
     }
 

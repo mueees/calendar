@@ -13,7 +13,7 @@ define([
     $mAjax.addPrefilter(function (options, originalOptions, xhr) {
         var auth = isAuth();
 
-        if( auth ){
+        if (auth) {
             xhr.setRequestHeader('Authorization', 'Bearer ' + auth.token);
         }
     });

@@ -1,4 +1,4 @@
-var oauth = require('../clients/oauth'),
+var oauth = require('../../../clients/oauth'),
     HttpError = require('common/errors/HttpError');
 
 module.exports = function (request, response, next) {

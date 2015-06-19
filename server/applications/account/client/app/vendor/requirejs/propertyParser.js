@@ -4,31 +4,31 @@
  * @version 0.1.0 (2011/12/06)
  * MIT license
  */
-define(function(){
+define(function () {
 
     var rProps = /([\w-]+)\s*:\s*(?:(\[[^\]]+\])|([^,]+)),?/g, //match "foo:bar" and "lorem:[ipsum,dolor]" capturing name as $1 and val as $2 or $3
         rArr = /^\[([^\]]+)\]$/; //match "[foo,bar]" capturing "foo,bar"
 
-    function parseProperties(str){
+    function parseProperties(str) {
         var match, obj = {};
         while (match = rProps.exec(str)) {
-            obj[ match[1] ] = typecastVal(match[2] || match[3]);
+            obj[match[1]] = typecastVal(match[2] || match[3]);
         }
         return obj;
     }
 
-    function typecastVal(val){
-        if (rArr.test(val)){
+    function typecastVal(val) {
+        if (rArr.test(val)) {
             val = val.replace(rArr, '$1').split(',');
-        } else if (val === 'null'){
+        } else if (val === 'null') {
             val = null;
-        } else if (val === 'false'){
+        } else if (val === 'false') {
             val = false;
-        } else if (val === 'true'){
+        } else if (val === 'true') {
             val = true;
-        } else if (val === '' || val === "''" || val === '""'){
+        } else if (val === '' || val === "''" || val === '""') {
             val = '';
-        } else if (! isNaN(val)) {
+        } else if (!isNaN(val)) {
             //isNaN('') == false
             val = +val;
         }
@@ -37,7 +37,7 @@ define(function(){
 
     //API
     return {
-        parseProperties : parseProperties,
-        typecastVal : typecastVal
+        parseProperties: parseProperties,
+        typecastVal: typecastVal
     };
 });

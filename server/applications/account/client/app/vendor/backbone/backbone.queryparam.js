@@ -3,7 +3,7 @@
         module.exports = factory(require("underscore"), require("backbone"));
     } else if (typeof define === "function" && define.amd) {
         // AMD. Register as an anonymous module.
-        define(["underscore","backbone"], function(_, Backbone) {
+        define(["underscore", "backbone"], function (_, Backbone) {
             // Use global variables if the locals are undefined.
             return factory(_ || root._, Backbone || root.Backbone);
         });
@@ -11,13 +11,13 @@
         // RequireJS isn't being used. Assume underscore and backbone are loaded in <script> tags
         factory(_, Backbone);
     }
-}(this, function(_, Backbone) {
+}(this, function (_, Backbone) {
 
     var queryStringParam = /^\?(.*)/,
         optionalParam = /\((.*?)\)/g,
-        namedParam    = /(\(\?)?:\w+/g,
-        splatParam    = /\*\w+/g,
-        escapeRegExp  = /[\-{}\[\]+?.,\\\^$|#\s]/g,
+        namedParam = /(\(\?)?:\w+/g,
+        splatParam = /\*\w+/g,
+        escapeRegExp = /[\-{}\[\]+?.,\\\^$|#\s]/g,
         fragmentStrip = /^([^\?]*)/,
         namesPattern = /[\:\*]([^\:\?\/]+)/g,
         routeStripper = /^[#\/]|\s+$/g,
@@ -25,7 +25,7 @@
     Backbone.Router.arrayValueSplit = '|';
 
     _.extend(Backbone.History.prototype, {
-        getFragment: function(fragment, forcePushState) {
+        getFragment: function (fragment, forcePushState) {
             /*jshint eqnull:true */
             if (fragment == null) {
                 if (this._hasPushState || !this._wantsHashChange || forcePushState) {
@@ -47,7 +47,7 @@
 
         // this will not perform custom query param serialization specific to the router
         // but will return a map of key/value pairs (the value is a string or array)
-        getQueryParameters: function(fragment, forcePushState) {
+        getQueryParameters: function (fragment, forcePushState) {
             fragment = this.getFragment(fragment, forcePushState);
             // if no query string exists, this will still be the original fragment
             var queryString = fragment.replace(fragmentStrip, '');
@@ -55,12 +55,12 @@
             return this._parseQueryString(match);
         },
 
-        _parseQueryString: function(match){
+        _parseQueryString: function (match) {
             var queryString;
             if (match) {
                 queryString = match[1];
                 var rtn = {};
-                iterateQueryString(queryString, function(name, value) {
+                iterateQueryString(queryString, function (name, value) {
                     value = parseParams(value);
 
                     if (!rtn[name]) {
@@ -78,29 +78,29 @@
             }
         },
 
-        getQueryParametersString: function(fragment, forcePushState){
+        getQueryParametersString: function (fragment, forcePushState) {
             fragment = this.getFragment(fragment, forcePushState);
             var queryString = fragment.replace(fragmentStrip, '');
             return queryString.slice(1);
         },
 
-        getRouteString: function(fragment, forcePushState){
+        getRouteString: function (fragment, forcePushState) {
             var result = "";
             fragment = this.getFragment(fragment, forcePushState);
             var queryString = this.getQueryParametersString(fragment, forcePushState);
             result = fragment.replace(queryString, '');
-            if(queryString.length) {
+            if (queryString.length) {
                 result = result.slice(0, -1);
             }
             return result;
         },
 
-        getBrowserQuery: function(){
+        getBrowserQuery: function () {
             var match = window.location.search.match(queryStringParam);
             return this._parseQueryString(match);
         },
 
-        getTotal: function(fragment, forcePushState){
+        getTotal: function (fragment, forcePushState) {
             return {
                 query: this.getQueryParameters(fragment, forcePushState),
                 queryString: this.getQueryParametersString(fragment, forcePushState),
@@ -114,18 +114,18 @@
     });
 
     _.extend(Backbone.Router.prototype, {
-        initialize: function(options) {
+        initialize: function (options) {
             this.encodedSplatParts = options && options.encodedSplatParts;
         },
 
-        _routeToRegExp: function(route) {
+        _routeToRegExp: function (route) {
             var splatMatch = (splatParam.exec(route) || {index: -1}),
                 namedMatch = (namedParam.exec(route) || {index: -1}),
                 paramNames = route.match(namesPattern) || [];
 
             route = route.replace(escapeRegExp, '\\$&')
                 .replace(optionalParam, '(?:$1)?')
-                .replace(namedParam, function(match, optional){
+                .replace(namedParam, function (match, optional) {
                     return optional ? match : '([^\\/\\?]+)';
                 })
                 // `[^??]` is hacking around a regular expression bug under iOS4.
@@ -145,7 +145,9 @@
                     rtn.splatMatch = -1;
                 }
             }
-            rtn.paramNames = _.map(paramNames, function(name) { return name.substring(1); });
+            rtn.paramNames = _.map(paramNames, function (name) {
+                return name.substring(1);
+            });
             rtn.namedParameters = this.namedParameters;
 
             return rtn;
@@ -155,7 +157,7 @@
          * Given a route, and a URL fragment that it matches, return the array of
          * extracted parameters.
          */
-        _extractParameters: function(route, fragment) {
+        _extractParameters: function (route, fragment) {
             var params = route.exec(fragment).slice(1),
                 namedParams = {};
             if (params.length > 0 && _.isUndefined(params[params.length - 1])) {
@@ -164,17 +166,17 @@
             }
 
             // do we have an additional query string?
-            var match = params.length && params[params.length-1] && params[params.length-1].match(queryStringParam);
+            var match = params.length && params[params.length - 1] && params[params.length - 1].match(queryStringParam);
             if (match) {
                 var queryString = match[1];
                 var data = {};
                 if (queryString) {
                     var self = this;
-                    iterateQueryString(queryString, function(name, value) {
+                    iterateQueryString(queryString, function (name, value) {
                         self._setParamValue(name, value, data);
                     });
                 }
-                params[params.length-1] = data;
+                params[params.length - 1] = data;
                 _.extend(namedParams, data);
             }
 
@@ -189,10 +191,10 @@
                 }
             }
 
-            for (var i=0; i<length; i++) {
+            for (var i = 0; i < length; i++) {
                 if (_.isString(params[i])) {
                     params[i] = parseParams(params[i]);
-                    if (route.paramNames && route.paramNames.length >= i-1) {
+                    if (route.paramNames && route.paramNames.length >= i - 1) {
                         namedParams[route.paramNames[i]] = params[i];
                     }
                 }
@@ -204,15 +206,15 @@
         /**
          * Set the parameter value on the data hash
          */
-        _setParamValue: function(key, value, data) {
+        _setParamValue: function (key, value, data) {
             // use '.' to define hash separators
             key = key.replace('[]', '');
             key = key.replace('%5B%5D', '');
             var parts = key.split('.');
             var _data = data;
-            for (var i=0; i<parts.length; i++) {
+            for (var i = 0; i < parts.length; i++) {
                 var part = parts[i];
-                if (i === parts.length-1) {
+                if (i === parts.length - 1) {
                     // set the value
                     _data[part] = this._decodeParamValue(value, _data[part]);
                 } else {
@@ -226,13 +228,13 @@
          * @param value the complete value
          * @param currentValue the currently known value (or list of values)
          */
-        _decodeParamValue: function(value, currentValue) {
+        _decodeParamValue: function (value, currentValue) {
             // '|' will indicate an array.  Array with 1 value is a=|b - multiple values can be a=b|c
             var splitChar = Backbone.Router.arrayValueSplit;
             if (splitChar && value.indexOf(splitChar) >= 0) {
                 var values = value.split(splitChar);
                 // clean it up
-                for (var i=values.length-1; i>=0; i--) {
+                for (var i = values.length - 1; i >= 0; i--) {
                     if (!values[i]) {
                         values.splice(i, 1);
                     } else {
@@ -256,12 +258,12 @@
         /**
          * Return the route fragment with queryParameters serialized to query parameter string
          */
-        toFragment: function(route, queryParameters) {
+        toFragment: function (route, queryParameters) {
             if (queryParameters) {
                 if (!_.isString(queryParameters)) {
                     queryParameters = toQueryString(queryParameters);
                 }
-                if(queryParameters) {
+                if (queryParameters) {
                     route += '?' + queryParameters;
                 }
             }
@@ -276,7 +278,10 @@
     function toQueryString(val, namePrefix) {
         /*jshint eqnull:true */
         var splitChar = Backbone.Router.arrayValueSplit;
-        function encodeSplit(val) { return String(val).replace(splitChar, encodeURIComponent(splitChar)); }
+
+        function encodeSplit(val) {
+            return String(val).replace(splitChar, encodeURIComponent(splitChar));
+        }
 
         if (!val) {
             return '';
@@ -284,7 +289,7 @@
 
         namePrefix = namePrefix || '';
         var rtn = [];
-        _.each(val, function(_val, name) {
+        _.each(val, function (_val, name) {
             name = namePrefix + name;
 
             if (_.isString(_val) || _.isNumber(_val) || _.isBoolean(_val) || _.isDate(_val)) {
@@ -328,7 +333,7 @@
 
     function iterateQueryString(queryString, callback) {
         var keyValues = queryString.split('&');
-        _.each(keyValues, function(keyValue) {
+        _.each(keyValues, function (keyValue) {
             var arr = keyValue.split('=');
             callback(arr.shift(), arr.join('='));
         });

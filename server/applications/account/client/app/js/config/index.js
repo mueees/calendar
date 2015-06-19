@@ -15,7 +15,7 @@ requirejs.config({
         "backbone.syphon": "../vendor/backbone/backbone.syphon",
         storage: '../vendor/storage/storage',
         bootstrap: '../vendor/bootstrap/dist/js/bootstrap',
-        'hbs' : '../vendor/handlebars-0.11.2/handlebars',
+        'hbs': '../vendor/handlebars-0.11.2/handlebars',
         mockajax: '../vendor/jquery-mockjax-2.0.0-beta/mockajax',
 
         underscore: "../vendor/underscore-1.8.3/underscore",
@@ -24,9 +24,9 @@ requirejs.config({
         text: '../vendor/requirejs/text'
     },
 
-    hbs : {
-        templateExtension : 'hbs',
-        disableI18n : true
+    hbs: {
+        templateExtension: 'hbs',
+        disableI18n: true
     },
 
 

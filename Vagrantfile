@@ -16,6 +16,9 @@ Vagrant::Config.run do |config|
   #account service
   config.vm.forward_port 6004, 6004
 
+  #account service
+  config.vm.forward_port 6005, 6005
+
   #api service
   config.vm.forward_port 6001, 6001
   config.vm.forward_port 6002, 6002

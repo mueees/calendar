@@ -9,8 +9,8 @@ define([
         className: 'modal-dialog',
 
         triggers: {
-            "click [data-link='decline']" : 'decline',
-            "click [data-link='accept']" : 'accept'
+            "click [data-link='decline']": 'decline',
+            "click [data-link='accept']": 'accept'
         }
     });
 });

@@ -12,13 +12,13 @@ define([
         return window.location.origin + window.location.pathname;
     }
 
-    function toFragment(route, queryParameters){
+    function toFragment(route, queryParameters) {
         return router.toFragment(route, queryParameters);
     }
 
     return {
         getUrlWithoutHash: getUrlWithoutHash,
         getTotal: getTotal,
-        toFragment:  toFragment
+        toFragment: toFragment
     }
 });

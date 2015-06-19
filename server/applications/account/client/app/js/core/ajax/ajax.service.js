@@ -17,7 +17,7 @@ define([
 
         try {
             response = JSON.parse(jqxhr.responseText);
-        } catch(e){
+        } catch (e) {
             response = {
                 message: 'Unknown error'
             }

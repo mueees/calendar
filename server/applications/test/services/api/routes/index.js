@@ -1,15 +1,17 @@
 var seedConfig = require('../../../config');
 
-var api = {
-    request: function (cb) {
-        cb(null, seedConfig.get('version'));
-    }
-};
+var api = {};
 
 module.exports = function (server) {
     server.api(api);
 
-    server.addRoute('/user/info', function (data, cb) {
-        cb(null, 'Request from: ' + data.userId + '. This is user info');
+    server.addRoute('/application/version', function (data, cb) {
+        cb(null, {
+            version: seedConfig.get('version')
+        });
+    });
+
+    server.addRoute('/application/echo', function (data, cb) {
+        cb(null, data);
     });
 };

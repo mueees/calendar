@@ -1,6 +1,6 @@
 'use strict';
 
-(function() {
+(function () {
 
     /**
      * @ngdoc overview
@@ -16,7 +16,7 @@
      * @requires $window
      */
 
-    factory('$localStorage', _storageFactory('localStorage')).
+        factory('$localStorage', _storageFactory('localStorage')).
 
     /**
      * @ngdoc object
@@ -25,28 +25,26 @@
      * @requires $window
      */
 
-    factory('$sessionStorage', _storageFactory('sessionStorage'));
+        factory('$sessionStorage', _storageFactory('sessionStorage'));
 
     function _storageFactory(storageType) {
         return [
             '$rootScope',
             '$window',
 
-            function(
-                $rootScope,
-                $window
-            ){
+            function ($rootScope,
+                      $window) {
                 // #9: Assign a placeholder object if Web Storage is unavailable to prevent breaking the entire AngularJS app
                 var webStorage = $window[storageType] || (console.warn('This browser does not support Web Storage!'), {}),
                     $storage = {
-                        $default: function(items) {
+                        $default: function (items) {
                             for (var k in items) {
                                 angular.isDefined($storage[k]) || ($storage[k] = items[k]);
                             }
 
                             return $storage;
                         },
-                        $reset: function(items) {
+                        $reset: function (items) {
                             for (var k in $storage) {
                                 '$' === k[0] || delete $storage[k];
                             }
@@ -64,12 +62,12 @@
 
                 _last$storage = angular.copy($storage);
 
-                $rootScope.$watch(function() {
-                    _debounce || (_debounce = setTimeout(function() {
+                $rootScope.$watch(function () {
+                    _debounce || (_debounce = setTimeout(function () {
                         _debounce = null;
 
                         if (!angular.equals($storage, _last$storage)) {
-                            angular.forEach($storage, function(v, k) {
+                            angular.forEach($storage, function (v, k) {
                                 angular.isDefined(v) && '$' !== k[0] && webStorage.setItem('ngStorage-' + k, angular.toJson(v));
 
                                 delete _last$storage[k];
@@ -85,7 +83,7 @@
                 });
 
                 // #6: Use `$window.addEventListener` instead of `angular.element` to avoid the jQuery-specific `event.originalEvent`
-                'localStorage' === storageType && $window.addEventListener && $window.addEventListener('storage', function(event) {
+                'localStorage' === storageType && $window.addEventListener && $window.addEventListener('storage', function (event) {
                     if ('ngStorage-' === event.key.slice(0, 10)) {
                         event.newValue ? $storage[event.key.slice(10)] = angular.fromJson(event.newValue) : delete $storage[event.key.slice(10)];
 

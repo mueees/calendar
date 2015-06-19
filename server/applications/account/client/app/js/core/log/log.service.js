@@ -11,7 +11,7 @@ define([
 
     Logger.prototype = {
         log: function (data) {
-            if(defaultOptions.canLog){
+            if (defaultOptions.canLog) {
                 if (typeof data == 'string' || data instanceof String) {
                     this._logString(data);
                 } else {
@@ -47,7 +47,7 @@ define([
         logger.log(text);
     }
 
-    function setOptions(options){
+    function setOptions(options) {
         defaultOptions = _.extend(defaultOptions, options);
     }
 

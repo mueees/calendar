@@ -8,7 +8,7 @@
         define(['underscore', "jquery", "backbone"], factory);
     }
 }(this, function (_, jQuery, Backbone) {
-    Backbone.Syphon = (function(Backbone, $, _){
+    Backbone.Syphon = (function (Backbone, $, _) {
         var Syphon = {};
 
         // Ignore Element Types
@@ -25,7 +25,7 @@
         // all of the form inputs, in this view.
         // Alternately, pass a form element directly
         // in place of the view.
-        Syphon.serialize = function(view, options){
+        Syphon.serialize = function (view, options) {
             var data = {};
 
             // Build the configuration
@@ -35,7 +35,7 @@
             var elements = getInputElements(view, config);
 
             // Process all of the elements
-            _.each(elements, function(el){
+            _.each(elements, function (el) {
                 var $el = $(el);
                 var type = getElementType($el);
 
@@ -50,7 +50,7 @@
                 // Get the key assignment validator and make sure
                 // it's valid before assigning the value to the key
                 var validKeyAssignment = config.keyAssignmentValidators.get(type);
-                if (validKeyAssignment($el, key, value)){
+                if (validKeyAssignment($el, key, value)) {
                     var keychain = config.keySplitter(key);
                     data = assignKeyValue(data, keychain, value);
                 }
@@ -64,7 +64,7 @@
         // all of the form inputs, in this view.
         // Alternately, pass a form element directly
         // in place of the view.
-        Syphon.deserialize = function(view, data, options){
+        Syphon.deserialize = function (view, data, options) {
             // Build the configuration
             var config = buildConfig(options);
 
@@ -75,7 +75,7 @@
             var flattenedData = flattenData(config, data);
 
             // Process all of the elements
-            _.each(elements, function(el){
+            _.each(elements, function (el) {
                 var $el = $(el);
                 var type = getElementType($el);
 
@@ -97,11 +97,11 @@
 
         // Retrieve all of the form inputs
         // from the form
-        var getInputElements = function(view, config){
+        var getInputElements = function (view, config) {
             var form = getForm(view);
             var elements = form.elements;
 
-            elements = _.reject(elements, function(el){
+            elements = _.reject(elements, function (el) {
                 var reject;
                 var type = getElementType(el);
                 var extractor = config.keyExtractors.get(type);
@@ -111,10 +111,10 @@
                 var foundInInclude = _.include(config.include, identifier);
                 var foundInExclude = _.include(config.exclude, identifier);
 
-                if (foundInInclude){
+                if (foundInInclude) {
                     reject = false;
                 } else {
-                    if (config.include){
+                    if (config.include) {
                         reject = true;
                     } else {
                         reject = (foundInExclude || foundInIgnored);
@@ -131,15 +131,15 @@
         // will either return the `type` attribute of
         // an `<input>` element, or the `tagName` of
         // the element when the element is not an `<input>`.
-        var getElementType = function(el){
+        var getElementType = function (el) {
             var typeAttr;
             var $el = $(el);
             var tagName = $el[0].tagName;
             var type = tagName;
 
-            if (tagName.toLowerCase() === "input"){
+            if (tagName.toLowerCase() === "input") {
                 typeAttr = $el.attr("type");
-                if (typeAttr){
+                if (typeAttr) {
                     type = typeAttr;
                 } else {
                     type = "text";
@@ -154,8 +154,8 @@
 
         // If a form element is given, just return it.
         // Otherwise, get the form element from the view.
-        var getForm = function(viewOrForm){
-            if (_.isUndefined(viewOrForm.$el) && viewOrForm.tagName.toLowerCase() === 'form'){
+        var getForm = function (viewOrForm) {
+            if (_.isUndefined(viewOrForm.$el) && viewOrForm.tagName.toLowerCase() === 'form') {
                 return viewOrForm;
             } else {
                 return viewOrForm.$el.is("form") ? viewOrForm.el : viewOrForm.$("form")[0];
@@ -164,7 +164,7 @@
 
         // Build a configuration object and initialize
         // default values.
-        var buildConfig = function(options){
+        var buildConfig = function (options) {
             var config = _.clone(options) || {};
 
             config.ignoredTypes = _.clone(Syphon.ignoredTypes);
@@ -199,19 +199,21 @@
         // becomes an array, and values are pushed in to the array,
         // allowing multiple fields with the same name to be
         // assigned to the array.
-        var assignKeyValue = function(obj, keychain, value) {
-            if (!keychain){ return obj; }
+        var assignKeyValue = function (obj, keychain, value) {
+            if (!keychain) {
+                return obj;
+            }
 
             var key = keychain.shift();
 
             // build the current object we need to store data
-            if (!obj[key]){
+            if (!obj[key]) {
                 obj[key] = _.isArray(key) ? [] : {};
             }
 
             // if it's the last key in the chain, assign the value directly
-            if (keychain.length === 0){
-                if (_.isArray(obj[key])){
+            if (keychain.length === 0) {
+                if (_.isArray(obj[key])) {
                     obj[key].push(value);
                 } else {
                     obj[key] = value;
@@ -219,7 +221,7 @@
             }
 
             // recursive parsing of the array, depth-first
-            if (keychain.length > 0){
+            if (keychain.length > 0) {
                 assignKeyValue(obj[key], keychain, value);
             }
 
@@ -257,22 +259,22 @@
         //  "foo[quux]": ["foo", "bar"]
         // }
         // ```
-        var flattenData = function(config, data, parentKey){
+        var flattenData = function (config, data, parentKey) {
             var flatData = {};
 
-            _.each(data, function(value, keyName){
+            _.each(data, function (value, keyName) {
                 var hash = {};
 
                 // If there is a parent key, join it with
                 // the current, child key.
-                if (parentKey){
+                if (parentKey) {
                     keyName = config.keyJoiner(parentKey, keyName);
                 }
 
-                if (_.isArray(value)){
+                if (_.isArray(value)) {
                     keyName += "[]";
                     hash[keyName] = value;
-                } else if (_.isObject(value)){
+                } else if (_.isObject(value)) {
                     hash = flattenData(config, value, keyName);
                 } else {
                     hash[keyName] = value;
@@ -295,7 +297,7 @@
     // Type Registries allow you to register something to
     // an input type, and retrieve either the item registered
     // for a specific type or the default registration
-    Backbone.Syphon.TypeRegistry = function(){
+    Backbone.Syphon.TypeRegistry = function () {
         this.registeredTypes = {};
     };
 
@@ -307,10 +309,10 @@
         // Get the registered item by type. If nothing is
         // found for the specified type, the default is
         // returned.
-        get: function(type){
+        get: function (type) {
             var item = this.registeredTypes[type];
 
-            if (!item){
+            if (!item) {
                 item = this.registeredTypes["default"];
             }
 
@@ -318,25 +320,23 @@
         },
 
         // Register a new item for a specified type
-        register: function(type, item){
+        register: function (type, item) {
             this.registeredTypes[type] = item;
         },
 
         // Register a default item to be used when no
         // item for a specified type is found
-        registerDefault: function(item){
+        registerDefault: function (item) {
             this.registeredTypes["default"] = item;
         },
 
         // Remove an item from a given type registration
-        unregister: function(type){
-            if (this.registeredTypes[type]){
+        unregister: function (type) {
+            if (this.registeredTypes[type]) {
                 delete this.registeredTypes[type];
             }
         }
     });
-
-
 
 
     // Key Extractors
@@ -351,7 +351,7 @@
 
     // The default key extractor, which uses the
     // input element's "id" attribute
-    Backbone.Syphon.KeyExtractors.registerDefault(function($el){
+    Backbone.Syphon.KeyExtractors.registerDefault(function ($el) {
         return $el.prop("name");
     });
 
@@ -368,13 +368,13 @@
 
     // The default input reader, which uses an input
     // element's "value"
-    Backbone.Syphon.InputReaders.registerDefault(function($el){
+    Backbone.Syphon.InputReaders.registerDefault(function ($el) {
         return $el.val();
     });
 
     // Checkbox reader, returning a boolean value for
     // whether or not the checkbox is checked.
-    Backbone.Syphon.InputReaders.register("checkbox", function($el){
+    Backbone.Syphon.InputReaders.register("checkbox", function ($el) {
         var checked = $el.prop("checked");
         return checked;
     });
@@ -392,20 +392,20 @@
 
     // The default input writer, which sets an input
     // element's "value"
-    Backbone.Syphon.InputWriters.registerDefault(function($el, value){
+    Backbone.Syphon.InputWriters.registerDefault(function ($el, value) {
         $el.val(value);
     });
 
     // Checkbox writer, set whether or not the checkbox is checked
     // depending on the boolean value.
-    Backbone.Syphon.InputWriters.register("checkbox", function($el, value){
+    Backbone.Syphon.InputWriters.register("checkbox", function ($el, value) {
         $el.prop("checked", value);
     });
 
     // Radio button writer, set whether or not the radio button is
     // checked.  The button should only be checked if it's value
     // equals the given value.
-    Backbone.Syphon.InputWriters.register("radio", function($el, value){
+    Backbone.Syphon.InputWriters.register("radio", function ($el, value) {
         $el.prop("checked", $el.val() === value);
     });
 
@@ -423,11 +423,13 @@
     Backbone.Syphon.KeyAssignmentValidators = new Backbone.Syphon.KeyAssignmentValidatorSet();
 
     // Everything is valid by default
-    Backbone.Syphon.KeyAssignmentValidators.registerDefault(function(){ return true; });
+    Backbone.Syphon.KeyAssignmentValidators.registerDefault(function () {
+        return true;
+    });
 
     // But only the "checked" radio button for a given
     // radio button group is valid
-    Backbone.Syphon.KeyAssignmentValidators.register("radio", function($el, key, value){
+    Backbone.Syphon.KeyAssignmentValidators.register("radio", function ($el, key, value) {
         return $el.prop("checked");
     });
 
@@ -441,10 +443,10 @@
     //
     // Override this method to use a custom key splitter, such as:
     // `<input name="foo.bar.baz">`, `return key.split(".")`
-    Backbone.Syphon.KeySplitter = function(key){
+    Backbone.Syphon.KeySplitter = function (key) {
         var matches = key.match(/[^\[\]]+/g);
 
-        if (key.indexOf("[]") === key.length - 2){
+        if (key.indexOf("[]") === key.length - 2) {
             lastKey = matches.pop();
             matches.push([lastKey]);
         }
@@ -470,7 +472,7 @@
     // `KeyJoiner("foo[bar]", "baz")` //=> "foo[bar][baz]"
     // `KeyJoiner("foo[bar]", "quux")` //=> "foo[bar][quux]"
 
-    Backbone.Syphon.KeyJoiner = function(parentKey, childKey){
+    Backbone.Syphon.KeyJoiner = function (parentKey, childKey) {
         return parentKey + "[" + childKey + "]";
     }
 

@@ -5,9 +5,7 @@ describe('ngStorage', function () {
 
     beforeEach(module('ngStorage'));
 
-    it('should contain a $localStorage service', inject(function(
-        $localStorage
-    ){
+    it('should contain a $localStorage service', inject(function ($localStorage) {
         expect($localStorage).not.to.equal(null);
     }));
 });

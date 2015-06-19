@@ -13,11 +13,15 @@
         env = (function () {
             // A global `exports` object signifies CommonJS-like enviroments that support
             //  `module.exports`, e.g. Node
-            if (typeof exports === "object") { return "CommonJS"; }
+            if (typeof exports === "object") {
+                return "CommonJS";
+            }
 
             // A global `define` method with an `amd` property signifies the presence of an AMD
             //  loader (require.js, curl.js)
-            if (typeof define === "function" && define.amd) { return "AMD"; }
+            if (typeof define === "function" && define.amd) {
+                return "AMD";
+            }
 
             // Otherwise we assume running in a browser
             return "browser";
@@ -30,7 +34,9 @@
     //  'commonJS' we assume the presense of node's `global` object and set root to it. (`root` is
     //  already set to `this` but in the specific case of Node, `this` won't actually capture the
     //  global context - `global` is needed)
-    if (env === "CommonJS") { root = global; }
+    if (env === "CommonJS") {
+        root = global;
+    }
 
     // Expose as module / global depending on environment
     switch (env) {
@@ -50,7 +56,7 @@
             //  `fauxServer`. This is only meaningful in this specific case where `fauxServer` is
             //  globally exposed
             fauxServer = createModule(root.setTimeout, {}, _, Backbone);
-            fauxServer.noConflict = (function() {
+            fauxServer.noConflict = (function () {
 
                 // Save a reference to the previous value of 'fauxServer', so that it can be restored
                 //  later on, if 'noConflict' is used
@@ -60,7 +66,9 @@
                 //  value returning a reference to `fauxServer`
                 return function () {
                     root.fauxServer = previousFauxServer;
-                    fauxServer.noConflict = function () { return fauxServer; };
+                    fauxServer.noConflict = function () {
+                        return fauxServer;
+                    };
                     return fauxServer;
                 };
             }());
@@ -80,7 +88,11 @@
     //  sanitize, provide defaults, etc
         skipUndefinedTail = function (array) {
             var a = [], i = array.length - 1;
-            for (; i >= 0; i--) { if (!_.isUndefined(array[i])) { a[i] = array[i]; } }
+            for (; i >= 0; i--) {
+                if (!_.isUndefined(array[i])) {
+                    a[i] = array[i];
+                }
+            }
             return a;
         },
 
@@ -117,7 +129,7 @@
                     return isOptPart ? match : "([^\/]+)";
                 };
 
-            return function(exp) {
+            return function (exp) {
                 exp = exp.replace(e, "\\$&")
                     .replace(o, "(?:$1)?")
                     .replace(p, getReplacementForP)
@@ -128,7 +140,8 @@
         }()),
 
     // A no-op method to reuse
-        noOp = function () {},
+        noOp = function () {
+        },
 
     // Server's emulated latency
         latency = 0,
@@ -157,7 +170,7 @@
          * @return {object} A matching route if one is found, null otherwise. Note that
          *  the returned route is a copy and cannot be modified to alter faux-server's behaviour
          */
-            getMatchingRoute = function (url, httpMethod) {
+        getMatchingRoute = function (url, httpMethod) {
             var i, r, weakMatch;
             for (i = routes.length - 1; i >= 0; --i) { // Iterating from latest to earliest
                 r = routes[i];
@@ -167,7 +180,9 @@
                         r.handlerParams = r.urlExp.exec(url).slice(1);
                         return r; // .. so return it. We're done
                     }
-                    if (r.httpMethod === "*") { weakMatch = r; } // Found a weak match
+                    if (r.httpMethod === "*") {
+                        weakMatch = r;
+                    } // Found a weak match
                 }
             }
             if (weakMatch) { // Found a weak match. That's good too ..
@@ -182,18 +197,26 @@
     //  the sync-method being used and any options that may have been given
         getRequestData = function (httpMethod, model, options) {
             // A `data` property whithin options overrides any Model data.
-            if (options.data) { return options.data; }
+            if (options.data) {
+                return options.data;
+            }
 
             // If no Model is given (??) then request data will be undefined no matter what
-            if (!model) { return; }
+            if (!model) {
+                return;
+            }
 
             // In the specific case of PATCH, a hash of 'changed attributes' is expected within
             //  options. If no such thing is present then the complete Model representation will
             //  be used instead
-            if (httpMethod === "PATCH") { return options.attrs || model.toJSON(); }
+            if (httpMethod === "PATCH") {
+                return options.attrs || model.toJSON();
+            }
 
             // Send the complete Model representation when POSTing or PUTing
-            if (httpMethod === "POST" || httpMethod === "PUT") { return model.toJSON(); }
+            if (httpMethod === "POST" || httpMethod === "PUT") {
+                return model.toJSON();
+            }
         },
 
     // Invoked _per sync_ (with the relevant options / context) to create a new transport -
@@ -211,7 +234,8 @@
                     var deferred = Backbone.$.Deferred();
                     deferred.then(syncOptions.success, syncOptions.error);
                     return deferred;
-                } catch (e) {}
+                } catch (e) {
+                }
             }
 
             // Otherwise create a poor-man's deferred - an object that implements a dumb
@@ -220,15 +244,21 @@
             //  `promise` returns an `undefined`. This is a good enough transport
             return {
                 promise: noOp,
-                resolve: function (value) { syncOptions.success(value); },
-                reject: function (reason) { syncOptions.error(reason); }
+                resolve: function (value) {
+                    syncOptions.success(value);
+                },
+                reject: function (reason) {
+                    syncOptions.error(reason);
+                }
             };
         };
 
     // Modify Backbone's sync to use the faux-server sync method (when appropriate)
     Backbone.sync = function (crudMethod, model, options) {
         // If faux-server is disabled, fall back to original sync
-        if (!isEnabled) { return nativeSync.call(model, crudMethod, model, options); }
+        if (!isEnabled) {
+            return nativeSync.call(model, crudMethod, model, options);
+        }
 
         _.defaults(options || (options = {}), {
             emulateHTTP: Backbone.emulateHTTP,
@@ -250,7 +280,7 @@
         // We'll be creating a transport for this sync / returning the transport's promise
             transport = null;
 
-        if(options.type) c.httpMethod = options.type.toUpperCase();
+        if (options.type) c.httpMethod = options.type.toUpperCase();
 
         // When emulating HTTP, 'create', 'update', 'delete' and 'patch' are all mapped to POST.
         if (options.emulateHTTP && c.httpMethod !== "GET") {
@@ -260,7 +290,7 @@
 
         // Ensure that we have a URL (A `url` property whithin options overrides Model /
         //  Collection URL)
-        if(!(c.url = options.url || _.result(model, "url"))) {
+        if (!(c.url = options.url || _.result(model, "url"))) {
             throw new Error("sync: Undefined 'url' property or function of Model / Collection");
         }
 
@@ -280,9 +310,9 @@
         //  callbacks. (The relevant 'success' or 'error' event will be triggered by backbone)
         execHandler = function () {
             /*var result = c.route.handler.apply(null, [c].concat(c.route.handlerParams)); // Handle
-            transport[_.isString(result) ? "reject" : "resolve"](result);*/
+             transport[_.isString(result) ? "reject" : "resolve"](result);*/
 
-            $.when(c.route.handler.apply(null, [c].concat(c.route.handlerParams))).always(function(result){
+            $.when(c.route.handler.apply(null, [c].concat(c.route.handlerParams))).always(function (result) {
                 transport[_.isString(result) ? "reject" : "resolve"](result);
             })
 
@@ -291,8 +321,12 @@
         model.trigger("request", model, null, options);
 
         // Call exec-method _now_ if zero-latency, else call later
-        if (!latency) { execHandler(); }
-        else { setTimeout(execHandler, _.isFunction(latency) ? latency() : latency); }
+        if (!latency) {
+            execHandler();
+        }
+        else {
+            setTimeout(execHandler, _.isFunction(latency) ? latency() : latency);
+        }
 
         // Return the transport's promise. Assuming the default transport-factory implementation
         //  this may be an actual promise or just undefined
@@ -465,7 +499,9 @@
          * @return {object} The faux-server
          */
         removeRoute: function (routeName) {
-            routes = _.reject(routes, function (r) { return r.name === routeName; });
+            routes = _.reject(routes, function (r) {
+                return r.name === routeName;
+            });
             return this;
         },
 
@@ -485,7 +521,9 @@
          *  the returned route is a copy and cannot be modified to alter faux-server's behaviour
          */
         getRoute: function (routeName) {
-            var route = _.find(routes, function (r) { return r.name === routeName; });
+            var route = _.find(routes, function (r) {
+                return r.name === routeName;
+            });
             return route ? _.clone(route) : null;
         },
 
@@ -533,7 +571,9 @@
          * @return {object} The faux-server
          */
         setLatency: function (min, max) {
-            latency = !max ? (min || 0) : function () { return min + Math.random() * (max - min); };
+            latency = !max ? (min || 0) : function () {
+                return min + Math.random() * (max - min);
+            };
             return this;
         },
 
@@ -584,12 +624,18 @@
             // Expecting `name`, `urlExp`, `handler` arguments. Only `urlExp` is mandatory
             var args = skipUndefinedTail(_.toArray(arguments));
 
-            if (!args.length) { throw new Error(method + ": Missing mandatory 'urlExp' argument"); }
+            if (!args.length) {
+                throw new Error(method + ": Missing mandatory 'urlExp' argument");
+            }
 
             // The `httpMethod` must be inserted into the args, either at tail-position if
             //  `handler` is missing or just before it (after `urlExp`) if it's present
-            if (!_.isFunction(args[args.length - 1])) { args.push(httpMethod); }
-            else { args.splice(args.length - 1, 0, httpMethod); }
+            if (!_.isFunction(args[args.length - 1])) {
+                args.push(httpMethod);
+            }
+            else {
+                args.splice(args.length - 1, 0, httpMethod);
+            }
 
             return fauxServer.addRoute.apply(this, args);
         };
