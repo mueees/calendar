@@ -19,6 +19,7 @@
     "cron": "1.0.9",
     "mongoose": "4.0.2",
     "dnode": "1.2.0",
+    "director": "latest",
 
     "chai": "2.3.0",
     "mocha": "2.2.4",
