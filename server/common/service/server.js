@@ -2,6 +2,7 @@ var dnode = require('dnode'),
     EventEmitter = require('events').EventEmitter,
     util = require('util'),
     _ = require('underscore'),
+    crossroads = require('crossroads'),
     ServerError = require('./ServerError');
 
 var defaultOptions = {
@@ -18,7 +19,14 @@ function Server(options) {
 
     this.port = this.options.port;
 
+    /*
+     * Api consist methods which requested side execute directly
+     * */
     this._api = this.options.api;
+
+    this._routes = [];
+
+    this._router = crossroads.create();
 
     this.server = null;
 
@@ -37,11 +45,55 @@ _.extend(Server.prototype, {
         this.server.listen(this.port);
 
         console.log("Service Server listen " + this.port + " port");
+
+        this._initApi();
     },
 
     // add new api methods
     api: function (api) {
         _.extend(this._api, api);
+    },
+
+    // add universal 'request' api method
+    _initApi: function () {
+        var me = this;
+
+        this.api({
+            request: function () {
+                me._requestHandler(arguments);
+            }
+        });
+    },
+
+    /*
+     * This is universal handler for request
+     * When the requested side doesn't know which method sever has to execute
+     * */
+    _requestHandler: function (arguments) {
+        var args = [].slice.call(arguments),
+            requestString = args.splice(0, 1);
+
+        if (!this._isHasMatchRoute(requestString)) {
+            var callback = args.pop();
+
+            callback(new ServerError(401, 'Invalid request method'));
+        } else {
+            this._router.parse(requestString, args);
+        }
+    },
+
+    _isHasMatchRoute: function (request) {
+        return _.filter(this._routes, function (route) {
+            return route.match(request);
+        }).length;
+    },
+
+    // add route to universal 'request' api method
+    addRoute: function (path, fn) {
+        var route = this._router.addRoute(path, fn);
+
+        // store all route, for checking in '_requestHandler', that we have handler for request
+        this._routes.push(route);
     }
 });
 

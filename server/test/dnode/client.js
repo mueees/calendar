@@ -13,4 +13,17 @@ client.on('remote', function () {
             console.log(err.message);
         }
     });
+
+    var data = {
+        userId: '123123',
+        body: {}
+    };
+
+    client.exec('request', '/user/info', data, function (err, result) {
+        if (err) {
+            return console.log(err);
+        }
+
+        console.log(result);
+    });
 });

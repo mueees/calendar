@@ -10,6 +10,3 @@ var director = require('director'),
 router.dispatch('on', '/api', {
     name: 123
 });
-
-// invoke
-

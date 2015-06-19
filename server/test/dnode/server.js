@@ -8,9 +8,17 @@ var server = new Server({
     port: 3300
 });
 
+server.addRoute('/user/info', function (data, cb) {
+    cb(null, 'Request from: ' + data.userId + '. This is user info');
+});
+
+server.addRoute('/user/info', function (data, cb) {
+    cb(null, 'Request from: ' + data.userId + '. This is user info');
+});
+
 server.api({
     transform: function (s, cb) {
-        setTimeout(function(){
+        setTimeout(function () {
             cb(new ServerError(500, 'Cannot find anything'));
         }, 450);
     },
