@@ -3,7 +3,7 @@ define([
     'config/app'
 ], function (BaseModel, config) {
     var Application = BaseModel.extend({
-        urlRoot: '/api/v' + config.api.version + '/application/create',
+        urlRoot: '/api/v' + config.api.version + '/application',
 
         urls: {
             privateKey: '/api/v' + config.api.version + '/application/privateKey',

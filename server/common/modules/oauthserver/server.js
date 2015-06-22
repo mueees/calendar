@@ -322,9 +322,10 @@ function getApplicationById(applicationId, callback) {
     }
 
     Application.findOne({
-        _id: applicationId
+        applicationId: applicationId
     }, null, function (err, application) {
         if (err) {
+            console.log(err);
             return callback(new OauthError(400, "Server error"));
         }
 

@@ -3,7 +3,7 @@ var express = require('express'),
     http = require('http'),
     HttpError = require('common/errors/HttpError'),
     bodyParser = require('body-parser'),
-    proxyConfig = require('../../config');
+    accessConfig = require('../../config');
 
 var app = express();
 
@@ -25,10 +25,9 @@ app.use(function (err, req, res) {
         res.sendHttpError(err);
     } else {
         console.log('end error');
-        console.log(err);
     }
 });
 
 var server = http.createServer(app);
-server.listen(proxyConfig.get("port"));
-console.log(proxyConfig.get('name') + " server listening: " + proxyConfig.get("port"));
+server.listen(accessConfig.get("port"));
+console.log(accessConfig.get('name') + " server listening: " + accessConfig.get("port"));

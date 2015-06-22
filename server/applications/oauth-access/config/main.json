@@ -1,5 +1,6 @@
 {
   "name": "Oauth Access",
   "version": 1,
-  "approvalUrl": "http://localhost:6004/#approval"
+  "approvalUrl": "http://localhost:6004/#approval",
+  "port": 6006
 }
