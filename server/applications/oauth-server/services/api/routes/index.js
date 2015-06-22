@@ -23,7 +23,9 @@ var api = {
 
     removeApplication: oauthserver.removeApplication,
 
-    getApplicationById: oauthserver.getApplicationById
+    getApplicationById: oauthserver.getApplicationById,
+
+    getApplicationByOauthKey: oauthserver.getApplicationByOauthKey
 };
 
 module.exports = function (server) {

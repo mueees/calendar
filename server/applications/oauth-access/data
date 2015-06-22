@@ -8,7 +8,7 @@ Mue.provide();
 http://oauth-access.batros.in.ua/provide/<publicKey>
 
 4. ѕо publicKey сервер находит приложение пользовател€, и перенаправл€ет запрос на
-http://oauth.batros.in.ua/#approval?applicationid=23&redirect=http://oauth-access.batros.in.ua/auth?code=213213
+http://oauth.batros.in.ua/#approval?applicationid=23&redirect=http://oauth-access.batros.in.ua/auth/<tiket>
 
 5. ƒалее после подтверждени€ пользователем, сервер http://oauth-access.batros.in.ua
     - code обменивает на access_token

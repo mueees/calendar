@@ -17,6 +17,7 @@ _.extend(Server.prototype, {
     removeApplication: removeApplication,
     getAllApplications: getAllApplications,
     getApplicationById: getApplicationById,
+    getApplicationByOauthKey: getApplicationByOauthKey,
     getPermissionByAccessToken: getPermissionByAccessToken
 });
 
@@ -322,13 +323,32 @@ function getApplicationById(applicationId, callback) {
         _id: applicationId
     }, null, function (err, application) {
         if (err) {
-            return next(new OauthError(400, "Server error"));
+            return callback(new OauthError(400, "Server error"));
         }
 
         callback(null, application);
     });
 }
 
+function getApplicationByOauthKey(oauthKey, callback) {
+    if (!oauthKey || !oauthKey.length) {
+        return callback(new OauthError(400, 'Invalid oauth key'));
+    }
 
+    Application.findOne({
+        oauthKey: oauthKey
+    }, null, function (err, application) {
+        if (err) {
+            return callback(new OauthError(400, "Server error"));
+        }
+
+        if (!application) {
+            return callback(new OauthError(400, "Cannot find application"));
+        }
+
+        callback(null, application);
+    });
+
+}
 
 module.exports = Server;
