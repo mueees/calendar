@@ -4,7 +4,7 @@ var express = require('express'),
     HttpError = require('common/errors/HttpError'),
     bodyParser = require('body-parser'),
     errorhandler = require('errorhandler'),
-    accountConfig = require('./config'),
+    accountConfig = require('../../config'),
     prefix = '/api/v' + accountConfig.get('api:version');
 
 var app = express();
@@ -18,9 +18,9 @@ app.set('views', __dirname + "/views");
 app.set('view engine', 'jade');
 
 if (process.env.NODE_ENV == "development") {
-    app.use(express.static('../client/build/app'));
+    app.use(express.static('../../../../../client/build/app'));
 } else {
-    app.use(express.static('../client/bin/app'));
+    app.use(express.static('../../../../../client/bin/app'));
 }
 
 app.use(require("common/middlewares/sendHttpError"));

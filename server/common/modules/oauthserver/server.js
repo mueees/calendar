@@ -285,6 +285,8 @@ function getAllApplications(userId, callback) {
         applicationId: true,
         date_create: true,
         description: true,
+        domain: true,
+        oauthKey: true,
         name: true,
         privateKey: true,
         redirectUrl: true,
@@ -324,6 +326,10 @@ function getApplicationById(applicationId, callback) {
     }, null, function (err, application) {
         if (err) {
             return callback(new OauthError(400, "Server error"));
+        }
+
+        if (!application) {
+            return callback(new OauthError(400, "Cannot find application"));
         }
 
         callback(null, application);

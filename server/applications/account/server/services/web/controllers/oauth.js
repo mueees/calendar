@@ -1,7 +1,7 @@
 var validator = require('validator'),
     async = require('async'),
     HttpError = require('common/errors/HttpError'),
-    oauthClient = require('../clients/oauth'),
+    oauthClient = require('../../../clients/oauth'),
     _ = require('underscore');
 
 var controller = {

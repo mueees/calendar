@@ -16,10 +16,10 @@ pm2 start index.js --name oauth
 cd /vagrant/server/applications/test/services/api
 pm2 start index.js --name test
 
-cd /vagrant/server/applications/proxy-api/services/web
+cd /vagrant/server/applications/proxy/services/web
 pm2 start index.js --name proxy
 
-cd /vagrant/server/applications/account/server
+cd /vagrant/server/applications/account/server/services/web
 pm2 start index.js --name account
 
 // PRODUCTION
@@ -40,10 +40,10 @@ pm2 start index.js --name oauth
 cd /home/mue/web/projects/calendar/server/applications/test/services/api
 pm2 start index.js --name test
 
-cd /home/mue/web/projects/calendar/server/applications/proxy-api/services/web
+cd /home/mue/web/projects/calendar/server/applications/proxy/services/web
 pm2 start index.js --name proxy
 
-cd /home/mue/web/projects/calendar/server/applications/account/server
+cd /home/mue/web/projects/calendar/server/applications/account/server/services/web
 pm2 start index.js --name account
 
 cd /home/mue/web/projects/calendar/server/test/routing-director

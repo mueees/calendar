@@ -3,7 +3,7 @@ var rootController = require('../controllers/root'),
     oauthController = require('../controllers/oauth'),
     applicationController = require('../controllers/application'),
     passport = require('passport'),
-    accountConfig = require('../config');
+    accountConfig = require('../../../config');
 
 var prefix = '/api/v' + accountConfig.get('api:version');
 

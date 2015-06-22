@@ -3,7 +3,7 @@ var validator = require('validator'),
     HttpError = require('common/errors/HttpError'),
     EmailAction = require('common/actions/email'),
     configuration = require("configuration"),
-    accountConfig = require("../config"),
+    accountConfig = require("../../../config"),
     User = require('common/resources/user');
 
 var controller = {

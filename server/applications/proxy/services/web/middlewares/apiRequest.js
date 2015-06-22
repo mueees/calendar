@@ -1,5 +1,6 @@
 var HttpError = require('common/errors/HttpError'),
     clients = {
+        account: require('../../../clients/account'),
         test: require('../../../clients/test')
     };
 

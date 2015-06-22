@@ -1,6 +1,6 @@
 var async = require('async'),
     HttpError = require('common/errors/HttpError'),
-    oauthClient = require('../clients/oauth'),
+    oauthClient = require('../../../clients/oauth'),
     _ = require("underscore");
 
 var controller = {
@@ -37,6 +37,8 @@ var controller = {
                     applicationId: application.applicationId,
                     date_create: application.date_create,
                     description: application.description,
+                    domain: application.domain,
+                    oauthKey: application.oauthKey,
                     name: application.name,
                     privateKey: application.privateKey,
                     redirectUrl: application.redirectUrl,

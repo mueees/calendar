@@ -23,6 +23,11 @@
       "api-prefix": "test",
       "status": true,
       "port": 8001
+    },
+    "account": {
+      "api-prefix": "account",
+      "status": true,
+      "port": 8002
     }
   }
 }
