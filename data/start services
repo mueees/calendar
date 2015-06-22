@@ -19,6 +19,9 @@ pm2 start index.js --name test
 cd /vagrant/server/applications/proxy-api/services/web
 pm2 start index.js --name proxy
 
+cd /vagrant/server/applications/account/server
+pm2 start index.js --name account
+
 // PRODUCTION
 export NODE_ENV=production
 export NODE_PATH=/vagrant/server
@@ -39,6 +42,9 @@ pm2 start index.js --name test
 
 cd /home/mue/web/projects/calendar/server/applications/proxy-api/services/web
 pm2 start index.js --name proxy
+
+cd /home/mue/web/projects/calendar/server/applications/account/server
+pm2 start index.js --name account
 
 cd /home/mue/web/projects/calendar/server/test/routing-director
 node index.js

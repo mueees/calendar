@@ -1,0 +1,16 @@
+1. ѕользователь подгружает скрипт, и вызывает метод init со своим публичным кодом
+Mue.initialize(<publicKey>);
+
+2. ƒалее запускает метод provide
+Mue.provide();
+
+3. ќткрываетс€ новое браузерное окно, и идет редирект по адресу
+http://oauth-access.batros.in.ua/provide/<publicKey>
+
+4. ѕо publicKey сервер находит приложение пользовател€, и перенаправл€ет запрос на
+http://oauth.batros.in.ua/#approval?applicationid=23&redirect=http://oauth-access.batros.in.ua/auth?code=213213
+
+5. ƒалее после подтверждени€ пользователем, сервер http://oauth-access.batros.in.ua
+    - code обменивает на access_token
+    - запоминает этот access_token в прив€зке к приложению, генерит token дл€ пользовател€
+    - через postMessage отправл€ет назад пользователю

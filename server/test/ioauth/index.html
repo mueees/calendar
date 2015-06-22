@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+<script src="oauth.js"></script>
+
+
+<script>
+    OAuth.initialize('qewDBGg2Qe7Ry2vgQK85f79zPkc');
+
+    OAuth.popup('github').done(function(result) {
+
+    });
+
+    window.addEventListener('message',function(event) {
+        if(event.origin !== 'http://davidwalsh.name') return;
+        console.log('message received:  ' + event.data,event);
+        event.source.postMessage('holla back youngin!',event.origin);
+    },false);
+</script>
+
+</body>
+</html>
