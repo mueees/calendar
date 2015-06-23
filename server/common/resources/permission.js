@@ -69,7 +69,7 @@ permissionSchema.methods.refreshToken = function (cb) {
 };
 
 permissionSchema.methods.isExpired = function (timeExpired) {
-    return ((new Date()).getTime() - this.date_exchange) < timeExpired;
+    return ((new Date()).getTime() - this.date_exchange) > timeExpired;
 };
 
 var Permission = mongoose.model('Permissions', permissionSchema);

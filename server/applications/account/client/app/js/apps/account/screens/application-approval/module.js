@@ -81,8 +81,7 @@ define([
                     approval.show();
 
                     this.listenTo(approval, 'approve', function (data) {
-                        window.open(data.redirectUrl);
-                        $mSecurity.navigateAfterSign();
+                        window.location.href = data.redirectUrl;
                     });
                     this.listenTo(approval, 'cancel', function () {
                         window.open($mUrl.getTotal().query.redirect);

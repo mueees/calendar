@@ -16,7 +16,7 @@ function Logger(module) {
     function send(type, message) {
         if (type == 'warning') {
             win.warn(message, {
-                extra: pathModule
+                module: pathModule
             });
         } else {
             win[type](message, {

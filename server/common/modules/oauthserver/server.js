@@ -1,11 +1,11 @@
+
 var validator = require('validator'),
     Permission = require('common/resources/permission'),
     Application = require('common/resources/application'),
     OauthError = require('./OauthError'),
     _ = require('underscore'),
-    expiredTime = 3600,
+    expiredTime = 1000*60*3, // 10 minutes
     async = require('async');
-
 function Server() {
 }
 

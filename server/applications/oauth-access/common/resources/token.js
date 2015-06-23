@@ -1,13 +1,14 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
-    ObjectId = Schema.ObjectId;
+    ObjectId = Schema.ObjectId,
+    log = require('common/log')(module),
+    heplers = require('common/helpers');
 
 var tokenSchema = new Schema({
     applicationId: {
         type: String,
-        required: true,
+        required: true
     },
-
     access_token: {
         type: String,
         default: ''
@@ -16,20 +17,38 @@ var tokenSchema = new Schema({
         type: String,
         default: ''
     },
-
-    last_refresh: {
-        type: Date
+    exchange: {
+        type: Number,
+        required: true
     },
-
+    last_refresh: {
+        type: Date,
+        default: new Date()
+    },
     client_token: {
         type: String,
-        default: ''
+        required: true
     },
-
-    userId: {
-        type: ObjectId
+    email: {
+        type: String,
+        required: true
     }
 });
+
+tokenSchema.statics.create = function (data, cb) {
+    data.client_token = heplers.util.getUUID();
+
+    var token = new this(data);
+
+    token.save(function (err, token) {
+        if (err) {
+            log.error(err);
+            return cb('Server error');
+        }
+
+        cb(null, token);
+    });
+};
 
 var Token = mongoose.model('Token', tokenSchema);
 
