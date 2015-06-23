@@ -21,6 +21,7 @@ module.exports = function (request, response, next) {
 
     clients[request.application].exec('request', request.params[0], data, function (err, data) {
         if (err) {
+            console.log(err);
             return next(new HttpError(400, err.message));
         }
 

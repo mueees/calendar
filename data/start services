@@ -13,7 +13,7 @@ export NODE_PATH=/vagrant/server
 cd /vagrant/server/applications/oauth-server/services/api
 pm2 start index.js --name oauth-server
 
-cd /vagrant/server/server/applications/account/server/services/api
+cd /vagrant/server/applications/account/server/services/api
 pm2 start index.js --name account-api
 
 cd /vagrant/server/applications/test/services/api

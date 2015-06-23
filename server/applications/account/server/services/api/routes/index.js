@@ -10,7 +10,7 @@ module.exports = function (server) {
         User.findOne({
             _id: data.userId
         }, function (err, user) {
-            if (!err) {
+            if (err) {
                 return callback(new ServerError(500, 'Server error'));
             }
 
@@ -19,7 +19,6 @@ module.exports = function (server) {
             }
 
             callback(null, {
-                _id: user._id,
                 email: user.email
             });
         });

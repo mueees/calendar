@@ -23,7 +23,7 @@ var api = {
 
     removeApplication: oauthserver.removeApplication,
 
-    getApplicationById: oauthserver.getApplicationById,
+    getApplicationByApplicationId: oauthserver.getApplicationByApplicationId,
 
     getApplicationByOauthKey: oauthserver.getApplicationByOauthKey
 };

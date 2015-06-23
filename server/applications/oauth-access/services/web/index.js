@@ -3,7 +3,8 @@ var express = require('express'),
     http = require('http'),
     HttpError = require('common/errors/HttpError'),
     bodyParser = require('body-parser'),
-    accessConfig = require('../../config');
+    accessConfig = require('../../config'),
+    configuration = require('configuration');
 
 var app = express();
 
@@ -12,6 +13,8 @@ app.use(bodyParser.json({type: 'application/json'}));
 
 app.use(require("common/middlewares/sendHttpError"));
 app.use(require("common/middlewares/enviroment"));
+
+require("common/mongooseConnect").initConnection(accessConfig);
 
 // listen routs
 route(app);
@@ -29,5 +32,5 @@ app.use(function (err, req, res) {
 });
 
 var server = http.createServer(app);
-server.listen(accessConfig.get("port"));
-console.log(accessConfig.get('name') + " server listening: " + accessConfig.get("port"));
+server.listen(configuration.get("applications:oauth-access:services:web:port"));
+console.log(configuration.get("applications:oauth-access:services:web:name") + " server listening: " + configuration.get("applications:oauth-access:services:web:port"));

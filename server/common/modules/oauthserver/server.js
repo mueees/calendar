@@ -16,7 +16,7 @@ _.extend(Server.prototype, {
     createApplication: createApplication,
     removeApplication: removeApplication,
     getAllApplications: getAllApplications,
-    getApplicationById: getApplicationById,
+    getApplicationByApplicationId: getApplicationByApplicationId,
     getApplicationByOauthKey: getApplicationByOauthKey,
     getPermissionByAccessToken: getPermissionByAccessToken
 });
@@ -300,13 +300,13 @@ function getAllApplications(userId, callback) {
     });
 }
 
-function removeApplication(applicationId, callback) {
-    if (!applicationId || !applicationId.length) {
-        return callback(new OauthError(400, 'Invalid application Id'));
+function removeApplication(id, callback) {
+    if (!id || !id.length) {
+        return callback(new OauthError(400, 'Invalid d'));
     }
 
     Application.remove({
-        _id: applicationId
+        _id: id
     }, function (err) {
         if (err) {
             return callback(new OauthError(400, "Server error"));
@@ -316,7 +316,7 @@ function removeApplication(applicationId, callback) {
     });
 }
 
-function getApplicationById(applicationId, callback) {
+function getApplicationByApplicationId(applicationId, callback) {
     if (!applicationId || !applicationId.length) {
         return callback(new OauthError(400, 'Invalid application Id'));
     }
@@ -325,7 +325,6 @@ function getApplicationById(applicationId, callback) {
         applicationId: applicationId
     }, null, function (err, application) {
         if (err) {
-            console.log(err);
             return callback(new OauthError(400, "Server error"));
         }
 

@@ -4,21 +4,23 @@ var async = require('async'),
     _ = require("underscore");
 
 var controller = {
-    getById: function (request, response, next) {
-        oauthClient.exec('getApplicationById', request.param("id"), function (err, application) {
+
+    getByApplicationId: function(request, response, next){
+        oauthClient.exec('getApplicationByApplicationId', request.param("id"), function (err, application) {
             if (err) {
                 return next(new HttpError(400, err.message));
             }
 
             if (application) {
                 response.send({
-                    applicationId: application.applicationId,
-                    date_create: application.date_create,
-                    description: application.description,
+                    _id: application._id,
                     name: application.name,
+                    status: application.status,
                     privateKey: application.privateKey,
+                    date_create: application.date_create,
                     redirectUrl: application.redirectUrl,
-                    status: application.status
+                    description: application.description,
+                    applicationId: application.applicationId
                 });
             } else {
                 return next(new HttpError(400, "Cannot find application."));
@@ -34,6 +36,7 @@ var controller = {
 
             var apps = _.map(applications, function (application) {
                 return {
+                    _id: application._id,
                     applicationId: application.applicationId,
                     date_create: application.date_create,
                     description: application.description,

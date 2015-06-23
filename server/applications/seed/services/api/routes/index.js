@@ -1,5 +1,4 @@
-var seedController = require('../controllers/seed'),
-    seedConfig = require('../../../config');
+var seedConfig = require('../../../config');
 
 var api = {
     getVersion: function (cb) {

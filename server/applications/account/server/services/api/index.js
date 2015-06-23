@@ -1,4 +1,5 @@
 var Server = require('common/service').Server,
+    accountConfig = require('../../config'),
     configuration = require('configuration');
 
 var server = new Server({
@@ -7,3 +8,6 @@ var server = new Server({
 
 // add routes
 require('./routes')(server);
+
+// connect to database
+require("common/mongooseConnect").initConnection(accountConfig);

@@ -7,7 +7,8 @@ define([
 
         urls: {
             privateKey: '/api/v' + config.api.version + '/application/privateKey',
-            remove: '/api/v' + config.api.version + '/application/remove'
+            remove: '/api/v' + config.api.version + '/application/remove',
+            fetchByApplicationId: '/api/v' + config.api.version + '/application/by/applicationid'
         },
 
         defaults: {
@@ -51,6 +52,28 @@ define([
             };
 
             return this.save(null, defaults);
+        },
+
+        fetchByApplicationId: function () {
+            return this.fetch({
+                url: this.urls.fetchByApplicationId + '/' + this.get('applicationId'),
+                type: 'GET'
+            });
+        },
+
+        findOne: function (options) {
+            var data = {
+                    _id: this.get('_id')
+                },
+                defaults = {
+                    url: this.urls.findOne,
+                    type: 'GET',
+                    data: JSON.stringify(data)
+                };
+
+            this.save(null, defaults);
+
+            return this;
         }
     });
 

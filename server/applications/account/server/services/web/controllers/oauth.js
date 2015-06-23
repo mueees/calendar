@@ -2,6 +2,7 @@ var validator = require('validator'),
     async = require('async'),
     HttpError = require('common/errors/HttpError'),
     oauthClient = require('../../../clients/oauth'),
+    configuration = require('configuration'),
     _ = require('underscore');
 
 var controller = {
@@ -20,7 +21,8 @@ var controller = {
             }
 
             response.send({
-                ticket: ticket
+                redirectUrl: 'http://localhost:' + configuration.get('applications:oauth-access:services:web:port') +
+                '/oauth/' + data.applicationId + '?ticket=' + ticket
             });
         });
     },

@@ -3,6 +3,23 @@
     "name": "Mue"
   },
   "applications": {
+    "account": {
+      "services": {
+        "web": {
+          "name": "Account",
+          "port": 6004,
+          "version": 1
+        }
+      }
+    },
+    "proxy": {
+      "services": {
+        "web": {
+          "name": "Proxy balance",
+          "port": 6005
+        }
+      }
+    },
     "seed": {
       "services": {
         "api": {
@@ -16,18 +33,28 @@
           "port": 7010
         }
       }
+    },
+    "oauth-access": {
+      "services": {
+        "web": {
+          "name": "Oauth Access",
+          "port": 6006,
+          "approvalUrl": "http://localhost:6004/#approval"
+        }
+      }
     }
   },
   "applications-api": {
     "test": {
       "api-prefix": "test",
       "status": true,
-      "port": 8001
+      "port": 8000
     },
     "account": {
+      "name": "Account api",
       "api-prefix": "account",
       "status": true,
-      "port": 8002
+      "port": 8001
     }
   }
 }

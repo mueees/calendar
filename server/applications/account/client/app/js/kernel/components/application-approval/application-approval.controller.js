@@ -31,7 +31,7 @@ define([
                 me = this;
 
             command.execute({
-                applicationid: this.application.get('_id')
+                applicationId: this.application.get('applicationId')
             }).then(function (data) {
                 $mNotify.notify({
                     text: me.application.get('name') + ' get access'

@@ -3,9 +3,9 @@ var rootController = require('../controllers/root'),
     oauthController = require('../controllers/oauth'),
     applicationController = require('../controllers/application'),
     passport = require('passport'),
-    accountConfig = require('../../../config');
+    configuration = require('configuration');
 
-var prefix = '/api/v' + accountConfig.get('api:version');
+var prefix = '/api/v' + configuration.get("applications:account:services:web:version");
 
 module.exports = function (app) {
 
@@ -24,6 +24,10 @@ module.exports = function (app) {
         passport.authenticate('bearer', {session: false}),
         applicationController.getAll);
 
+    app.get(prefix + '/application/by/applicationid/:id',
+        passport.authenticate('bearer', {session: false}),
+        applicationController.getByApplicationId);
+
     app.post(prefix + '/application/create',
         passport.authenticate('bearer', {session: false}),
         applicationController.create);
@@ -31,10 +35,6 @@ module.exports = function (app) {
     app.post(prefix + '/application/remove/:id',
         passport.authenticate('bearer', {session: false}),
         applicationController.remove);
-
-    app.get(prefix + '/application/:id',
-        passport.authenticate('bearer', {session: false}),
-        applicationController.getById);
 
     /*OAUTH 2*/
     app.post(prefix + '/oauth/auth',

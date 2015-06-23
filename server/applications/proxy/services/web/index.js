@@ -3,7 +3,7 @@ var express = require('express'),
     http = require('http'),
     HttpError = require('common/errors/HttpError'),
     bodyParser = require('body-parser'),
-    proxyConfig = require('../../config');
+    configuration = require('configuration');
 
 var app = express();
 
@@ -30,5 +30,5 @@ app.use(function (err, req, res) {
 });
 
 var server = http.createServer(app);
-server.listen(proxyConfig.get("port"));
-console.log(proxyConfig.get('name') + " server listening: " + proxyConfig.get("port"));
+server.listen(configuration.get("applications:proxy:services:web:port"));
+console.log(configuration.get("applications:proxy:services:web:name") + " server listening: " + configuration.get("applications:proxy:services:web:port"));

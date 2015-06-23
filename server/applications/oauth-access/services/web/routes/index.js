@@ -1,7 +1,8 @@
-var request = require('request'),
+var req = require('request'),
     oauthClient = require('../../../clients/oauth'),
     Token = require('../../../common/resources/token'),
-    oauthAccessConfig = require('../../../config');
+    Token = require('../../../common/resources/token'),
+    configuration = require('configuration');
 
 module.exports = function (app) {
     app.get('/provide/:oauthKey', function (request, response, next) {
@@ -11,23 +12,23 @@ module.exports = function (app) {
                 return response.redirect('/error/provide');
             }
 
-            var url = oauthAccessConfig.get('approvalUrl') + '?applicationid=' + application.applicationId;
+            var url = configuration.get("applications:oauth-access:services:web:approvalUrl") + '?applicationid=' + application.applicationId;
 
             response.redirect(url);
         });
     });
 
-    app.get('/oauth/:applicationid', function (request, response, next) {
+    app.get('/oauth/:applicationId', function (request, response, next) {
         var ticket = request.query.ticket;
 
         if (!ticket) {
             return response.redirect('/error/oauth');
         }
 
-        console.log('applicationid: ' + request.params.applicationid);
+        console.log('applicationId: ' + request.params.applicationId);
 
         // find application for getting privateKey
-        oauthClient.exec('getApplicationById', request.params.applicationid, function (err, application) {
+        oauthClient.exec('getApplicationByApplicationId', request.params.applicationId, function (err, application) {
             if (err) {
                 console.log(err);
                 return response.redirect('/error/oauth');
@@ -46,7 +47,7 @@ module.exports = function (app) {
                 // tokens contains access, refresh and exchange parameters
                 // get user email
 
-                if(err){
+                if (err) {
                     console.log('exchange got error');
                     console.log(err);
                     return;
@@ -55,17 +56,18 @@ module.exports = function (app) {
                 console.log('tokens');
                 console.log(tokens);
 
-                request({
-                    url: 'http://localhost:6005/api/account/info',
+                req({
+                    url: 'http://localhost:6005/api/account/user',
                     headers: {
                         'Authorization': 'Bearer ' + tokens.access_token
                     }
                 }, function (err, response, body) {
-                    if (!error && response.statusCode == 200) {
-                        var info = JSON.parse(body);
+                    if(err){
+                        console.log("account info got error");
+                        console.log(err);
+                        return;
                     }
 
-                    console.log(response);
                     console.log(body);
                 });
 

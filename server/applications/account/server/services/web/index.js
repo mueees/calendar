@@ -5,7 +5,7 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     errorhandler = require('errorhandler'),
     accountConfig = require('../../config'),
-    prefix = '/api/v' + accountConfig.get('api:version');
+    configuration = require('configuration');
 
 var app = express();
 
@@ -46,5 +46,5 @@ app.use(function (err, req, res, next) {
 require("common/mongooseConnect").initConnection(accountConfig);
 
 var server = http.createServer(app);
-server.listen(accountConfig.get("service:port"));
-console.log(accountConfig.get("service:name") + ' server listening: ' + accountConfig.get("service:port") + ' port');
+server.listen(configuration.get("applications:account:services:web:port"));
+console.log(configuration.get("applications:account:services:web:name") + ' server listening: ' + configuration.get("applications:account:services:web:port") + ' port');

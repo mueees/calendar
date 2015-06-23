@@ -43,10 +43,10 @@ define([
                                 fn: function () {
                                     var def = $.Deferred(),
                                         application = new ApplicationModel({
-                                            _id: $mUrl.getTotal().query.applicationid
+                                            applicationId: $mUrl.getTotal().query.applicationid
                                         });
 
-                                    application.fetch().then(function () {
+                                    application.fetchByApplicationId().then(function () {
                                         def.resolve(application);
                                     }, function () {
                                         def.reject();
@@ -81,7 +81,7 @@ define([
                     approval.show();
 
                     this.listenTo(approval, 'approve', function (data) {
-                        window.open($mUrl.getTotal().query.redirect + '?token=' + data.token);
+                        window.open(data.redirectUrl);
                         $mSecurity.navigateAfterSign();
                     });
                     this.listenTo(approval, 'cancel', function () {

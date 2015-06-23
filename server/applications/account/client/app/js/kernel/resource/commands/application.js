@@ -5,7 +5,7 @@ define([
     var prefix = '/api/v' + config.api.version;
 
     Commands.register('application:approve', {
-        url: prefix + '/application/approve',
+        url: prefix + '/oauth/auth',
         type: 'POST'
     });
 
