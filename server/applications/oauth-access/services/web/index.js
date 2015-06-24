@@ -18,6 +18,8 @@ app.use(require("common/middlewares/enviroment"));
 
 require("common/mongooseConnect").initConnection(accessConfig);
 
+app.use(express.static('./public'));
+
 // listen routs
 route(app);
 

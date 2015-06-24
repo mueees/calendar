@@ -6,7 +6,6 @@ var req = require('request'),
     passport = require('passport'),
     apiRequest = require('../middlewares/apiRequest'),
     refreshAccessToken = require('../middlewares/refreshAccessToken'),
-
     GetUserEmail = require('../../../common/actions/GetUserEmail'),
     configuration = require('configuration');
 
@@ -109,6 +108,7 @@ module.exports = function (app) {
         });
     });
 
+    // send all request to proxy server
     app.use('/api/:application/*', [
         passport.authenticate('bearer', {session: false}),
         refreshAccessToken,

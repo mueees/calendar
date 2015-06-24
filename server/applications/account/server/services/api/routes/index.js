@@ -2,12 +2,11 @@ var ServerError = require('common/service').ServerError,
     User = require('common/resources/user'),
     oauthClient = require('../../../clients/oauth'),
     log = require('common/log')(module),
+    _ = require('underscore'),
     async = require('async');
 
 module.exports = function (server) {
     server.addRoute('/user', function (data, callback) {
-        log.info('Account api: /user request');
-
         if (!data.userId) {
             log.error('Cannot find user id');
             return callback(new ServerError(400, 'Cannot find user id'));

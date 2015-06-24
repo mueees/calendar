@@ -2,8 +2,71 @@
 	"version": 1,
 	"collections": [
 		{
+			"id": "1a111075-1772-4383-dabd-bdc8781dbeac",
+			"name": "Account-Access",
+			"description": "",
+			"order": [],
+			"folders": [
+				{
+					"id": "642aaa9f-e5e0-3530-39de-a006767fd098",
+					"name": "account",
+					"description": "",
+					"write": true,
+					"order": [
+						"f8f4cd03-2dc7-4de9-3cb6-efa39abd6d23"
+					],
+					"collection": "1a111075-1772-4383-dabd-bdc8781dbeac",
+					"owner": 0,
+					"collection_name": "Account-Access: Account app",
+					"collection_owner": 0,
+					"collection_id": "1a111075-1772-4383-dabd-bdc8781dbeac"
+				}
+			],
+			"timestamp": 1435147459278,
+			"synced": false,
+			"remote_id": 0,
+			"owner": 0,
+			"sharedWithTeam": false,
+			"subscribed": false,
+			"remoteLink": "",
+			"public": false,
+			"createdAt": 1435147459278,
+			"updatedAt": 1435148730155,
+			"write": true,
+			"requests": [
+				{
+					"id": "f8f4cd03-2dc7-4de9-3cb6-efa39abd6d23",
+					"headers": "Authorization: Bearer c3e1d6ec-2482-490d-b9e3-57ca1fdb7c62\nX-Requested-With: XMLHttpRequest\n",
+					"url": "http://localhost:6006/api/account/user",
+					"preRequestScript": "",
+					"pathVariables": {},
+					"method": "GET",
+					"data": [
+						{
+							"key": "eacho",
+							"value": "yeah!",
+							"type": "text",
+							"enabled": true
+						}
+					],
+					"dataMode": "params",
+					"version": 2,
+					"tests": "",
+					"currentHelper": "normal",
+					"helperAttributes": {},
+					"time": 1435148024997,
+					"name": "Get user info",
+					"description": "",
+					"collectionId": "1a111075-1772-4383-dabd-bdc8781dbeac",
+					"responses": [],
+					"synced": true,
+					"folder": "642aaa9f-e5e0-3530-39de-a006767fd098"
+				}
+			]
+		},
+		{
 			"id": "3d4bf4c5-1b82-a133-3d7b-393396d4d6d4",
-			"name": "Test app",
+			"name": "Proxy: Test app",
 			"description": "",
 			"order": [
 				"daf3a974-c414-e736-5325-1782bcbc873f",
@@ -19,6 +82,8 @@
 			"subscribed": false,
 			"remoteLink": "",
 			"public": false,
+			"createdAt": null,
+			"updatedAt": 1435147476851,
 			"write": true,
 			"requests": [
 				{

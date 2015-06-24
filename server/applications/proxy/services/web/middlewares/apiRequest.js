@@ -20,12 +20,6 @@ module.exports = function (request, response, next) {
 
     data.originalUrl = request.originalUrl;
 
-    log.info('request params:');
-    log.info(data);
-
-    log.info('resource');
-    log.info(request.params[0]);
-
     clients[request.application].exec('request', '/' + request.params[0], data, function (err, data) {
         if (err) {
             log.error(err.message);

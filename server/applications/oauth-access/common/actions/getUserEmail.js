@@ -14,7 +14,7 @@ _.extend(GetUserEmail.prototype, {
     initialize: function (access_token) {
         var data = {
             application: 'account',
-            request: 'user',
+            request: '/user',
             access_token: access_token,
             method: 'GET'
         };
