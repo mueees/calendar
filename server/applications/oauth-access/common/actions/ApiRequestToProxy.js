@@ -2,6 +2,7 @@ var util = require('util'),
     request = require('request'),
     _ = require('underscore'),
     log = require('common/log')(module),
+    path = require('path'),
     BaseAction = require('common/actions/base');
 
 function ApiRequestToProxy(data) {
@@ -18,9 +19,10 @@ _.extend(ApiRequestToProxy.prototype, {
         this.method = options.method;
         this.data = options.data;
     },
+
     execute: function (callback) {
         var options = {
-            url: 'http://localhost:6005/api/' + this.application + '/' + this.request,
+            url: 'http://' + path.normalize('localhost:6005/api/' + this.application + '/' + this.request),
             headers: {
                 'Authorization': 'Bearer ' + this.access_token,
                 'X-Requested-With': 'XMLHttpRequest'

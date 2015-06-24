@@ -2,6 +2,7 @@ var dnode = require('dnode'),
     EventEmitter = require('events').EventEmitter,
     util = require('util'),
     _ = require('underscore'),
+    log = require('common/log')(module),
     crossroads = require('crossroads'),
     ServerError = require('./ServerError');
 
@@ -75,9 +76,12 @@ _.extend(Server.prototype, {
 
         if (!this._isHasMatchRoute(requestString)) {
             var callback = args.pop();
-
+            log.error('Invalid request method');
             callback(new ServerError(401, 'Invalid request method'));
         } else {
+            log.info('Got request: ' + requestString);
+            log.info('with arguments: ');
+            log.info(args);
             this._router.parse(requestString, args);
         }
     },

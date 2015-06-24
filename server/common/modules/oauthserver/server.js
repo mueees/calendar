@@ -1,10 +1,10 @@
-
 var validator = require('validator'),
     Permission = require('common/resources/permission'),
     Application = require('common/resources/application'),
     OauthError = require('./OauthError'),
     _ = require('underscore'),
-    expiredTime = 1000*60*3, // 10 minutes
+    log = require('common/log')(module),
+    expiredTime = 1000*60*3, // 3 minutes
     async = require('async');
 function Server() {
 }
@@ -275,6 +275,7 @@ function createApplication(data, callback) {
 
 function getAllApplications(userId, callback) {
     if (!userId || !userId.length) {
+        log.error('Invalid  user id');
         return callback(new OauthError(400, 'Invalid user Id'));
     }
 
@@ -293,6 +294,7 @@ function getAllApplications(userId, callback) {
         status: true
     }, function (err, applications) {
         if (err) {
+            log.error(err);
             return callback(new OauthError(400, err));
         }
 

@@ -23,7 +23,10 @@ module.exports = function (request, response, next) {
     log.info('request params:');
     log.info(data);
 
-    clients[request.application].exec('request', request.params[0], data, function (err, data) {
+    log.info('resource');
+    log.info(request.params[0]);
+
+    clients[request.application].exec('request', '/' + request.params[0], data, function (err, data) {
         if (err) {
             log.error(err.message);
             return next(new HttpError(400, err.message));
