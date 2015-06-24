@@ -4,13 +4,14 @@ var util = require('util'),
     log = require('common/log')(module),
     BaseAction = require('common/actions/base');
 
-function GetEmail(access_token){
-    this.access_token = access_token;
+function RequestToProxy(data){
+    this.version = data.version;
+    this.application = data.application;
 }
 
-util.inherits(GetEmail, BaseAction);
+util.inherits(RequestToProxy, BaseAction);
 
-_.extend(GetEmail.prototype, {
+_.extend(RequestToProxy.prototype, {
     execute: function (callback) {
         request({
             url: 'http://localhost:6005/api/v1/account/user',
@@ -29,4 +30,4 @@ _.extend(GetEmail.prototype, {
     }
 });
 
-module.exports = GetEmail;
+module.exports = RequestToProxy;

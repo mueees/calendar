@@ -17,6 +17,10 @@ module.exports = function (request, response, next) {
         return next(new HttpError(400, application + " offline."));
     }
 
+    if( applicationApi.version && ('v' + applicationApi.version) != request.params.version ){
+        return next(new HttpError(400, application + ' has ' + applicationApi.version + ' version.'));
+    }
+
     request.application = application;
 
     next();

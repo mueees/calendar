@@ -5,7 +5,7 @@ var isApiExist = require('../middlewares/isApiExist'),
     getPermission = require('../middlewares/getPermission');
 
 module.exports = function (app) {
-    app.use('/api/:application/*', [
+    app.use('/api/:version/:application/*', [
         isApiExist,
         getAccessToken,
         getPermission,

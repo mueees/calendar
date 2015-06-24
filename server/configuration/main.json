@@ -54,7 +54,8 @@
       "name": "Account api",
       "api-prefix": "account",
       "status": true,
-      "port": 8001
+      "port": 8001,
+      "version": 1
     }
   }
 }

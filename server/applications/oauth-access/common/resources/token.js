@@ -50,6 +50,22 @@ tokenSchema.statics.create = function (data, cb) {
     });
 };
 
+tokenSchema.statics.getTokenByClientToken = function(client_token, cb){
+    this.findOne({
+        client_token: client_token
+    }, null, function(err, token){
+        if( err ){
+            return cb("Server error");
+        }
+
+        if(!token){
+            cb(null, false);
+        } else {
+            cb(null, token);
+        }
+    });
+};
+
 var Token = mongoose.model('Token', tokenSchema);
 
 module.exports = Token;

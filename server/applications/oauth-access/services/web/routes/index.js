@@ -3,6 +3,7 @@ var req = require('request'),
     Token = require('../../../common/resources/token'),
     log = require('common/log')(module),
     async = require('async'),
+    passport = require('passport'),
     GetUserEmail = require('../../../common/actions/getUserEmail'),
     configuration = require('configuration');
 
@@ -97,4 +98,9 @@ module.exports = function (app) {
             response.send('ok');
         });
     });
+
+    app.use('/api/:application/*', [
+        passport.authenticate('bearer', {session: false}),
+        apiRequest
+    ]);
 };
