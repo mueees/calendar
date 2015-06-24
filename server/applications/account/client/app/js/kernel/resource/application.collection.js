@@ -5,7 +5,7 @@ define([
 ], function (BaseCollection, ApplicationModel, config) {
     var ApplicationCollection = BaseCollection.extend({
         model: ApplicationModel,
-        url: '/api/v' + config.api.version + '/application/all'
+        url: '/api/application/all'
     });
 
     return ApplicationCollection;

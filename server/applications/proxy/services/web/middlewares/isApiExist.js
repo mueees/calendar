@@ -3,6 +3,7 @@
  * */
 
 var applicationsApi = require('configuration').get('applications-api'),
+    log = require('common/log')(module),
     HttpError = require('common/errors/HttpError');
 
 module.exports = function (request, response, next) {
@@ -17,11 +18,9 @@ module.exports = function (request, response, next) {
         return next(new HttpError(400, application + " offline."));
     }
 
-    if( applicationApi.version && ('v' + applicationApi.version) != request.params.version ){
-        return next(new HttpError(400, application + ' has ' + applicationApi.version + ' version.'));
-    }
-
     request.application = application;
+
+    log.info('application: ' + application);
 
     next();
 };

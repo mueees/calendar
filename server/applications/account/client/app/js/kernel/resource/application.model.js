@@ -3,12 +3,12 @@ define([
     'config/app'
 ], function (BaseModel, config) {
     var Application = BaseModel.extend({
-        urlRoot: '/api/v' + config.api.version + '/application',
+        urlRoot: '/api/application',
 
         urls: {
-            privateKey: '/api/v' + config.api.version + '/application/privateKey',
-            remove: '/api/v' + config.api.version + '/application/remove',
-            fetchByApplicationId: '/api/v' + config.api.version + '/application/by/applicationid'
+            privateKey: '/api/application/privateKey',
+            remove: '/api/application/remove',
+            fetchByApplicationId: '/api/application/by/applicationid'
         },
 
         defaults: {

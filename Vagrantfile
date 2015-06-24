@@ -54,5 +54,6 @@ Vagrant::Config.run do |config|
       chef.add_recipe "nodejs"
       chef.add_recipe "redis"
   end
+
   config.vm.provision :shell, :path => "./Vagrantdata/setup.sh"
 end

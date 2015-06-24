@@ -2,31 +2,36 @@ var util = require('util'),
     request = require('request'),
     _ = require('underscore'),
     log = require('common/log')(module),
-    BaseAction = require('common/actions/base');
+    ApiRequestToProxy = require('./ApiRequestToProxy');
 
-function GetEmail(access_token){
-    this.access_token = access_token;
+function GetUserEmail(access_token) {
+    this.initialize(access_token);
 }
 
-util.inherits(GetEmail, BaseAction);
+util.inherits(GetUserEmail, ApiRequestToProxy);
 
-_.extend(GetEmail.prototype, {
+_.extend(GetUserEmail.prototype, {
+    initialize: function (access_token) {
+        var data = {
+            application: 'account',
+            request: 'user',
+            access_token: access_token,
+            method: 'GET'
+        };
+
+        ApiRequestToProxy.prototype.initialize.apply(this, [data]);
+    },
+
     execute: function (callback) {
-        request({
-            url: 'http://localhost:6005/api/v1/account/user',
-            headers: {
-                'Authorization': 'Bearer ' + this.access_token,
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        }, function (err, response, data) {
-            if(err){
+        ApiRequestToProxy.prototype.execute.apply(this, [function (err, data) {
+            if (err) {
                 log.error(err.message);
                 callback(err);
             }
 
-            callback(null, JSON.parse(data).email);
-        });
+            callback(null, data.email);
+        }]);
     }
 });
 
-module.exports = GetEmail;
+module.exports = GetUserEmail;

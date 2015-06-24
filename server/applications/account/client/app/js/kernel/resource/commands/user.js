@@ -2,7 +2,7 @@ define([
     'core/resource/command',
     'config/app'
 ], function (Commands, config) {
-    var prefix = '/api/v' + config.api.version;
+    var prefix = '/api';
 
     Commands.register('signin', {
         url: prefix + '/signin',

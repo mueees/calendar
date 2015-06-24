@@ -1,5 +1,6 @@
 var express = require('express'),
     route = require('./routes'),
+    log = require('common/log')(module),
     http = require('http'),
     HttpError = require('common/errors/HttpError'),
     bodyParser = require('body-parser'),
@@ -25,10 +26,9 @@ app.use(function (err, req, res) {
         res.sendHttpError(err);
     } else {
         console.log('end error');
-        console.log(err);
     }
 });
 
 var server = http.createServer(app);
 server.listen(configuration.get("applications:proxy:services:web:port"));
-console.log(configuration.get("applications:proxy:services:web:name") + " server listening: " + configuration.get("applications:proxy:services:web:port"));
+log.info(configuration.get("applications:proxy:services:web:name") + " server listening: " + configuration.get("applications:proxy:services:web:port"));

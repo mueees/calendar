@@ -4,10 +4,19 @@ var req = require('request'),
     log = require('common/log')(module),
     async = require('async'),
     passport = require('passport'),
-    GetUserEmail = require('../../../common/actions/getUserEmail'),
+    apiRequest = require('../middlewares/apiRequest'),
+    refreshAccessToken = require('../middlewares/refreshAccessToken'),
+
+    GetUserEmail = require('../../../common/actions/GetUserEmail'),
     configuration = require('configuration');
 
 module.exports = function (app) {
+    app.use(function(req, res, next) {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        next();
+    });
+
     app.get('/provide/:oauthKey', function (request, response, next) {
         oauthClient.exec('getApplicationByOauthKey', request.params.oauthKey, function (err, application) {
             if (err) {
@@ -26,9 +35,9 @@ module.exports = function (app) {
             return response.send(500);
         }
 
-        function getApplication(callback){
+        function getApplication(callback) {
             oauthClient.exec('getApplicationByApplicationId', request.params.applicationId, function (err, application) {
-                if(err){
+                if (err) {
                     return callback(err);
                 }
 
@@ -38,7 +47,7 @@ module.exports = function (app) {
             });
         }
 
-        function exchangeTicket(application, callback){
+        function exchangeTicket(application, callback) {
             var data = {
                 ticket: request.query.ticket,
                 privateKey: application.privateKey,
@@ -46,7 +55,7 @@ module.exports = function (app) {
             };
 
             oauthClient.exec('exchange', data, function (err, tokens) {
-                if(err){
+                if (err) {
                     return callback(err);
                 }
 
@@ -56,27 +65,28 @@ module.exports = function (app) {
             });
         }
 
-        function getUserEmail(application, tokens, callback){
+        function getUserEmail(application, tokens, callback) {
             (new GetUserEmail(tokens.access_token)).execute(function (err, email) {
-                if(err){
+                if (err) {
                     return callback(err);
                 }
 
-                log.info('User email: ' +  email);
+                log.info('User email: ' + email);
 
                 callback(null, application, tokens, email);
             });
         }
 
-        function createToken(application, tokens, email, callback){
+        function createToken(application, tokens, email, callback) {
             Token.create({
                 email: email,
                 applicationId: application.applicationId,
+                privateKey: application.privateKey,
                 access_token: tokens.access_token,
                 refresh_token: tokens.refresh_token,
                 exchange: tokens.exchange
             }, function (err, token) {
-                if(err){
+                if (err) {
                     return callback(err);
                 }
 
@@ -89,18 +99,19 @@ module.exports = function (app) {
             exchangeTicket,
             getUserEmail,
             createToken
-        ], function (err) {
-            if(err){
+        ], function (err, client_token) {
+            if (err) {
                 log.error(err);
                 return response.send(500);
             }
 
-            response.send('ok');
+            response.send(client_token);
         });
     });
 
     app.use('/api/:application/*', [
         passport.authenticate('bearer', {session: false}),
+        refreshAccessToken,
         apiRequest
     ]);
 };

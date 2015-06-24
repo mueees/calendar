@@ -3,7 +3,6 @@ VAGRANT
 
 // Start vagrant
 cd mue\project\calendar
-vagrant up
 vagrant ssh
 
 // DEVELOPMENT

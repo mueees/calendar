@@ -1,4 +1,5 @@
 var HttpError = require('common/errors/HttpError'),
+    log = require('common/log')(module),
     clients = {
         account: require('../../../clients/account'),
         test: require('../../../clients/test')
@@ -10,7 +11,7 @@ module.exports = function (request, response, next) {
     };
 
     if (request.method == 'get') {
-        data.request = request.query;
+        data.data = request.query;
     }
 
     if (request.method == 'port') {
@@ -19,9 +20,12 @@ module.exports = function (request, response, next) {
 
     data.originalUrl = request.originalUrl;
 
+    log.info('request params:');
+    log.info(data);
+
     clients[request.application].exec('request', request.params[0], data, function (err, data) {
         if (err) {
-            console.log(err);
+            log.error(err.message);
             return next(new HttpError(400, err.message));
         }
 

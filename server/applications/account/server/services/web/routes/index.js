@@ -5,7 +5,7 @@ var rootController = require('../controllers/root'),
     passport = require('passport'),
     configuration = require('configuration');
 
-var prefix = '/api/v' + configuration.get("applications:account:services:web:version");
+var prefix = '/api';
 
 module.exports = function (app) {
 

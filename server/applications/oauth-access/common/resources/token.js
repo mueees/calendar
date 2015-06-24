@@ -2,10 +2,16 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId,
     log = require('common/log')(module),
-    heplers = require('common/helpers');
+    RefreshAccessToken = require('../actions/RefreshAccessToken'),
+    beforeRefreshTime = 1000 * 30, // 30 seconds
+    helpers = require('common/helpers');
 
 var tokenSchema = new Schema({
     applicationId: {
+        type: String,
+        required: true
+    },
+    privateKey: {
         type: String,
         required: true
     },
@@ -35,8 +41,32 @@ var tokenSchema = new Schema({
     }
 });
 
+tokenSchema.methods.isNeedRefresh = function () {
+    return (new Date()).getTime() - this.last_refresh > this.exchange - beforeRefreshTime;
+};
+
+tokenSchema.methods.refreshAccessToken = function (callback) {
+    var me = this,
+        refreshAction = new RefreshAccessToken({
+            privateKey: this.privateKey,
+            refresh_token: this.refresh_token,
+            applicationId: this.applicationId
+        });
+
+    refreshAction.execute(function (err, data) {
+        if (err) {
+            return callback(err);
+        }
+
+        me.access_token = data.access_token;
+        me.expired = data.expired;
+
+        callback(null, me);
+    });
+};
+
 tokenSchema.statics.create = function (data, cb) {
-    data.client_token = heplers.util.getUUID();
+    data.client_token = helpers.util.getUUID();
 
     var token = new this(data);
 
@@ -50,15 +80,15 @@ tokenSchema.statics.create = function (data, cb) {
     });
 };
 
-tokenSchema.statics.getTokenByClientToken = function(client_token, cb){
+tokenSchema.statics.getTokenByClientToken = function (client_token, cb) {
     this.findOne({
         client_token: client_token
-    }, null, function(err, token){
-        if( err ){
+    }, null, function (err, token) {
+        if (err) {
             return cb("Server error");
         }
 
-        if(!token){
+        if (!token) {
             cb(null, false);
         } else {
             cb(null, token);

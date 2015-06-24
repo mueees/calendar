@@ -8,6 +8,8 @@ var express = require('express'),
 
 var app = express();
 
+require('./auth');
+
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json({type: 'application/json'}));
 

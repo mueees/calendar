@@ -11,6 +11,9 @@ module.exports = function (request, response, next) {
 
         request.permission = permission;
 
+        log.info('permission:');
+        log.info(permission);
+
         next();
     });
 };
