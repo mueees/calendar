@@ -37,44 +37,60 @@
             this.defer = $.Deferred();
 
             this.window = window.open('http://localhost:6006/provide/' + applicationOauthKey);
-            w.addEventListener("message", me.receiveMessage, false);
+            w.addEventListener("message", function (e) {
+                me.receiveMessage(e);
+            }, false);
 
             this.start = new Date();
             this.openTimeout = setTimeout(function () {
                 me.reject();
             }, timeout);
 
-            setInterval(function () {
-                //w.postMessage('Hi', 'http://localhost:6006');
-            }, 100);
+            this.openInterval = setTimeout(function () {
+                me.window.postMessage('hi', '*');
+            }, 500);
 
             return this.defer.promise();
         },
 
         reject: function () {
+            this.clearOpenInterval();
             this.clearOpenTimeout();
             this.unSubscribeMessage();
             this.defer.reject();
         },
 
         unSubscribeMessage: function () {
-            window.removeEventListener("message", me.receiveMessage, false);
+            window.removeEventListener("message", this.receiveMessage, false);
+        },
+
+        clearOpenInterval: function () {
+            if(this.openInterval){
+                clearInterval(this.openInterval);
+                this.openInterval = null;
+            }
         },
 
         clearOpenTimeout: function () {
             if (this.openTimeout) {
                 clearTimeout(this.openTimeout);
+                this.openTimeout = null;
             }
         },
 
         receiveMessage: function (event) {
-            console.log(event);
-
             if (event.origin == origin) {
+                this.clearOpenInterval();
                 this.clearOpenTimeout();
                 this.unSubscribeMessage();
 
-                this.resolve(JSON.parse(event.data));
+                var data = JSON.parse(event.data);
+
+                if( data.status == 200 ){
+                    this.defer.resolve(data);
+                }else{
+                    this.defer.reject(data);
+                }
             }
         }
     };
