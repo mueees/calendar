@@ -6,11 +6,18 @@
 </head>
 <body>
 
-
+<script src="jquery.js"></script>
 <script src="mue.js"></script>
 
 <script>
+    Mue.initialize('7a05b8c0-bf17-9440-24a0-81fa31c9438');
 
+    Mue.popup().then(function (data) {
+        console.log('ok');
+    }, function (data) {
+        console.log('false');
+    });
 </script>
+
 </body>
 </html>

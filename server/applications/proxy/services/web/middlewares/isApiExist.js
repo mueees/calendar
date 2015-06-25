@@ -19,8 +19,5 @@ module.exports = function (request, response, next) {
     }
 
     request.application = application;
-
-    log.info('application: ' + application);
-
     next();
 };

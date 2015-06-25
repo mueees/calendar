@@ -13,6 +13,9 @@ require('./auth');
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json({type: 'application/json'}));
 
+app.set('views', __dirname + "/views");
+app.set('view engine', 'jade');
+
 app.use(require("common/middlewares/sendHttpError"));
 app.use(require("common/middlewares/enviroment"));
 

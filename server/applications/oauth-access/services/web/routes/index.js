@@ -20,7 +20,12 @@ module.exports = function (app) {
         oauthClient.exec('getApplicationByOauthKey', request.params.oauthKey, function (err, application) {
             if (err) {
                 log.error(err.message);
-                return response.send(500);
+                return response.render('response', {
+                    js: JSON.stringify({
+                        status: 500,
+                        message: "Server error"
+                    })
+                });
             }
 
             var url = configuration.get("applications:oauth-access:services:web:approvalUrl") + '?applicationid=' + application.applicationId;
