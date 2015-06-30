@@ -16,14 +16,17 @@ module.exports = function (app) {
         next();
     });
 
-    app.get('/provide/:oauthKey', function (request, response, next) {
+    app.get('/provide/:oauthKey', function (request, response) {
         oauthClient.exec('getApplicationByOauthKey', request.params.oauthKey, function (err, application) {
             if (err) {
                 log.error(err.message);
-                return response.render('response', {
-                    js: JSON.stringify({
-                        status: 500,
-                        message: "Server error"
+                return response.render('postMessage', {
+                    response: JSON.stringify({
+                        status: 400,
+                        message: 'Server error'
+                    }),
+                    meta: JSON.stringify({
+                        domain: null
                     })
                 });
             }
@@ -36,7 +39,8 @@ module.exports = function (app) {
 
     app.get('/oauth/:applicationId', function (request, response, next) {
         if (!request.query.ticket) {
-            return response.send(500);
+            log.error('Cannot find ticket');
+            return response.render('postMessage', errorResponse);
         }
 
         function getApplication(callback) {
@@ -75,8 +79,6 @@ module.exports = function (app) {
                     return callback(err);
                 }
 
-                log.info('User email: ' + email);
-
                 callback(null, application, tokens, email);
             });
         }
@@ -94,7 +96,7 @@ module.exports = function (app) {
                     return callback(err);
                 }
 
-                callback(null, token.client_token);
+                callback(null, token, application);
             });
         }
 
@@ -103,13 +105,29 @@ module.exports = function (app) {
             exchangeTicket,
             getUserEmail,
             createToken
-        ], function (err, client_token) {
+        ], function (err, token, application) {
             if (err) {
                 log.error(err);
-                return response.send(500);
+                return response.render('postMessage', {
+                    response: JSON.stringify({
+                        status: 400,
+                        message: 'Server error'
+                    }),
+                    meta: JSON.stringify({
+                        domain: application.domain || null
+                    })
+                });
             }
 
-            response.send(client_token);
+            response.render('postMessage', {
+                response: JSON.stringify({
+                    status: 200,
+                    client_token: token.client_token
+                }),
+                meta: JSON.stringify({
+                    domain: application.domain
+                })
+            });
         });
     });
 

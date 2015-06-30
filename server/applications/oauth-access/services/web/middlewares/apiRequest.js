@@ -14,9 +14,6 @@ module.exports = function (request, response, next) {
         data.data = request.body;
     }
 
-    log.info('request params:');
-    log.info(data);
-
     (new ApiRequestToProxy(data)).execute(function (err, data) {
         if (err) {
             log.error(err);

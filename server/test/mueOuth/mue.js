@@ -37,31 +37,50 @@
             this.defer = $.Deferred();
 
             this.window = window.open('http://localhost:6006/provide/' + applicationOauthKey);
+
             w.addEventListener("message", function (e) {
                 me.receiveMessage(e);
             }, false);
 
             this.start = new Date();
             this.openTimeout = setTimeout(function () {
-                me.reject();
+                me.reject('Timeout');
             }, timeout);
 
-            this.openInterval = setTimeout(function () {
-                me.window.postMessage('hi', '*');
+            this.openInterval = setInterval(function () {
+                me.window.postMessage({
+                    origin: window.location.origin,
+                    host: window.location.host,
+                    href: window.location.href
+                }, '*');
             }, 500);
+
+            this.windowClosedInterval = setInterval(function() {
+                if(me.window.closed) {
+                    me.reject('Window was closed');
+                }
+            }, 1000);
 
             return this.defer.promise();
         },
 
-        reject: function () {
+        reject: function (errorMessage) {
             this.clearOpenInterval();
+            this.clearWindowClosedInterval();
             this.clearOpenTimeout();
             this.unSubscribeMessage();
-            this.defer.reject();
+            this.defer.reject({
+                status: 500,
+                message: errorMessage || 'Server error'
+            });
         },
 
         unSubscribeMessage: function () {
             window.removeEventListener("message", this.receiveMessage, false);
+        },
+
+        clearWindowClosedInterval: function () {
+            clearInterval(this.windowClosedInterval);
         },
 
         clearOpenInterval: function () {

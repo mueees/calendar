@@ -10,12 +10,14 @@
 <script src="mue.js"></script>
 
 <script>
-    Mue.initialize('7a05b8c0-bf17-9440-24a0-81fa31c9438');
+    Mue.initialize('16a98ea3-4714-a259-468a-2d8eb879818c');
 
     Mue.popup().then(function (data) {
+        console.log(data);
         console.log('ok');
     }, function (data) {
-        console.log('false');
+        console.log(data);
+        console.log('fail');
     });
 </script>
 
