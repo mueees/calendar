@@ -13,14 +13,14 @@ server.addRoute('/user/info', function (data, cb) {
 });
 
 server.addRoute('/user/info', function (data, cb) {
-    cb(null, 'Request from: ' + data.userId + '. This is user info');
-});
+    cb(null, 'This is user info');
+});/**/
 
 server.api({
     transform: function (s, cb) {
         setTimeout(function () {
-            cb(new ServerError(500, 'Cannot find anything'));
-        }, 450);
+            cb(null, s.toUpperCase());
+        }, 4000);
     },
 
     getVersion: function (cb) {

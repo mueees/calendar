@@ -37,10 +37,18 @@ module.exports = function (app) {
         });
     });
 
-    app.get('/oauth/:applicationId', function (request, response, next) {
+    app.get('/oauth/:applicationId', function (request, response) {
         if (!request.query.ticket) {
             log.error('Cannot find ticket');
-            return response.render('postMessage', errorResponse);
+            return response.render('postMessage', {
+                response: JSON.stringify({
+                    status: 400,
+                    message: 'Cannot find ticket'
+                }),
+                meta: JSON.stringify({
+                    domain: null
+                })
+            });
         }
 
         function getApplication(callback) {
@@ -108,6 +116,7 @@ module.exports = function (app) {
         ], function (err, token, application) {
             if (err) {
                 log.error(err);
+                
                 return response.render('postMessage', {
                     response: JSON.stringify({
                         status: 400,

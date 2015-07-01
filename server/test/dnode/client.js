@@ -9,17 +9,22 @@ var client = new Client({
 client.on('remote', function () {
     client.exec('transform', 'mue', function (err, result) {
         if (err) {
-            console.log(err.status);
-            console.log(err.message);
+            console.log("ERRRRRORRRR");
+            return;
         }
+
+        console.log("RESSSULT");
+        console.log(result);
     });
 
-    var data = {
+    client.on('end', function () {
+        console.log("RESPONSE ERROR");
+    });
+
+    client.exec('request', '/user/info', {
         userId: '123123',
         body: {}
-    };
-
-    client.exec('request', '/user/info', data, function (err, result) {
+    }, function (err, result) {
         if (err) {
             return console.log(err);
         }
