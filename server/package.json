@@ -22,9 +22,6 @@
     "crossroads": "0.12.0",
     "request": "latest",
 
-    "chai": "2.3.0",
-    "mocha": "2.2.4",
-    "sinon": "1.14.1",
     "underscore": "latest"
   }
 }
