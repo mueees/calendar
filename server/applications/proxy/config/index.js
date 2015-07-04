@@ -12,8 +12,8 @@ if ((NODE_ENV == 'development')) {
     configFile = 'production.json'
 }
 
-nconf.file('api-balancer.main', {file: path.join(__dirname, 'main.json')});
-nconf.file('api-balancer.secret', {file: path.join(__dirname, 'secret.json')});
-nconf.file('api-balancer.configFile', {file: path.join(__dirname, configFile)});
+nconf.file('proxy.main', {file: path.join(__dirname, 'main.json')});
+nconf.file('proxy.secret', {file: path.join(__dirname, 'secret.json')});
+nconf.file('proxy.configFile', {file: path.join(__dirname, configFile)});
 
 module.exports = nconf;

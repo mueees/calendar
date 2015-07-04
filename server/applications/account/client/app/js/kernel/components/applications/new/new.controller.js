@@ -28,7 +28,7 @@ define([
             var me = this;
 
             if (this.application.isValid(true)) {
-                this.application.save().then(function () {
+                this.application.create().then(function () {
                     me.trigger('create', me.application);
                     me.region.reset();
                 });

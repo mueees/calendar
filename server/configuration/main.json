@@ -12,7 +12,7 @@
         }
       }
     },
-    "proxy": {
+    "api": {
       "services": {
         "web": {
           "name": "Proxy balance",
@@ -27,7 +27,7 @@
         }
       }
     },
-    "oauth-access": {
+    "proxy": {
       "services": {
         "web": {
           "name": "Oauth Access",

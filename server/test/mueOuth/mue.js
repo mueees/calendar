@@ -1,6 +1,7 @@
 (function (w) {
     var applicationOauthKey = null,
         timeout = 1000 * 60 * 2, // 2 minute
+        provideServer = 'http://proxy.mue.in.ua/provide/',
         origin = 'http://localhost:6006',
         provide = null;
 
@@ -36,7 +37,7 @@
 
             this.defer = $.Deferred();
 
-            this.window = window.open('http://localhost:6006/provide/' + applicationOauthKey);
+            this.window = window.open(provideServer + applicationOauthKey);
 
             w.addEventListener("message", function (e) {
                 me.receiveMessage(e);

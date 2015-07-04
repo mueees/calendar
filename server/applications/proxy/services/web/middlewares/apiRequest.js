@@ -1,28 +1,22 @@
 var HttpError = require('common/errors/HttpError'),
     log = require('common/log')(module),
-    clients = {
-        account: require('../../../clients/account'),
-        test: require('../../../clients/test')
-    };
+    ApiRequestToProxy = require('../../../common/actions/ApiRequestToProxy');
 
 module.exports = function (request, response, next) {
     var data = {
-        userId: request.permission.userId
+        application: request.params.application,
+        request: request.params[0],
+        access_token: request.user.access_token,
+        method: request.method
     };
 
-    if (request.method == 'get') {
-        data.data = request.query;
-    }
-
-    if (request.method == 'port') {
+    if (data.method == 'port') {
         data.data = request.body;
     }
 
-    data.originalUrl = request.originalUrl;
-
-    clients[request.application].exec('request', '/' + request.params[0], data, function (err, data) {
+    (new ApiRequestToProxy(data)).execute(function (err, data) {
         if (err) {
-            log.error(err.message);
+            log.error(err);
             return next(new HttpError(400, err.message));
         }
 

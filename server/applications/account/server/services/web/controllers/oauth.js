@@ -21,7 +21,7 @@ var controller = {
             }
 
             response.send({
-                redirectUrl: 'http://localhost:' + configuration.get('applications:oauth-access:services:web:port') +
+                redirectUrl: 'http://localhost:' + configuration.get('applications:proxy:services:web:port') +
                 '/oauth/' + data.applicationId + '?ticket=' + ticket
             });
         });

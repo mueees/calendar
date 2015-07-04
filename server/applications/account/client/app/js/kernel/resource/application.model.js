@@ -8,7 +8,8 @@ define([
         urls: {
             privateKey: '/api/application/privateKey',
             remove: '/api/application/remove',
-            fetchByApplicationId: '/api/application/by/applicationid'
+            fetchByApplicationId: '/api/application/by/applicationid',
+            create: '/create'
         },
 
         defaults: {
@@ -28,6 +29,12 @@ define([
             domain: {
                 required: true
             }
+        },
+
+        create: function () {
+            return this.save(null, {
+                url: this.urlRoot + this.urls.create
+            });
         },
 
         newPrivateKey: function () {

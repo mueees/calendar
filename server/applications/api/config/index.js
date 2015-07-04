@@ -12,8 +12,8 @@ if ((NODE_ENV == 'development')) {
     configFile = 'production.json'
 }
 
-nconf.file('oauth-access.main', {file: path.join(__dirname, 'main.json')});
-nconf.file('oauth-access.secret', {file: path.join(__dirname, 'secret.json')});
-nconf.file('oauth-access.configFile', {file: path.join(__dirname, configFile)});
+nconf.file('api.main', {file: path.join(__dirname, 'main.json')});
+nconf.file('api.secret', {file: path.join(__dirname, 'secret.json')});
+nconf.file('api.configFile', {file: path.join(__dirname, configFile)});
 
 module.exports = nconf;
