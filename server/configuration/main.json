@@ -32,7 +32,7 @@
         "web": {
           "name": "Oauth Access",
           "port": 10002,
-          "approvalUrl": "http://localhost:10000/#approval"
+          "approvalUrl": "http://mue.in.ua/#approval"
         }
       }
     }
