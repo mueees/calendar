@@ -14,7 +14,11 @@ function EmailAction(options){
         data: null
     };
 
-    options.template = '../../../' + options.template;
+    if( options.template.indexOf('/') !== 0 ){
+        // there is path, to common view folder
+        options.template = __dirname.slice(0, __dirname.indexOf('common/actions')) + options.template;
+    }
+
     this.settings = _.extend(defaultOption , options);
 }
 
@@ -44,7 +48,10 @@ _.extend(EmailAction.prototype, {
                 if(callback) callback(err);
                 return false;
             }
-            if(callback) callback(null);
+
+            if(callback) {
+                callback(null)
+            }
         });
     }
 });

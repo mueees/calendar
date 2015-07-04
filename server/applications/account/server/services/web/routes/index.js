@@ -17,6 +17,8 @@ module.exports = function (app) {
 
     app.post(prefix + '/signin', userController.signIn);
 
+    app.get(prefix + '/logout', userController.logout);
+
     app.get(prefix + '/confirmuser', userController.confirmuser);
 
     /*APPLICATION*/

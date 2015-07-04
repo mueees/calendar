@@ -6,6 +6,7 @@
     "account": {
       "services": {
         "web": {
+          "domain": "http://mue.in.ua",
           "name": "Account",
           "port": 10000,
           "version": 1

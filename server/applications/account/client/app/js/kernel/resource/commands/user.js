@@ -16,7 +16,7 @@ define([
 
     Commands.register('logout', {
         url: prefix + '/logout',
-        type: 'POST'
+        type: 'GET'
     });
 
     return Commands;

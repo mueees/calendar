@@ -1,8 +1,10 @@
-module.exports = function(req, res, next){
+module.exports = function(request, response, next){
     if( process.env.NODE_ENV == "development" ){
-        res.locals.production = false;
+        request.development = true;
+        response.locals.production = request.production = false;
     }else{
-        res.locals.production = true;
+        request.development = false;
+        response.locals.production = request.production = true;
     }
 
     next();

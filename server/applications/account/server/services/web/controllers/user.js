@@ -47,6 +47,7 @@ var controller = {
                 template: 'views/email/confirmEmail.jade',
                 subject: "Confirmation account",
                 data: {
+                    host: (request.production) ? configuration.get('applications:account:services:web:domain') : 'http://localhost:' + configuration.get('applications:account:services:web:port'),
                     confirmationId: user.confirmationId,
                     application: configuration.get('project:name'),
                     apiVersion: accountConfig.get('api:version')
@@ -112,6 +113,11 @@ var controller = {
 
             response.send(token);
         });
+    },
+
+    logout: function (request, response, next) {
+        // todo: implement logout method
+        response.send({});
     }
 };
 
