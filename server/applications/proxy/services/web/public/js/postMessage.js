@@ -3,16 +3,20 @@ var response = response || {},
 
 function sendResponse(e){
     e.source.postMessage(JSON.stringify(response), "*");
-    window.close();
+    setTimeout(function(){
+        window.close();
+    }, 100);
 }
 
 window.addEventListener('message', function (e) {
-    if( meta.domain ){
-        if(e.origin == meta.domain){
-            sendResponse(e);
-        }
-    } else {
+    if(e.origin.indexOf('localhost') != -1){
         sendResponse(e);
+    }else{
+        if( meta.domain ){
+            if(e.origin == meta.domain){
+                sendResponse(e);
+            }
+        }
     }
 
     setTimeout(function () {

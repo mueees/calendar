@@ -31,7 +31,15 @@ module.exports = function (app) {
                 });
             }
 
-            var url = configuration.get("applications:api:services:web:approvalUrl") + '?applicationid=' + application.applicationId;
+            var approvalUrl;
+
+            if((process.env.NODE_ENV == "development")){
+                approvalUrl = configuration.get("applications:proxy:services:web:approvalUrlDev");
+            }else{
+                approvalUrl = configuration.get("applications:proxy:services:web:approvalUrl");
+            }
+
+            var url = approvalUrl + '?applicationid=' + application.applicationId;
 
             response.redirect(url);
         });
@@ -57,7 +65,7 @@ module.exports = function (app) {
                     return callback(err);
                 }
 
-                log.info(application);
+                log.info(application.name);
 
                 callback(null, application);
             });
@@ -75,7 +83,7 @@ module.exports = function (app) {
                     return callback(err);
                 }
 
-                log.info(tokens);
+                log.info(application.name);
 
                 callback(null, application, tokens);
             });
@@ -87,6 +95,7 @@ module.exports = function (app) {
                     return callback(err);
                 }
 
+                log.info(application.name);
                 callback(null, application, tokens, email);
             });
         }
@@ -104,6 +113,7 @@ module.exports = function (app) {
                     return callback(err);
                 }
 
+                log.info(application.name);
                 callback(null, token, application);
             });
         }
@@ -121,12 +131,11 @@ module.exports = function (app) {
                     response: JSON.stringify({
                         status: 400,
                         message: 'Server error'
-                    }),
-                    meta: JSON.stringify({
-                        domain: application.domain || null
                     })
                 });
             }
+
+            log.info(application.name);
 
             response.render('postMessage', {
                 response: JSON.stringify({

@@ -1,8 +1,9 @@
 (function (w) {
     var applicationOauthKey = null,
         timeout = 1000 * 60 * 2, // 2 minute
-        provideServer = 'http://proxy.mue.in.ua/provide/',
-        origin = 'http://localhost:6006',
+        //provideServer = 'http://proxy.mue.in.ua/provide/',
+        origin = 'http://localhost:10002',
+        provideServer = 'http://localhost:10002/provide/',
         provide = null;
 
     function initialize(oauthKey) {
@@ -43,7 +44,6 @@
                 me.receiveMessage(e);
             }, false);
 
-            this.start = new Date();
             this.openTimeout = setTimeout(function () {
                 me.reject('Timeout');
             }, timeout);

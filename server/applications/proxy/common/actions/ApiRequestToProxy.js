@@ -3,6 +3,7 @@ var util = require('util'),
     _ = require('underscore'),
     log = require('common/log')(module),
     path = require('path'),
+    configuration = require('configuration'),
     BaseAction = require('common/actions/base');
 
 function ApiRequestToProxy(data) {
@@ -21,8 +22,17 @@ _.extend(ApiRequestToProxy.prototype, {
     },
 
     execute: function (callback) {
+        var url;
+
+        if(process.env.NODE_ENV == "development"){
+            url = 'localhost:' + configuration.get('applications:api:services:web:port') + '/api/';
+        }else{
+            url = 'api.mue.in.ua/api/';
+        }
+
+        // todo: check how works path.normalize with http or https ?
         var options = {
-            url: 'http://' + path.normalize('localhost:6005/api/' + this.application + '/' + this.request),
+            url: 'http://' + path.normalize(url + this.application + '/' + this.request),
             headers: {
                 'Authorization': 'Bearer ' + this.access_token,
                 'X-Requested-With': 'XMLHttpRequest'

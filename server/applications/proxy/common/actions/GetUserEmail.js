@@ -29,6 +29,8 @@ _.extend(GetUserEmail.prototype, {
                 callback(err);
             }
 
+            log.info(data);
+
             callback(null, data.email);
         }]);
     }
