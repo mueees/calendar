@@ -48,7 +48,7 @@
     "test": {
       "api-prefix": "test",
       "status": true,
-      "port": 8000
+      "port": 8002
     },
     "account": {
       "name": "Account api",
