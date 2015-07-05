@@ -1,6 +1,7 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId,
+    log = require('common/log')(module),
     heplers = require('common/helpers');
 
 var applicationSchema = new Schema({
@@ -15,6 +16,10 @@ var applicationSchema = new Schema({
     applicationId: {
         type: String,
         require: heplers.util.getUUID()
+    },
+    useProxy: {
+        type: Boolean,
+        require: true
     },
     redirectUrl: {
         type: String,
@@ -61,6 +66,32 @@ applicationSchema.statics.create = function (data, cb) {
         }
 
         cb(null, application);
+    });
+};
+
+applicationSchema.refreshPrivateKey = function (applicationId, cb) {
+    this.findOne({
+        applicationId: applicationId
+    }, function (err, application) {
+        if (err) {
+            log.error(err);
+            return cb('Server error');
+        }
+
+        if(!application){
+            return cb('Cannot find application');
+        }
+
+        application.privateKey = heplers.util.getUUID();
+
+        application.save(function (err, application) {
+            if (err){
+                log.error(err);
+                return cb('Server error');
+            }
+
+            cb(null, application.privateKey);
+        });
     });
 };
 

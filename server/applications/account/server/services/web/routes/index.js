@@ -38,6 +38,10 @@ module.exports = function (app) {
         passport.authenticate('bearer', {session: false}),
         applicationController.remove);
 
+    app.post(prefix + '/application/newPrivateKey',
+        passport.authenticate('bearer', {session: false}),
+        applicationController.newPrivateKey);
+
     /*OAUTH 2*/
     app.post(prefix + '/oauth/auth',
         passport.authenticate('bearer', {session: false}),

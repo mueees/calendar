@@ -16,15 +16,18 @@ define([
             name: '',
             domain: '',
             description: '',
-            redirectUrl: ''
+            redirectUrl: '',
+            useProxy: true
         },
 
         validation: {
             name: {
                 required: true
             },
-            redirectUrl: {
-                required: true
+            redirectUrl: function(){
+                if(!this.get('useProxy') && !this.get('redirectUrl')){
+                    return 'Redirect Url is required.'
+                }
             },
             domain: {
                 required: true

@@ -9,9 +9,7 @@
         <label>Domain</label>
         <input type="text" name="domain" class="form-control" placeholder="Domain">
 
-        <p class="help-block">Domain should looks like example.com</p>
-
-        <p class="help-block">Without http://</p>
+        <p class="help-block">Domain should looks like http://example.com</p>
     </div>
 
     <div class="form-group">
@@ -19,7 +17,13 @@
         <textarea class="form-control" name="description"></textarea>
     </div>
 
-    <div class="form-group">
+    <div class="checkbox">
+        <label>
+            <input name="useProxy" type="checkbox" > Use proxy server proxy.mue.in.ua for saving user tokens
+        </label>
+    </div>
+
+    <div class="form-group redirectUrl-group hide">
         <label>Redirect url</label>
         <input type="text" name="redirectUrl" class="form-control">
     </div>

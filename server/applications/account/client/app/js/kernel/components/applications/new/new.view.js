@@ -6,6 +6,20 @@ define([
     return FormView.extend({
         template: hbs.compile(template),
 
+        ui: {
+            redirectGroup: '.redirectUrl-group'
+        },
+
+        initialize: function () {
+            FormView.prototype.initialize.apply(this, arguments);
+
+            this.listenTo(this.model, 'change:useProxy', this.onChangeProxy);
+        },
+
+        onChangeProxy: function () {
+            this.ui.redirectGroup.toggleClass('hide')
+        },
+
         triggers: {
             "click [data-link='cancel']": 'cancel',
             "click [data-link='create']": 'create'
@@ -23,6 +37,9 @@ define([
             },
             '[name=redirectUrl]': {
                 observe: 'redirectUrl'
+            },
+            '[name=useProxy]': {
+                observe: 'useProxy'
             }
         },
 

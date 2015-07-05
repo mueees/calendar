@@ -23,6 +23,8 @@ var api = {
 
     removeApplication: oauthserver.removeApplication,
 
+    newPrivateKey: oauthserver.newPrivateKey,
+
     getApplicationByApplicationId: oauthserver.getApplicationByApplicationId,
 
     getApplicationByOauthKey: oauthserver.getApplicationByOauthKey

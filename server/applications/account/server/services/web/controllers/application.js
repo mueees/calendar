@@ -4,7 +4,6 @@ var async = require('async'),
     _ = require("underscore");
 
 var controller = {
-
     getByApplicationId: function(request, response, next){
         oauthClient.exec('getApplicationByApplicationId', request.param("id"), function (err, application) {
             if (err) {
@@ -45,6 +44,7 @@ var controller = {
                     name: application.name,
                     privateKey: application.privateKey,
                     redirectUrl: application.redirectUrl,
+                    useProxy: application.useProxy,
                     status: application.status
                 }
             });
@@ -60,6 +60,10 @@ var controller = {
             return next(new HttpError(400, "Name should exists."));
         }
 
+        if(!data.useProxy && !data.redirectUrl){
+            return next(new HttpError(400, "Redirect url should exists."));
+        }
+
         data.userId = request.user._id;
 
         oauthClient.exec('createApplication', data, function (err, application) {
@@ -68,6 +72,24 @@ var controller = {
             }
 
             response.send(application);
+        });
+    },
+
+    newPrivateKey: function (request, response, next) {
+        var data = request.body;
+
+        if (!data.applicationId) {
+            return next(new HttpError(400, "Application Id should exists."));
+        }
+
+        oauthClient.exec('newPrivateKey', data.applicationId, function (err, newPrivateKey) {
+            if (err) {
+                return next(new HttpError(400, err.message));
+            }
+
+            response.send({
+                newPrivateKey: newPrivateKey
+            });
         });
     },
 

@@ -14,6 +14,7 @@ _.extend(Server.prototype, {
     refresh: refresh,
     exchange: exchange,
     createApplication: createApplication,
+    newPrivateKey: newPrivateKey,
     removeApplication: removeApplication,
     getAllApplications: getAllApplications,
     getApplicationByApplicationId: getApplicationByApplicationId,
@@ -257,6 +258,10 @@ function createApplication(data, callback) {
         return callback(new OauthError(400, "User Id should exists."));
     }
 
+    if(!data.useProxy && !data.redirectUrl){
+        return callback(new OauthError(400, "Redirect url should exists."));
+    }
+
     Application.create(data, function (err, application) {
         if (err) {
             return callback(new OauthError(400, err));
@@ -290,6 +295,7 @@ function getAllApplications(userId, callback) {
         oauthKey: true,
         name: true,
         privateKey: true,
+        useProxy: true,
         redirectUrl: true,
         status: true
     }, function (err, applications) {
@@ -357,6 +363,16 @@ function getApplicationByOauthKey(oauthKey, callback) {
         callback(null, application);
     });
 
+}
+
+function newPrivateKey(applicationId, callback){
+    Application.refreshPrivateKey(applicationId, function (err, newPrivateKey) {
+        if(err){
+            return callback(new OauthError(400, err));
+        }
+
+        callback(null, newPrivateKey)
+    });
 }
 
 module.exports = Server;
