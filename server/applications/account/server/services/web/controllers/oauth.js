@@ -2,6 +2,7 @@ var validator = require('validator'),
     async = require('async'),
     HttpError = require('common/errors/HttpError'),
     oauthClient = require('../../../clients/oauth'),
+    log = require('common/log')(module),
     configuration = require('configuration'),
     _ = require('underscore');
 
@@ -17,6 +18,7 @@ var controller = {
 
         oauthClient.exec('auth', data, function (err, ticket) {
             if (err) {
+                log.error(err);
                 return next(new HttpError(400, err.message));
             }
 
@@ -44,6 +46,7 @@ var controller = {
 
         oauthClient.exec('exchange', data, function (err, tokens) {
             if (err) {
+                log.error(err);
                 return next(new HttpError(400, err.message));
             }
 
@@ -68,6 +71,7 @@ var controller = {
 
         oauthClient.exec('refresh', data, function (err, tokens) {
             if (err) {
+                log.error(err);
                 return next(new HttpError(400, err.message));
             }
 
