@@ -368,6 +368,7 @@ function getApplicationByOauthKey(oauthKey, callback) {
 function newPrivateKey(applicationId, callback){
     Application.refreshPrivateKey(applicationId, function (err, newPrivateKey) {
         if(err){
+            log.error(err);
             return callback(new OauthError(400, err));
         }
 

@@ -15,6 +15,7 @@ function Server(options) {
     this.options = _.extend(defaultOptions, options);
 
     if (!this.options.port) {
+        log.error("Port should exist");
         throw new ServerError(0, "Port should exist");
     }
 

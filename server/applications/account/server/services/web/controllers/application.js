@@ -1,5 +1,6 @@
 var async = require('async'),
     HttpError = require('common/errors/HttpError'),
+    log = require('common/log')(module),
     oauthClient = require('../../../clients/oauth'),
     _ = require("underscore");
 
@@ -7,6 +8,7 @@ var controller = {
     getByApplicationId: function(request, response, next){
         oauthClient.exec('getApplicationByApplicationId', request.param("id"), function (err, application) {
             if (err) {
+                log.error(err);
                 return next(new HttpError(400, err.message));
             }
 
@@ -30,6 +32,7 @@ var controller = {
     getAll: function (request, response, next) {
         oauthClient.exec('getAllApplications', request.user._id, function (err, applications) {
             if (err) {
+                log.error(err);
                 return next(new HttpError(400, err.message));
             }
 
@@ -68,6 +71,7 @@ var controller = {
 
         oauthClient.exec('createApplication', data, function (err, application) {
             if (err) {
+                log.error(err);
                 return next(new HttpError(400, err.message));
             }
 
@@ -82,13 +86,14 @@ var controller = {
             return next(new HttpError(400, "Application Id should exists."));
         }
 
-        oauthClient.exec('newPrivateKey', data.applicationId, function (err, newPrivateKey) {
+        oauthClient.exec('newPrivateKey', data.applicationId, function (err, privateKey) {
             if (err) {
+                log.error(err);
                 return next(new HttpError(400, err.message));
             }
 
             response.send({
-                newPrivateKey: newPrivateKey
+                privateKey: privateKey
             });
         });
     },
@@ -96,6 +101,7 @@ var controller = {
     remove: function (request, response, next) {
         oauthClient.exec('removeApplication', applicationId, function (err) {
             if (err) {
+                log.error(err);
                 return next(new HttpError(400, err.message));
             }
 

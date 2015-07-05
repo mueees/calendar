@@ -69,7 +69,7 @@ applicationSchema.statics.create = function (data, cb) {
     });
 };
 
-applicationSchema.refreshPrivateKey = function (applicationId, cb) {
+applicationSchema.statics.refreshPrivateKey = function (applicationId, cb) {
     this.findOne({
         applicationId: applicationId
     }, function (err, application) {

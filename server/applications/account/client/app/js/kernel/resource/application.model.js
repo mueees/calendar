@@ -6,7 +6,7 @@ define([
         urlRoot: '/api/application',
 
         urls: {
-            privateKey: '/api/application/privateKey',
+            newPrivateKey: '/api/application/newPrivateKey',
             remove: '/api/application/remove',
             fetchByApplicationId: '/api/application/by/applicationid',
             create: '/create'
@@ -41,16 +41,15 @@ define([
         },
 
         newPrivateKey: function () {
-            var data = {
-                    _id: this.get('_id')
-                },
-                defaults = {
-                    url: this.urls.privateKey,
+            var options = {
+                    url: this.urls.newPrivateKey,
                     type: 'POST',
-                    data: JSON.stringify(data)
+                    data: JSON.stringify({
+                        applicationId: this.get('applicationId')
+                    })
                 };
 
-            this.save(null, defaults);
+            this.save(null, options);
 
             return this;
         },

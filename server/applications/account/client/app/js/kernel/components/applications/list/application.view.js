@@ -24,7 +24,7 @@ define([
         initialize: function () {
             this.isOpen = false;
 
-            this.listenTo(this.model, 'change:privateKey', this.privateKeyHandler)
+            this.listenTo(this.model, 'change:privateKey', this.privateKeyHandler);
             this.listenTo(this.model, 'change', this.anyChangeHandler);
         },
 
@@ -50,7 +50,7 @@ define([
         },
 
         newPrivateKeyHandler: function () {
-            this.model.newPrivateKey()
+            this.model.newPrivateKey();
         },
 
         onDeleteHandler: function () {

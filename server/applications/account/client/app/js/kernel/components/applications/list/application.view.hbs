@@ -21,7 +21,7 @@
 
     <div class="form-group">
         <label>Description</label>
-        <textarea class="form-control" name="description">{{description}}</textarea>
+        <textarea disabled class="form-control" name="description">{{description}}</textarea>
     </div>
 
     <div class="checkbox">
@@ -33,7 +33,7 @@
     {{#if useProxy}}
         <div class="form-group">
             <label>Oauth key</label>
-            <input type="text" class="form-control" name="privateKey" value="{{oauthKey}}" disabled>
+            <input type="text" class="form-control" name="oauthKey" value="{{oauthKey}}" disabled>
         </div>
     {{else}}
         <div class="form-group">
