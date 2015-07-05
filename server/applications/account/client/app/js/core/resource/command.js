@@ -31,17 +31,18 @@ define([
         },
 
         getAjaxConfig: function (options, data) {
-            var url = this.getUrl(options, data);
-
             var ajaxConfig = {
                 type: "GET",
-                dataType: "JSON",
-                url: url
+                url: this.getUrl(options, data)
             };
 
             _.extend(ajaxConfig, options);
 
             ajaxConfig.data = data;
+
+            if( ajaxConfig.type == 'POST' && ajaxConfig.data && !_.isString(ajaxConfig.data) ){
+                ajaxConfig.data = JSON.stringify(ajaxConfig.data);
+            }
 
             // return promise
             return ajaxConfig;

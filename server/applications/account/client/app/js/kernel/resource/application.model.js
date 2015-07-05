@@ -36,7 +36,8 @@ define([
 
         create: function () {
             return this.save(null, {
-                url: this.urlRoot + this.urls.create
+                url: this.urlRoot + this.urls.create,
+                data: JSON.stringify(this.toJSON())
             });
         },
 
