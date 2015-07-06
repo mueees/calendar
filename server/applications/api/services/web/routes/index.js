@@ -9,7 +9,6 @@ module.exports = function (app) {
         isApiExist,
         getAccessToken,
         getPermission,
-        apiRequest,
-        log
+        apiRequest
     ]);
 };

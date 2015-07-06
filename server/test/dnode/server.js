@@ -14,7 +14,7 @@ server.addRoute('/user/info', function (data, cb) {
 
 server.addRoute('/user/info', function (data, cb) {
     cb(null, 'This is user info');
-});/**/
+});
 
 server.api({
     transform: function (s, cb) {

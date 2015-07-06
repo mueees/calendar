@@ -19,6 +19,9 @@ pm2 start index.js --name account-api
 cd /vagrant/server/applications/test/services/api
 pm2 start index.js --name test
 
+cd /vagrant/server/applications/calendar/services/api
+pm2 start index.js --name calendar
+
 cd /vagrant/server/applications/api/services/web
 pm2 start index.js --name api
 
@@ -49,6 +52,9 @@ pm2 start index.js --name account-api
 cd /home/mue/web/projects/calendar/server/applications/test/services/api
 pm2 start index.js --name test
 
+cd /home/mue/web/projects/calendar/server/applications/calendar/services/api
+pm2 start index.js --name calendar
+
 cd /home/mue/web/projects/calendar/server/applications/api/services/web
 pm2 start index.js --name api
 
@@ -73,6 +79,9 @@ pm2 start index.js --name account-api
 
 cd /home/mue/web/public/calendar/server/applications/test/services/api
 pm2 start index.js --name test
+
+cd /home/mue/web/public/calendar/server/applications/calendar/services/api
+pm2 start index.js --name calendar
 
 cd /home/mue/web/public/calendar/server/applications/api/services/web
 pm2 start index.js --name api

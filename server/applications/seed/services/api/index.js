@@ -1,5 +1,5 @@
 var Server = require('common/service').Server,
-    configuration = require('common/configuration');
+    configuration = require('configuration');
 
 var server = new Server({
     port: configuration.get('applications:seed:services:api:port')
