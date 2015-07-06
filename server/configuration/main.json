@@ -51,6 +51,13 @@
       "status": true,
       "port": 8001,
       "version": 1
+    },
+    "calendar": {
+      "name": "Calendar api",
+      "api-prefix": "calendar",
+      "status": true,
+      "port": 8003,
+      "version": 1
     }
   }
 }

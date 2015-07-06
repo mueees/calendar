@@ -1,0 +1,8 @@
+{
+  "name": "Seed",
+  "version": 1,
+  "services": {
+    "api": {
+    }
+  }
+}
