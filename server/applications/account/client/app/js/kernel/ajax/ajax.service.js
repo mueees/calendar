@@ -5,6 +5,6 @@ define([
     'core/channel/channel.service'
 ], function ($, $mNotify, $mAjax, $mChannel) {
     $mAjax.addPrefilter(function(options, originalOptions, jqXHR){
-        console.log(1);
+        options.contentType = 'application/json';
     });
 });

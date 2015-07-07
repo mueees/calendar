@@ -34,10 +34,11 @@ app.use(function (err, req, res, next) {
     if (err instanceof HttpError) {
         res.sendHttpError(err);
     } else {
-        log.error('end error');
+        res.status(500);
+        res.send('Fatal server error');
+        log.error(err.message);
     }
 });
 
-var server = http.createServer(app);
-server.listen(configuration.get("applications:proxy:services:web:port"));
+http.createServer(app).listen(configuration.get("applications:proxy:services:web:port"));
 log.info(configuration.get("applications:proxy:services:web:name") + " server listening: " + configuration.get("applications:proxy:services:web:port"));

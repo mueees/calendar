@@ -36,14 +36,14 @@ app.use(function (err, req, res, next) {
     if (err instanceof HttpError) {
         res.sendHttpError(err);
     } else {
-        console.log('end error');
-        console.log(err);
+        res.status(500);
+        res.send('Fatal server error');
+        log.error(err.message);
     }
 });
 
 // connect to database
 require("common/mongooseConnect").initConnection(accountConfig);
 
-var server = http.createServer(app);
-server.listen(configuration.get("applications:account:services:web:port"));
+http.createServer(app).listen(configuration.get("applications:account:services:web:port"));
 console.log(configuration.get("applications:account:services:web:name") + ' server listening: ' + configuration.get("applications:account:services:web:port") + ' port');

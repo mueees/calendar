@@ -17,6 +17,26 @@ var eventSchema = new Schema({
         type: ObjectId,
         required: true
     },
+    startDay: {
+        type: Date,
+        required: true
+    },
+    endDay: {
+        type: Date,
+        required: true
+    },
+    isAllDay: {
+        type: Boolean,
+        required: true
+    },
+    isRepeat: {
+        type: Boolean,
+        required: true
+    },
+    repeat: {
+        type: Object,
+        default: {}
+    },
     date_create: {
         type: 'Date',
         default: new Date()
