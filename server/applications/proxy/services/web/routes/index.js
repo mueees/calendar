@@ -135,8 +135,6 @@ module.exports = function (app) {
                 });
             }
 
-            log.info(application.name);
-
             response.render('postMessage', {
                 response: JSON.stringify({
                     status: 200,

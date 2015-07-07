@@ -1,5 +1,6 @@
 var HttpError = require('common/errors/HttpError'),
     log = require('common/log')(module),
+    _ = require('underscore'),
     clients = {
         account: require('../../../clients/account'),
         calendar: require('../../../clients/calendar')
@@ -10,16 +11,17 @@ module.exports = function (request, response, next) {
         userId: request.permission.userId
     };
 
-    if (request.method == 'get') {
+    if (request.method == 'GET') {
         options.data = request.query;
     }
 
-    if (request.method == 'port') {
+    if (request.method == 'POST') {
         options.data = request.body;
+
+        log.info(options.data);
     }
 
     options.originalUrl = request.originalUrl;
-
 
     log.info('Execute request');
 
@@ -27,6 +29,12 @@ module.exports = function (request, response, next) {
         if (err) {
             log.error(err.message);
             return next(new HttpError(400, err.message));
+        }
+
+        if (_.isString(data)) {
+            data = {
+                data: data
+            }
         }
 
         response.send(data);

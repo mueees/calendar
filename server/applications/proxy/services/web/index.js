@@ -4,13 +4,13 @@ var express = require('express'),
     HttpError = require('common/errors/HttpError'),
     bodyParser = require('body-parser'),
     accessConfig = require('../../config'),
+    log = require('common/log')(module),
     configuration = require('configuration');
 
 var app = express();
 
 require('./auth');
 
-app.use(bodyParser.urlencoded());
 app.use(bodyParser.json({type: 'application/json'}));
 
 app.set('views', __dirname + "/views");
@@ -26,7 +26,7 @@ app.use(express.static('./public'));
 // listen routs
 route(app);
 
-app.use(function (err, req, res) {
+app.use(function (err, req, res, next) {
     if (typeof err == "number") {
         err = new HttpError(err);
     }
@@ -34,10 +34,10 @@ app.use(function (err, req, res) {
     if (err instanceof HttpError) {
         res.sendHttpError(err);
     } else {
-        console.log('end error');
+        log.error('end error');
     }
 });
 
 var server = http.createServer(app);
 server.listen(configuration.get("applications:proxy:services:web:port"));
-console.log(configuration.get("applications:proxy:services:web:name") + " server listening: " + configuration.get("applications:proxy:services:web:port"));
+log.info(configuration.get("applications:proxy:services:web:name") + " server listening: " + configuration.get("applications:proxy:services:web:port"));

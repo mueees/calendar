@@ -24,9 +24,9 @@ _.extend(ApiRequestToProxy.prototype, {
     execute: function (callback) {
         var url;
 
-        if(process.env.NODE_ENV == "development"){
+        if (process.env.NODE_ENV == "development") {
             url = 'localhost:' + configuration.get('applications:api:services:web:port') + '/api/';
-        }else{
+        } else {
             url = 'api.mue.in.ua/api/';
         }
 
@@ -42,9 +42,8 @@ _.extend(ApiRequestToProxy.prototype, {
 
         // add post data for POST request
         if (this.method == 'POST' && this.data) {
-            options.postData = {};
-            options.postData.params = this.data;
-            options.headers['content-type'] = 'application/x-www-form-urlencoded';
+            options.json = true;
+            options.body = this.data;
         }
 
         request(options, function (err, response, data) {
@@ -53,7 +52,13 @@ _.extend(ApiRequestToProxy.prototype, {
                 callback(err);
             }
 
-            callback(null, JSON.parse(data));
+            if (_.isString(data)) {
+                try {
+                    data = JSON.parse(data);
+                } catch (e) {}
+            }
+
+            callback(null, data);
         });
     }
 });

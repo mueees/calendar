@@ -31,7 +31,7 @@
     "proxy": {
       "services": {
         "web": {
-          "name": "Oauth Access",
+          "name": "Proxy",
           "port": 10002,
           "approvalUrlDev": "http://localhost:10000/#approval",
           "approvalUrl": "http://mue.in.ua/#approval"

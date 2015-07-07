@@ -81,8 +81,6 @@ _.extend(Server.prototype, {
             callback(new ServerError(401, 'Invalid request method'));
         } else {
             log.info('Got request: ' + requestString);
-            log.info('with arguments: ');
-            log.info(args);
             this._router.parse(requestString, args);
         }
     },
