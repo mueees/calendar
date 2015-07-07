@@ -1,5 +1,6 @@
 var ServerError = require('../../../common/error/ServerError'),
     log = require('common/log')(module),
+    calendarConfig = require('../../../config'),
     Calendar = require('../../../common/resources/calendar');
 
 var api = {
@@ -33,13 +34,13 @@ var api = {
 
             callback(null);
         });
-    },
-
-    'calendar/{id}': function (options, callback) {
-
     }
 };
 
 module.exports = function (server) {
+    server.addRoute('/version', function (callback) {
+        callback(null, calendarConfig.get('services:api:version'));
+    });
+
     server.api(api);
 };

@@ -13,8 +13,8 @@ require('./auth');
 
 /*app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json({type: 'application/json'}));*/
-
-app.use(bodyParser.json({type: 'application/x-www-form-urlencoded'}));
+app.use(bodyParser.json({type: 'application/json'}));
+//app.use(bodyParser.json({type: 'application/x-www-form-urlencoded'}));
 
 app.set('views', __dirname + "/views");
 app.set('view engine', 'jade');

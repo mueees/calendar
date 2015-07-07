@@ -2,8 +2,7 @@ var HttpError = require('common/errors/HttpError'),
     log = require('common/log')(module),
     clients = {
         account: require('../../../clients/account'),
-        calendar: require('../../../clients/calendar'),
-        test: require('../../../clients/test')
+        calendar: require('../../../clients/calendar')
     };
 
 module.exports = function (request, response, next) {
@@ -20,6 +19,9 @@ module.exports = function (request, response, next) {
     }
 
     options.originalUrl = request.originalUrl;
+
+
+    log.info('Execute request');
 
     clients[request.application].exec('request', '/' + request.params[0], options, function (err, data) {
         if (err) {

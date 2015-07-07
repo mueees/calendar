@@ -14,13 +14,13 @@ Vagrant::Config.run do |config|
   # Port forwarding
 
   # account service
-  config.vm.forward_port 6004, 6004
+  config.vm.forward_port 10000, 10000
 
-  # proxy service
-  config.vm.forward_port 6005, 6005
+  # api service
+  config.vm.forward_port 10001, 10001
 
   # oauth access service
-  config.vm.forward_port 6006, 6006
+  config.vm.forward_port 10002, 10002
 
   #api service
   config.vm.forward_port 6001, 6001

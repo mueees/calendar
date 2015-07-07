@@ -16,7 +16,7 @@
     "api": {
       "services": {
         "web": {
-          "name": "Proxy balance",
+          "name": "Api",
           "port": 10001
         }
       }
@@ -40,11 +40,6 @@
     }
   },
   "applications-api": {
-    "test": {
-      "api-prefix": "test",
-      "status": true,
-      "port": 8002
-    },
     "account": {
       "name": "Account api",
       "api-prefix": "account",

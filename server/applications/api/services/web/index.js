@@ -8,7 +8,6 @@ var express = require('express'),
 
 var app = express();
 
-app.use(bodyParser.urlencoded());
 app.use(bodyParser.json({type: 'application/json'}));
 
 app.use(require("common/middlewares/sendHttpError"));
@@ -17,7 +16,7 @@ app.use(require("common/middlewares/enviroment"));
 // listen routs
 route(app);
 
-app.use(function (err, req, res) {
+app.use(function (err, req, res, next) {
     if (typeof err == "number") {
         err = new HttpError(err);
     }
@@ -25,7 +24,7 @@ app.use(function (err, req, res) {
     if (err instanceof HttpError) {
         res.sendHttpError(err);
     } else {
-        console.log('end error');
+        log.error('end error');
     }
 });
 
