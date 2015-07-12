@@ -1,5 +1,5 @@
 define([
-    'core/ajax/ajax.service'
+    'clientCore/ajax/ajax.service'
 ], function ($mAjax) {
     $mAjax.addPrefilter(function (options, originalOptions, xhr) {
         console.log('loading start');

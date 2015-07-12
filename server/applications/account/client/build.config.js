@@ -38,7 +38,8 @@ module.exports = {
             'app/vendor/backbone/backbone.syphon.js',
             'app/vendor/backbone/backbone.validation.js',
             'app/vendor/backbone/backbone.wreqr.js',
-            'app/vendor/storage/storage.js'
+            'app/vendor/storage/storage.js',
+            'app/vendor/client-core/js/**/*'
         ],
         css: [],
         fonts: [],

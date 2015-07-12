@@ -4,11 +4,32 @@ define([
     './auth.service',
     'core/notify/notify.service',
     'core/url/url.service',
-    'core/channel/channel.service',
-    'core/ajax/ajax.service'
-], function (App, storage, $mAuth, $mNotify, $mUrl, $mChannel, $mAjax) {
+    'clientCore/ajax/ajax.service'
+], function (App, storage, $mAuth, $mNotify, $mUrl, $mAjax) {
     var afterAuth = null,
         signPage = null;
+
+    $mAjax.addErrorInterceptor(function(event, jqxhr){
+        var response;
+
+        try {
+            response = JSON.parse(jqxhr.responseText);
+        } catch (e) {
+            response = {
+                message: 'Unknown error'
+            }
+        }
+
+        if (jqxhr.status == 401) {
+            logout();
+            navigateToSign();
+        }
+
+        $mNotify.notify({
+            text: 'Status: ' + jqxhr.status + '. \n ' + response.message,
+            type: 'danger'
+        });
+    });
 
     $mAjax.addPrefilter(function (options, originalOptions, xhr) {
         var auth = isAuth();
@@ -17,28 +38,6 @@ define([
             xhr.setRequestHeader('Authorization', 'Bearer ' + auth.token);
         }
     });
-
-    $mChannel.on('ajax:error', errorHandler);
-
-    function errorHandler(options) {
-        $mNotify.notify({
-            text: _generateText(options),
-            type: 'danger'
-        });
-
-        if (options.status == 401) {
-            logout();
-            navigateToSign();
-        }
-    }
-
-    function _generateText(options) {
-        if (!options.response.message) {
-            options.response.message = 'Unknown error';
-        }
-
-        return 'Status: ' + options.status + '. \n ' + options.response.message;
-    }
 
     function isAuth() {
         return $mAuth.isAuth();
