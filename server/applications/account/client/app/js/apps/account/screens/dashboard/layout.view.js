@@ -7,7 +7,7 @@ define([
         template: hbs.compile(layoutTemplate),
 
         triggers: {
-            "click .logout": "logout"
+            "click [data-link='logout']": 'logout'
         },
 
         regions: {
