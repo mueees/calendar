@@ -7,55 +7,6 @@ var validator = require('validator'),
     User = require('common/resources/user');
 
 var controller = {
-    signUp: function (request, response, next) {
-        var data = request.body;
-
-        if (!validator.isEmail(data.email)) {
-            return next(new HttpError(400, "Invalid Email"));
-        }
-
-        if (!validator.isLength(data.password, 5)) {
-            return next(new HttpError(400, "Password less than 5."));
-        }
-
-        async.waterfall([
-            function (cb) {
-                User.isUserExist(data.email, cb);
-            },
-            function (user, cb) {
-                if (user) {
-                    return cb("User with same email already registered");
-                } else {
-                    cb(null);
-                }
-            },
-            function (cb) {
-                User.signup(data.email, data.password, cb);
-            }
-        ], function (err, user) {
-            if (err) {
-                return next(new HttpError(400, err));
-            }
-
-            response.status(200);
-            response.send({
-                _id: user._id
-            });
-
-            new EmailAction({
-                to: data.email,
-                template: 'views/email/confirmEmail.jade',
-                subject: "Confirmation account",
-                data: {
-                    host: (request.production) ? configuration.get('applications:account:services:web:domain') : 'http://localhost:' + configuration.get('applications:account:services:web:port'),
-                    confirmationId: user.confirmationId,
-                    application: configuration.get('project:name'),
-                    apiVersion: accountConfig.get('api:version')
-                }
-            }).execute();
-        });
-    },
-
     confirmuser: function (request, response, next) {
         var confirmationId = request.query.confirmationId;
 
@@ -84,7 +35,7 @@ var controller = {
         });
     },
 
-    signIn: function (request, response, next) {
+    sign: function (request, response, next) {
         var data = request.body;
 
         if (!validator.isEmail(data.email)) {
@@ -95,23 +46,58 @@ var controller = {
             return next(new HttpError(400, "Password less than 5."));
         }
 
-        async.waterfall([
-            function (cb) {
-                User.isRightCredential(data.email, data.password, cb);
-            },
-            function (user, cb) {
-                if (!user.isConfirm()) {
-                    return cb("Please confirm account. Check your email");
+        User.isUserExist(data.email, function (err, user) {
+            if(err){
+                if (err) {
+                    return next(new HttpError(400, err));
                 }
-
-                user.generateAccountToken(cb);
-            }
-        ], function (err, token) {
-            if (err) {
-                return next(new HttpError(400, err));
             }
 
-            response.send(token);
+            if(user) {
+                // this is sign in
+                async.waterfall([
+                    function(callback){
+                        User.isRightCredential(data.email, data.password, callback);
+                    },
+                    function (user, callback){
+                        if (!user.isConfirm()) {
+                            return callback("Please confirm account. Check your email");
+                        }
+
+                        user.generateAccountToken(callback);
+                    }
+                ], function (err, token) {
+                    if (err) {
+                        return next(new HttpError(400, err));
+                    }
+
+                    response.send(token);
+                });
+            }else {
+                // this is sign up
+                User.signup(data.email, data.password, function(err, user){
+                    if (err) {
+                        return next(new HttpError(400, err));
+                    }
+
+                    response.status(200);
+                    response.send({
+                        _id: user._id
+                    });
+
+                    new EmailAction({
+                        to: data.email,
+                        template: 'views/email/confirmEmail.jade',
+                        subject: "Confirmation account",
+                        data: {
+                            host: (request.production) ? configuration.get('applications:account:services:web:domain') : 'http://localhost:' + configuration.get('applications:account:services:web:port'),
+                            confirmationId: user.confirmationId,
+                            application: configuration.get('project:name'),
+                            apiVersion: accountConfig.get('api:version')
+                        }
+                    }).execute();
+                });
+            }
         });
     },
 

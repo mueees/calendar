@@ -77,22 +77,20 @@ define([
         });
     }
 
-    function signin(credentials) {
-        $mAuth.signin(credentials).then(function () {
-            $mNotify.notify({
-                text: 'Sign in success',
-                type: 'success'
-            });
+    function sign(credentials){
+        $mAuth.sign(credentials).then(function (data) {
+            if(data._id){
+                $mNotify.notify({
+                    text: 'Please check your email'
+                });
+            } else if( data.token ){
+                $mNotify.notify({
+                    text: 'Sign in success',
+                    type: 'success'
+                });
 
-            navigateAfterSign();
-        });
-    }
-
-    function signup(credentials) {
-        $mAuth.signup(credentials).then(function () {
-            $mNotify.notify({
-                text: 'Please check your email'
-            });
+                navigateAfterSign();
+            }
         });
     }
 
@@ -110,8 +108,7 @@ define([
     }
 
     return {
-        signin: signin,
-        signup: signup,
+        sign: sign,
         logout: logout,
         isAuth: isAuth,
         getSignPage: getSignPage,

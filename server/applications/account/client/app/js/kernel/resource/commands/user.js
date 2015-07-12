@@ -4,13 +4,8 @@ define([
 ], function (Commands, config) {
     var prefix = '/api';
 
-    Commands.register('signin', {
-        url: prefix + '/signin',
-        type: 'POST'
-    });
-
-    Commands.register('signup', {
-        url: prefix + '/signup',
+    Commands.register('sign', {
+        url: prefix + '/sign',
         type: 'POST'
     });
 

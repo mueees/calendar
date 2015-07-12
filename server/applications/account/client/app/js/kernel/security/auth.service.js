@@ -7,18 +7,24 @@ define([
         return $mSession.getSession();
     }
 
-    function signin(credentials) {
-        var command = Commands.get('signin');
+    function sign(credentials) {
+        var command = Commands.get('sign'),
+            promise = command.execute(credentials);
 
-        return command.execute(credentials).then(function (data) {
-            credentials.token = data.token;
-            $mSession.create(credentials);
+        promise.then(function (data) {
+            data = data || {};
+
+            if(data._id){
+                // this is sign up
+
+            } else if( data.token ){
+                // this is sign in
+                credentials.token = data.token;
+                $mSession.create(credentials);
+            }
         });
-    }
 
-    function signup(credentials) {
-        var command = Commands.get('signup');
-        return command.execute(credentials);
+        return promise;
     }
 
     function logout() {
@@ -30,8 +36,7 @@ define([
 
     return {
         isAuth: isAuth,
-        signup: signup,
-        signin: signin,
+        sign: sign,
         logout: logout
     }
 });

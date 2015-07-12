@@ -13,9 +13,7 @@ module.exports = function (app) {
     app.get('/', rootController.home);
 
     /*USER*/
-    app.post(prefix + '/signup', userController.signUp);
-
-    app.post(prefix + '/signin', userController.signIn);
+    app.post(prefix + '/sign', userController.sign);
 
     app.get(prefix + '/logout', userController.logout);
 

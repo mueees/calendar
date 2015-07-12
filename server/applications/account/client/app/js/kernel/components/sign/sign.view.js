@@ -6,8 +6,7 @@ define([
         template: _.template(template),
 
         triggers: {
-            "click .signup": "signup",
-            "click .signin": "signin"
+            "click [data-link='sign']": 'sign'
         },
 
         bindings: {

@@ -9,7 +9,7 @@ define([
     'core/url/url.service',
     'core/notify/notify.service',
     'core/channel/channel.service'
-], function (App, BaseRouter, SignupController, SignupLayout, $mLog, $mTitle, $mUrl, $mNotify, $mChannel) {
+], function (App, BaseRouter, SignController, SignLayout, $mLog, $mTitle, $mUrl, $mNotify, $mChannel) {
     App.module('Apps.Account.Sign', {
         startWithParent: false,
 
@@ -44,13 +44,13 @@ define([
 
             var Controller = Marionette.Controller.extend({
                 initialize: function () {
-                    var layout = new SignupLayout(),
-                        signup = new SignupController({
-                            region: layout.getRegion('signup')
+                    var layout = new SignLayout(),
+                        sign = new SignController({
+                            region: layout.getRegion('sign')
                         });
 
                     App.body.show(layout);
-                    signup.show();
+                    sign.show();
 
                     $mTitle.setTitle('Sign');
                 }

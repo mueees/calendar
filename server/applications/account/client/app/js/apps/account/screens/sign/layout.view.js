@@ -6,7 +6,7 @@ define([
     return Marionette.LayoutView.extend({
         template: hbs.compile(layoutTemplate),
         regions: {
-            signup: '.signup'
+            sign: '.sign-region'
         }
     })
 });
