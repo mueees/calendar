@@ -2,7 +2,7 @@ define([
     'marionette',
     'hbs',
     'text!./application.view.hbs',
-    'core/dialog/dialog.service'
+    'clientCore/dialog/dialog.service'
 ], function (Marionette, hbs, template, $mDialog) {
     return Marionette.ItemView.extend({
         template: hbs.compile(template),

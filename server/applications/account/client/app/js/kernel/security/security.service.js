@@ -2,8 +2,8 @@ define([
     'app',
     'storage',
     './auth.service',
-    'core/notify/notify.service',
-    'core/url/url.service',
+    'clientCore/notify/notify.service',
+    'clientCore/url/url.service',
     'clientCore/ajax/ajax.service'
 ], function (App, storage, $mAuth, $mNotify, $mUrl, $mAjax) {
     var afterAuth = null,

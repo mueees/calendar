@@ -1,5 +1,5 @@
 define([
-    'core/resource/command',
+    'clientCore/resource/command',
     'config/app'
 ], function (Commands, config) {
     var prefix = '/api';

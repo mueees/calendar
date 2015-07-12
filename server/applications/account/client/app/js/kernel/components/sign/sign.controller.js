@@ -1,6 +1,6 @@
 define([
     'marionette',
-    'core/resource/base.model',
+    'clientCore/resource/base.model',
     'kernel/security/security.service',
     './sign.view'
 ], function (Marionette, BaseModel, $mSecurity, View) {

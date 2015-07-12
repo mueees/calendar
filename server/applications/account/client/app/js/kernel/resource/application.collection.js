@@ -1,5 +1,5 @@
 define([
-    'core/resource/base.collection',
+    'clientCore/resource/base.collection',
     './application.model',
     'config/app'
 ], function (BaseCollection, ApplicationModel, config) {

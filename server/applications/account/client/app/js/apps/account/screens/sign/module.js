@@ -5,10 +5,8 @@ define([
     './layout.view',
 
     'clientCore/log/log.service',
-    'clientCore/window-title/window-title.service',
-    'core/url/url.service',
-    'core/notify/notify.service'
-], function (App, BaseRouter, SignController, SignLayout, $mLog, $mTitle, $mUrl, $mNotify) {
+    'clientCore/window-title/window-title.service'
+], function (App, BaseRouter, SignController, SignLayout, $mLog, $mTitle) {
     App.module('Apps.Account.Sign', {
         startWithParent: false,
 

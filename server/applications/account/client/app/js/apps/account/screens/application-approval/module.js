@@ -5,7 +5,7 @@ define([
 
     'clientCore/log/log.service',
     'clientCore/window-title/window-title.service',
-    'core/url/url.service',
+    'clientCore/url/url.service',
     'kernel/security/security.service',
     'kernel/resource/application.model',
     'kernel/components/application-approval/application-approval.controller'

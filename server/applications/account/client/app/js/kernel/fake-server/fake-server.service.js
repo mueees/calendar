@@ -1,5 +1,5 @@
 define([
-    'core/fake-server/fake-server.service'
+    'clientCore/fake-server/fake-server.service'
 ], function ($mFakeServer) {
     var prefix = '/api/v1';
 

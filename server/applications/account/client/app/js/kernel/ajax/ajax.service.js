@@ -1,6 +1,6 @@
 define([
     'jquery',
-    'core/notify/notify.service',
+    'clientCore/notify/notify.service',
     'clientCore/ajax/ajax.service'
 ], function ($, $mNotify, $mAjax) {
     $mAjax.addPrefilter(function(options, originalOptions, jqXHR){

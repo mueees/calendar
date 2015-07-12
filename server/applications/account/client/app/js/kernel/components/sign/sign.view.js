@@ -1,5 +1,5 @@
 define([
-    'core/components/base/view/form.view',
+    'clientCore/components/base/view/form.view',
     'text!./sign.view.html'
 ], function (FormView, template) {
     return FormView.extend({

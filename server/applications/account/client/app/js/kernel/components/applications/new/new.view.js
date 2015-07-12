@@ -1,5 +1,5 @@
 define([
-    'core/components/base/view/form.view',
+    'clientCore/components/base/view/form.view',
     'hbs',
     'text!./new.view.hbs'
 ], function (FormView, hbs, template) {

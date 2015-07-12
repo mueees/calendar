@@ -1,5 +1,5 @@
 define([
-    'core/resource/base.model',
+    'clientCore/resource/base.model',
     'config/app'
 ], function (BaseModel, config) {
     var Application = BaseModel.extend({

@@ -2,7 +2,7 @@ define([
     'marionette',
     './application-approval.view',
     'kernel/resource/commands/application',
-    'core/notify/notify.service'
+    'clientCore/notify/notify.service'
 ], function (Marionette, View, Commands, $mNotify) {
     return Marionette.Controller.extend({
         initialize: function (options) {

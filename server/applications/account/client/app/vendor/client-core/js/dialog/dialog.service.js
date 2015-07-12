@@ -1,6 +1,6 @@
 define([
     'jquery',
-    'core/modal/modal.service',
+    'clientCore/modal/modal.service',
     './prompt/prompt.view',
     './confirm/confirm.view'
 ], function ($, $mModal, PromptView, ConfirmView) {

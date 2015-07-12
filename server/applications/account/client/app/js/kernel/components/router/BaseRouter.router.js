@@ -3,7 +3,7 @@ define([
     'marionette',
     'kernel/security/security.service',
 
-    'core/router/before-resolve.extend'
+    'clientCore/router/before-resolve.extend'
 ], function (App, Marionette, $mSecurity) {
     return Marionette.AppRouter.extend({
         before: function (route, name, access) {

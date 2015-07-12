@@ -10,11 +10,11 @@ define([
     './controllers/proflie/profile.controller',
 
     // components
-    'core/components/menu/menu.view',
+    'clientCore/components/menu/menu.view',
     'clientCore/log/log.service',
     'clientCore/window-title/window-title.service',
     'kernel/security/security.service',
-    'core/modal/modal.service'
+    'clientCore/modal/modal.service'
 ], function (App, BaseRouter, DashboardLayout, ApplicationController, ProfileController, MenuView, $mLog, $mTitle, $mSecurity, $mModal) {
     App.module('Apps.Account.Dashboard', {
         startWithParent: false,

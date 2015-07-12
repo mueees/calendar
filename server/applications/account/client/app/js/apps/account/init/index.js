@@ -1,8 +1,8 @@
 define([
     'jquery',
-    'core/notify/notify.service',
+    'clientCore/notify/notify.service',
     'kernel/security/security.service',
-    'core/modal/modal.service'
+    'clientCore/modal/modal.service'
 ], function ($, $mNotify, $mSecurity, $mModal) {
     $mNotify.setContainer($('.mue-notify'));
 
