@@ -11,8 +11,7 @@ define([
         },
 
         regions: {
-            subController: '.mue-dashboard-subController-container',
-            menu: '.mue-dashboard-menu-container'
+            subController: '.mue-dashboard-subController-container'
         }
     })
 });

@@ -62,23 +62,6 @@ define([
                     this.layout = new DashboardLayout();
                     App.body.show(this.layout);
 
-                    this.menu = new MenuView({
-                        model: new Backbone.Model({
-                            items: [
-                                {
-                                    name: 'profile',
-                                    href: 'dashboard/profile'
-                                },
-                                {
-                                    name: 'application',
-                                    href: 'dashboard/application'
-                                }
-                            ]
-                        })
-                    });
-
-                    this.layout.menu.show(this.menu);
-
                     this.listenTo(this.layout, 'logout', this.logoutHandler);
                 },
 
