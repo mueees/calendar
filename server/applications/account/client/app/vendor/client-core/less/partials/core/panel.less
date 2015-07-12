@@ -1,0 +1,42 @@
+.mue-panel {
+  border-color: @coral;
+  border-width: 2px;
+  min-height: 30px;
+
+  &.mue-panel-banana {
+    .panel-heading{
+      background: @banana;
+      color: white;
+    }
+  }
+
+  .panel-heading {
+    position: relative;
+    text-align: center;
+
+    .btn-panel-heading-action {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      color: @flag;
+    }
+  }
+
+  &.mue-panel-wide {
+    .btn-panel-heading-action {
+      color: white;
+    }
+
+    .panel-body {
+      padding: 0;
+    }
+  }
+
+  .mue-list-group-flat{
+    margin-bottom: 0;
+  }
+
+  .mue-toolbar-action {
+    border-radius: 0 0 4px 4px;
+  }
+}

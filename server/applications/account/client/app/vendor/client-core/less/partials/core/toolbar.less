@@ -1,0 +1,42 @@
+.mue-toolbar{
+  padding: 0;
+  margin: 0;
+
+  li {
+    list-style: none;
+    color: @eight;
+    width: 35px;
+    height: 35px;
+  }
+
+  .btn {
+    padding: 7px 10px;
+  }
+
+  &.mue-toolbar-horizontal {
+    li {
+      float: left;
+    }
+  }
+
+  &.mue-toolbar-dark {
+    li {
+      background: @gunpowder;
+
+      &.active, &:hover, &:active, &:visited {
+        background: @banana;
+        color: white;
+        outline: none;
+        box-shadow: none;
+
+        .btn {
+          color: white;
+        }
+      }
+    }
+
+    .btn {
+      color: @eight;
+    }
+  }
+}

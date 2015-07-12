@@ -1,0 +1,265 @@
+/*Core buttons*/
+.btn {
+  &.btn-action {
+    &:hover {
+      padding: 7px 12px 5px;
+    }
+
+    &:active {
+      padding: 8px 12px 4px;
+    }
+  }
+
+  &.btn-lg {
+    &.btn-action {
+      &:hover {
+        padding: 11px 16px 9px;
+      }
+
+      &:active {
+        padding: 12px 16px 8px;
+      }
+    }
+  }
+
+  &.btn-sm {
+    &.btn-action {
+      &:hover {
+        padding: 6px 10px 4px;
+      }
+
+      &:active {
+        padding: 7px 10px 3px;
+      }
+    }
+  }
+
+  &.btn-xs {
+    &.btn-action {
+      &:hover {
+        padding: 2px 5px 0;
+      }
+
+      &:active {
+        padding: 3px 5px 0;
+      }
+    }
+  }
+
+  &:hover, &:active, &:focus,  &:visited {
+    outline: none;
+    box-shadow: none;
+  }
+
+  &.btn-clear{
+    &:focus, &:hover, &:visited, &:active {
+      outline: none;
+      border: none;
+    }
+  }
+
+  .mue-icon {
+    padding: 0 10px 0 0;
+  }
+}
+
+.btn-lagoon {
+  color: white;
+  background: @lagoon;
+  border-color: @lagoon;
+
+  &:focus {
+    color: white;
+    background: @lagoon;
+    border-color: @lagoon;
+  }
+
+  &:hover {
+    color: white;
+    background: rgb(15, 198, 255);
+    border-color: rgb(15, 198, 255);
+  }
+
+  &:active {
+    color: white;
+    background: @lagoon-dark;
+    border-color: @lagoon-dark;
+    outline: none;
+  }
+
+  &.btn-action {
+    box-shadow: 0 4px 0 @lagoon-dark;
+
+    &:hover {
+      box-shadow: 0 3px 0 @lagoon-dark;
+
+    }
+
+    &:active {
+      box-shadow: 0 0 0 @lagoon-dark;
+      outline: none;
+    }
+  }
+}
+
+.btn-strawberry {
+  color: white;
+  background: @strawberry;
+  border-color: @strawberry;
+
+  &:focus {
+    color: white;
+    background: @strawberry;
+    border-color: @strawberry;
+  }
+
+  &:hover {
+    color: white;
+    background: rgb(255, 95, 95);
+    border-color: rgb(255, 95, 95);
+  }
+
+  &:active {
+    color: white;
+    background: @strawberry-dark;
+    border-color: @strawberry-dark;
+    outline: none;
+  }
+
+  &.btn-action {
+    box-shadow: 0 4px 0 @strawberry-dark;
+
+    &:hover {
+      box-shadow: 0 3px 0 @strawberry-dark;
+    }
+
+    &:active {
+      box-shadow: 0 0 0 @strawberry-dark;
+      outline: none;
+    }
+  }
+}
+
+.btn-banana {
+  color: white;
+  background: @banana;
+  border-color: @banana;
+
+  &:focus {
+    color: white;
+    background: @banana;
+    border-color: @banana;
+  }
+
+  &:hover {
+    color: white;
+    background: rgb(255, 228, 151);
+    border-color: rgb(255, 228, 151);
+  }
+
+  &:active {
+    color: white;
+    background: @banana-dark;
+    border-color: @banana-dark;
+    outline: none;
+  }
+
+  &.btn-action {
+    box-shadow: 0 4px 0 @banana-dark;
+
+    &:hover {
+      box-shadow: 0 3px 0 @banana-dark;
+    }
+
+    &:active {
+      box-shadow: 0 0 0 @banana-dark;
+      outline: none;
+    }
+  }
+}
+
+.btn-bruise {
+  color: white;
+  background: @bruise;
+  border-color: @bruise;
+
+  &:focus {
+    color: white;
+    background: @bruise;
+    border-color: @bruise;
+  }
+
+  &:hover {
+    color: white;
+    background: #B99CE7;
+    border-color: #B99CE7;
+  }
+
+  &:active {
+    color: white;
+    background: @bruise-dark;
+    border-color: @bruise-dark;
+    outline: none;
+  }
+
+  &.btn-action {
+    box-shadow: 0 4px 0 @bruise-dark;
+
+    &:hover {
+      box-shadow: 0 3px 0 @bruise-dark;
+    }
+
+    &:active {
+      box-shadow: 0 0 0 @bruise-dark;
+      outline: none;
+    }
+  }
+}
+
+.btn-neutral {
+  color: @gunpowder;
+  background: @coral;
+  border-color: @coral;
+
+  &:focus {
+    color: @gunpowder;
+    background: @coral;
+    border-color: @coral;
+  }
+
+  &:hover {
+    color: @gunpowder;
+    background: @surf;
+    border-color: @surf;
+  }
+
+  &:active {
+    color: white;
+    background: @cutlass;
+    border-color: @cutlass;
+    outline: none;
+  }
+}
+
+.btn-clear {
+  color: @gunpowder;
+  background: transparent;
+  border-color: transparent;
+  padding: 0;
+  border: none;
+  outline: none;
+
+  .mue-icon {
+    padding: 0;
+  }
+
+  &:focus, &:hover, &:visited, &:active {
+    color: @gunpowder;
+    background: transparent;
+    border-color: transparent;
+  }
+
+  &:active {
+    color: white;
+  }
+}

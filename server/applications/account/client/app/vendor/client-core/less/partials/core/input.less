@@ -1,0 +1,60 @@
+.form-group {
+  position: relative;
+
+  &.mue-group-error {
+    .form-control {
+      border-color: @strawberry;
+    }
+  }
+
+  &.mue-group-warning {
+    .form-control {
+      border-color: @banana;
+    }
+  }
+
+  &.mue-group-success {
+    .form-control {
+      border-color: @cove;
+    }
+  }
+
+  .form-control-icon {
+    position: relative;
+
+    .mue-icon {
+      position: absolute;
+      top: 9px;
+      left: 10px;
+      color: @gunpowder;
+    }
+  }
+}
+
+.form-control {
+  outline: none;
+  border: 1px solid @coral;
+  color: @gunpowder;
+
+  &:hover {
+    border-color: @cutlass;
+  }
+
+  &:focus {
+    border-color: @lagoon;
+    box-shadow: none;
+  }
+
+  &.mue-control-coral {
+    background: @coral;
+    color: @gunpowder;
+
+    &:hover {
+      background: @surf;
+    }
+
+    &:focus {
+      background: white;
+    }
+  }
+}

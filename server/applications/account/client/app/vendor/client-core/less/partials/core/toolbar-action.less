@@ -1,0 +1,40 @@
+.mue-toolbar-action{
+  text-align: center;
+  margin: 0;
+  padding: 0;
+
+  li{
+    list-style: none;
+    color: @eight;
+    width: 35px;
+    height: 35px;
+  }
+
+  .btn {
+    padding: 7px 10px;
+  }
+
+  &.mue-toolbar-action-horizontal {
+    li {
+      display: inline-block;
+    }
+  }
+
+  &.mue-toolbar-action-dark {
+    background: @flag;
+
+    li {
+      &.active, &:hover, &:active, &:visited {
+        color: @banana;
+
+        .btn {
+          color: @banana;
+        }
+      }
+    }
+
+    .btn {
+      color: @eight;
+    }
+  }
+}
