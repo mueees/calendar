@@ -11,8 +11,8 @@ define([
 
     // components
     'core/components/menu/menu.view',
-    'core/log/log.service',
-    'core/window-title/window-title.service',
+    'clientCore/log/log.service',
+    'clientCore/window-title/window-title.service',
     'kernel/security/security.service',
     'core/modal/modal.service'
 ], function (App, BaseRouter, DashboardLayout, ApplicationController, ProfileController, MenuView, $mLog, $mTitle, $mSecurity, $mModal) {

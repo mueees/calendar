@@ -4,12 +4,11 @@ define([
     'kernel/components/sign/sign.controller',
     './layout.view',
 
-    'core/log/log.service',
-    'core/window-title/window-title.service',
+    'clientCore/log/log.service',
+    'clientCore/window-title/window-title.service',
     'core/url/url.service',
-    'core/notify/notify.service',
-    'core/channel/channel.service'
-], function (App, BaseRouter, SignController, SignLayout, $mLog, $mTitle, $mUrl, $mNotify, $mChannel) {
+    'core/notify/notify.service'
+], function (App, BaseRouter, SignController, SignLayout, $mLog, $mTitle, $mUrl, $mNotify) {
     App.module('Apps.Account.Sign', {
         startWithParent: false,
 

@@ -3,8 +3,8 @@ define([
     'kernel/components/router/BaseRouter.router',
     './layout.view',
 
-    'core/log/log.service',
-    'core/window-title/window-title.service',
+    'clientCore/log/log.service',
+    'clientCore/window-title/window-title.service',
     'core/url/url.service',
     'kernel/security/security.service',
     'kernel/resource/application.model',

@@ -1,7 +1,7 @@
 require([
     'app',
 
-    'core/ajax-loader/ajax-loader.service',
+    'clientCore/ajax-loader/ajax-loader.service',
 
     'kernel/ajax/ajax.service',
 
