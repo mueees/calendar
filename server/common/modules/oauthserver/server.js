@@ -6,6 +6,7 @@ var validator = require('validator'),
     log = require('common/log')(module),
     expiredTime = 1000*60*3, // 3 minutes
     async = require('async');
+
 function Server() {
 }
 
@@ -311,7 +312,7 @@ function getAllApplications(userId, callback) {
 
 function removeApplication(id, callback) {
     if (!id || !id.length) {
-        return callback(new OauthError(400, 'Invalid d'));
+        return callback(new OauthError(400, 'Invalid id'));
     }
 
     Application.remove({

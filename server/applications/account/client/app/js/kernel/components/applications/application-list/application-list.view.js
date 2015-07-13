@@ -13,7 +13,13 @@ define([
         },
 
         initialize: function () {
+            var me = this;
+
             this.listenTo(this.collection, 'add', this.render);
+            this.listenTo(this.collection, 'remove', function(){
+                me.render();
+                me.trigger('application:new');
+            });
         },
 
         serializeData: function () {

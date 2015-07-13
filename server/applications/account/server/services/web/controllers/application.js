@@ -99,7 +99,13 @@ var controller = {
     },
 
     remove: function (request, response, next) {
-        oauthClient.exec('removeApplication', applicationId, function (err) {
+        var data = request.body;
+
+        if (!data._id) {
+            return next(new HttpError(400, "Application id should exists."));
+        }
+
+        oauthClient.exec('removeApplication', data._id, function (err) {
             if (err) {
                 log.error(err);
                 return next(new HttpError(400, err.message));

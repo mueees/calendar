@@ -55,13 +55,16 @@ define([
             return this;
         },
 
-        remove: function (options) {
-            var defaults = {
-                url: this.urls.remove + '/' + this.get('_id'),
-                type: 'POST'
+        remove: function () {
+            var options = {
+                url: this.urls.remove,
+                type: 'POST',
+                data: JSON.stringify({
+                    _id: this.get('_id')
+                })
             };
 
-            return this.save(null, defaults);
+            return this.fetch(options);
         },
 
         fetchByApplicationId: function () {
