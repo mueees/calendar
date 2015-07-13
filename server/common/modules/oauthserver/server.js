@@ -268,6 +268,7 @@ function createApplication(data, callback) {
         }
 
         callback(null, {
+            _id: application._id,
             name: application.name,
             applicationId: application.applicationId,
             privateKey: application.privateKey,
