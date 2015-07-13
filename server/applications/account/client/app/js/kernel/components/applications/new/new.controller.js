@@ -15,13 +15,7 @@ define([
                 model: this.application
             });
 
-            this.listenTo(this.view, 'cancel', this.onCancelHandler);
             this.listenTo(this.view, 'create', this.onCreateHandler);
-        },
-
-        onCancelHandler: function () {
-            this.region.reset();
-            this.trigger('cancel');
         },
 
         onCreateHandler: function () {

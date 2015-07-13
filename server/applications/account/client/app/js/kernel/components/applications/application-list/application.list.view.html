@@ -1,0 +1,22 @@
+<a data-link="application" href="#" class="list-group-item list-group-item-lagoon active">
+    <div class="mue-item-icon">
+        <i class="fa fa-desktop mue-icon"></i>
+    </div>
+    <div class="mue-item-content">
+        <h4 class="list-group-item-heading">New application</h4>
+
+        <p class="mue-item-description">
+            Create new application, and provide new level usability.
+        </p>
+    </div>
+</a>
+
+<% _.each(applications, function(application){ %>
+<a href="#" class="list-group-item list-group-item-lagoon" data-id="<%= application._id %>" data-link="application">
+    <h4 class="list-group-item-heading"><%= application.name %></h4>
+
+    <p class="mue-item-description">
+        <%= application.description %>
+    </p>
+</a>
+<% }); %>

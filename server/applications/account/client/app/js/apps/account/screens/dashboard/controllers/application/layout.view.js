@@ -6,14 +6,9 @@ define([
     return Marionette.LayoutView.extend({
         template: hbs.compile(layoutTemplate),
 
-        triggers: {
-            "click [data-link='list']": "list",
-            "click [data-link='new']": "new"
-        },
-
         regions: {
-            content: "[data-region='content']",
-            newApplication: "[data-region='newApplication']"
+            applicationList: "[data-region='applicationList']",
+            application: "[data-region='application']"
         }
     })
 });

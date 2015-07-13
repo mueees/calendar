@@ -1,0 +1,47 @@
+<div class="form-panel-title">
+    {{name}}
+</div>
+
+<div class="form-panel-description">
+    {{description}}
+</div>
+
+<div class="form-group">
+    <label>Name</label>
+    <input type="text" name="name" class="form-control" value="{{name}}" disabled>
+</div>
+
+<div class="form-group">
+    <label>Domain</label>
+    <input type="text" name="domain" class="form-control" placeholder="Domain" value="{{domain}}" disabled>
+
+    <p class="help-block">Domain should looks like http://example.com</p>
+</div>
+
+<div class="form-group">
+    <label>Description</label>
+    <textarea class="form-control" name="description" disabled>{{description}}</textarea>
+</div>
+
+<div class="checkbox">
+    <label>
+        <input name="useProxy" type="checkbox" disabled checked="{{useProxy}}"> Use proxy server proxy.mue.in.ua for saving user tokens
+    </label>
+</div>
+
+{{#if useProxy}}
+    <div class="form-group">
+        <label>Oauth key</label>
+        <input type="text" class="form-control" name="oauthKey" value="{{oauthKey}}" disabled>
+    </div>
+{{else}}
+    <div class="form-group">
+        <label>Redirect url</label>
+        <input type="text" name="redirectUrl" class="form-control" value="{{redirectUrl}}" disabled>
+    </div>
+{{/if}}
+
+<div class="form-group">
+    <button class="btn btn-lagoon btn-action" type="button" data-link='edit'>Edit</button>
+    <button class="btn btn-strawberry btn-action" data-link='delete'>Delete</button>
+</div>

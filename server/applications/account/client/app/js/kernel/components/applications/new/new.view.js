@@ -21,7 +21,6 @@ define([
         },
 
         triggers: {
-            "click [data-link='cancel']": 'cancel',
             "click [data-link='create']": 'create'
         },
 
@@ -43,6 +42,6 @@ define([
             }
         },
 
-        className: 'panel panel-default'
+        className: 'panel mue-panel mue-form-panel'
     });
 });
