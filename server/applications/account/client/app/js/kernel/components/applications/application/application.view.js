@@ -7,13 +7,21 @@ define([
     return FormView.extend({
         template: hbs.compile(template),
 
+        className: 'panel mue-panel mue-form-panel',
+
         events: {
             "click [data-link='delete']": 'onDeleteHandler',
             "click [data-link='newPrivateKey']": 'newPrivateKeyHandler'
         },
 
+        ui: {
+            privateKey: "[name='privateKey']"
+        },
+
         initialize: function () {
             FormView.prototype.initialize.apply(this, arguments);
+
+            this.listenTo(this.model, 'change:privateKey', this.privateKeyHandler);
         },
 
         onDeleteHandler: function () {
@@ -28,6 +36,12 @@ define([
             });
         },
 
-        className: 'panel mue-panel mue-form-panel'
+        newPrivateKeyHandler: function () {
+            this.model.newPrivateKey();
+        },
+
+        privateKeyHandler: function(){
+            this.ui.privateKey.val(this.model.get('privateKey'));
+        }
     });
 });

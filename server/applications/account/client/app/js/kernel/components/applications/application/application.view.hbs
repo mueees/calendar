@@ -12,6 +12,18 @@
 </div>
 
 <div class="form-group">
+    <label>Application id</label>
+    <input type="text" class="form-control" value="{{applicationId}}" disabled>
+</div>
+
+<div class="form-group">
+    <label>Private key</label>
+    <!--<button class="btn btn-link" type="button" data-link='newPrivateKey'>Generate new key</button>-->
+    <button class="btn btn-lagoon btn-xs pull-right" data-link='newPrivateKey'>generate new key</button>
+    <input type="text" class="form-control" name="privateKey" value="{{privateKey}}" disabled>
+</div>
+
+<div class="form-group">
     <label>Domain</label>
     <input type="text" name="domain" class="form-control" placeholder="Domain" value="{{domain}}" disabled>
 
