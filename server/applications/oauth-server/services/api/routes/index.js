@@ -19,6 +19,8 @@ var api = {
 
     createApplication: oauthserver.createApplication,
 
+    editApplication: oauthserver.editApplication,
+
     getAllApplications: oauthserver.getAllApplications,
 
     removeApplication: oauthserver.removeApplication,

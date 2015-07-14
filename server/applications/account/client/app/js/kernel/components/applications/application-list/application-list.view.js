@@ -15,11 +15,21 @@ define([
         initialize: function () {
             var me = this;
 
+            this.listenTo(this.collection, 'change:name change:description', this.onEditHandler);
             this.listenTo(this.collection, 'add', this.render);
-            this.listenTo(this.collection, 'remove', function(){
+            this.listenTo(this.collection, 'remove', function () {
                 me.render();
                 me.trigger('application:new');
             });
+        },
+
+        onEditHandler: function (model) {
+            var $el = this.$el.find('[data-id=' + model.get('_id') + ']');
+
+            if ($el) {
+                $el.find('.list-group-item-heading').html(model.get('name'));
+                $el.find('.mue-item-description').html(model.get('description'));
+            }
         },
 
         serializeData: function () {
@@ -37,9 +47,9 @@ define([
             this.$el.find('.list-group-item').removeClass('active');
             $item.addClass('active');
 
-            if(id){
+            if (id) {
                 this.trigger('application:selected', id);
-            }else{
+            } else {
                 this.trigger('application:new');
             }
         }

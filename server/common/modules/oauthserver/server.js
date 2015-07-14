@@ -4,7 +4,7 @@ var validator = require('validator'),
     OauthError = require('./OauthError'),
     _ = require('underscore'),
     log = require('common/log')(module),
-    expiredTime = 1000*60*3, // 3 minutes
+    expiredTime = 1000 * 60 * 3, // 3 minutes
     async = require('async');
 
 function Server() {
@@ -15,6 +15,7 @@ _.extend(Server.prototype, {
     refresh: refresh,
     exchange: exchange,
     createApplication: createApplication,
+    editApplication: editApplication,
     newPrivateKey: newPrivateKey,
     removeApplication: removeApplication,
     getAllApplications: getAllApplications,
@@ -259,7 +260,7 @@ function createApplication(data, callback) {
         return callback(new OauthError(400, "User Id should exists."));
     }
 
-    if(!data.useProxy && !data.redirectUrl){
+    if (!data.useProxy && !data.redirectUrl) {
         return callback(new OauthError(400, "Redirect url should exists."));
     }
 
@@ -277,6 +278,26 @@ function createApplication(data, callback) {
             date_create: application.date_create,
             description: application.description
         });
+    });
+}
+
+function editApplication(data, callback) {
+    var _id = data._id;
+
+    if (!_id) {
+        return callback(new OauthError(400, "Id should exists."));
+    }
+
+    delete data._id;
+
+    Application.update({
+        _id: _id
+    }, data, function (err, application) {
+        if (err) {
+            return callback(new OauthError(400, "Server error"));
+        }
+
+        callback(null, application);
     });
 }
 
@@ -367,9 +388,9 @@ function getApplicationByOauthKey(oauthKey, callback) {
 
 }
 
-function newPrivateKey(applicationId, callback){
+function newPrivateKey(applicationId, callback) {
     Application.refreshPrivateKey(applicationId, function (err, newPrivateKey) {
-        if(err){
+        if (err) {
             log.error(err);
             return callback(new OauthError(400, err));
         }

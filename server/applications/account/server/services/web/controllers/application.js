@@ -5,7 +5,7 @@ var async = require('async'),
     _ = require("underscore");
 
 var controller = {
-    getByApplicationId: function(request, response, next){
+    getByApplicationId: function (request, response, next) {
         oauthClient.exec('getApplicationByApplicationId', request.param("id"), function (err, application) {
             if (err) {
                 log.error(err);
@@ -63,13 +63,49 @@ var controller = {
             return next(new HttpError(400, "Name should exists."));
         }
 
-        if(!data.useProxy && !data.redirectUrl){
+        if (!data.useProxy && !data.redirectUrl) {
             return next(new HttpError(400, "Redirect url should exists."));
         }
 
         data.userId = request.user._id;
 
         oauthClient.exec('createApplication', data, function (err, application) {
+            if (err) {
+                log.error(err);
+                return next(new HttpError(400, err.message));
+            }
+
+            response.send(application);
+        });
+    },
+
+    edit: function (request, response, next) {
+        var data = request.body,
+            edit = {};
+
+        if( !data._id ){
+            return next(new HttpError(400, "Cannot find id."));
+        }
+
+        edit._id = data._id;
+
+        if (data.name) {
+            edit.name = data.name;
+        }
+
+        if (data.domain) {
+            edit.domain = data.domain;
+        }
+
+        if (data.description) {
+            edit.description = data.description;
+        }
+
+        if( !Object.keys(edit).length ){
+            return next(new HttpError(400, "Cannot find parameters for chnging."));
+        }
+
+        oauthClient.exec('editApplication', edit, function (err, application) {
             if (err) {
                 log.error(err);
                 return next(new HttpError(400, err.message));

@@ -8,7 +8,8 @@ define([
             newPrivateKey: '/api/application/newPrivateKey',
             remove: '/api/application/remove',
             fetchByApplicationId: '/api/application/by/applicationid',
-            create: '/create'
+            create: '/create',
+            edit: '/api/application/edit'
         },
 
         defaults: {
@@ -32,9 +33,9 @@ define([
                 var domain = this.get('domain'),
                     req = new RegExp("^http(s)?:\/\/");
 
-                if( !domain ){
+                if (!domain) {
                     return 'Domain should exist';
-                } else if( !req.test(this.get('domain')) ){
+                } else if (!req.test(this.get('domain'))) {
                     return 'Domain should has valid format';
                 }
             }
@@ -71,6 +72,18 @@ define([
             };
 
             return this.fetch(options);
+        },
+
+        editData: function (data) {
+            data._id = this.get('_id');
+
+            if (this.isValid(true)) {
+                return this.fetch({
+                    url: this.urls.edit,
+                    type: "POST",
+                    data: JSON.stringify(data)
+                });
+            }
         },
 
         fetchByApplicationId: function () {

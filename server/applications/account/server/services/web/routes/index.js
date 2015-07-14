@@ -32,6 +32,10 @@ module.exports = function (app) {
         passport.authenticate('bearer', {session: false}),
         applicationController.create);
 
+    app.post(prefix + '/application/edit',
+        passport.authenticate('bearer', {session: false}),
+        applicationController.edit);
+
     app.post(prefix + '/application/remove',
         passport.authenticate('bearer', {session: false}),
         applicationController.remove);
