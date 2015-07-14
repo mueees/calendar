@@ -1,11 +1,15 @@
 define([
-    'clientCore/ajax/ajax.service'
-], function ($mAjax) {
+    'clientCore/ajax/ajax.service',
+    './ajax-loader.view'
+], function ($mAjax, AjaxLoaderView) {
+    var view = (new AjaxLoaderView()).render(),
+        $body = $('body');
+
     $mAjax.addPrefilter(function (options, originalOptions, xhr) {
-        console.log('loading start');
+        $body.append(view.$el);
 
         xhr.complete(function () {
-            console.log('loading done');
+            $body.find('.mue-spinner').remove();
         });
     });
 });
