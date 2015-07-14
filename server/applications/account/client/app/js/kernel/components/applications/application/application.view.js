@@ -37,7 +37,14 @@ define([
         },
 
         newPrivateKeyHandler: function () {
-            this.model.newPrivateKey();
+            var me = this;
+
+            $mDialog.confirm({
+                text: 'Do you want update private key?',
+                accept: 'Update'
+            }).then(function () {
+                me.model.newPrivateKey();
+            });
         },
 
         privateKeyHandler: function(){

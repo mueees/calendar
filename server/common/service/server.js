@@ -46,7 +46,7 @@ _.extend(Server.prototype, {
         this.server = dnode(this._api);
         this.server.listen(this.port);
 
-        console.log("Service Server listen " + this.port + " port");
+        log.info("Service Server listen " + this.port + " port");
 
         this._initApi();
     },
@@ -77,6 +77,7 @@ _.extend(Server.prototype, {
 
         if (!this._isHasMatchRoute(requestString)) {
             var callback = args.pop();
+
             log.error('Invalid request method');
             callback(new ServerError(401, 'Invalid request method'));
         } else {

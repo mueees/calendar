@@ -11,7 +11,7 @@ define([
     });
 
     $mSecurity.setAfterAuth({
-        fragment: 'dashboard/profile'
+        fragment: 'dashboard/application'
     });
 
     $mModal.setContainer($('.mue-modal'));

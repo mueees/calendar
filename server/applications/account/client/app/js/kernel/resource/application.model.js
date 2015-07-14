@@ -1,7 +1,6 @@
 define([
-    'clientCore/resource/base.model',
-    'config/app'
-], function (BaseModel, config) {
+    'clientCore/resource/base.model'
+], function (BaseModel) {
     var Application = BaseModel.extend({
         urlRoot: '/api/application',
 
@@ -24,13 +23,20 @@ define([
             name: {
                 required: true
             },
-            redirectUrl: function(){
-                if(!this.get('useProxy') && !this.get('redirectUrl')){
+            redirectUrl: function () {
+                if (!this.get('useProxy') && !this.get('redirectUrl')) {
                     return 'Redirect Url is required.'
                 }
             },
-            domain: {
-                required: true
+            domain: function () {
+                var domain = this.get('domain'),
+                    req = new RegExp("^http(s)?:\/\/");
+
+                if( !domain ){
+                    return 'Domain should exist';
+                } else if( !req.test(this.get('domain')) ){
+                    return 'Domain should has valid format';
+                }
             }
         },
 
@@ -43,12 +49,12 @@ define([
 
         newPrivateKey: function () {
             var options = {
-                    url: this.urls.newPrivateKey,
-                    type: 'POST',
-                    data: JSON.stringify({
-                        applicationId: this.get('applicationId')
-                    })
-                };
+                url: this.urls.newPrivateKey,
+                type: 'POST',
+                data: JSON.stringify({
+                    applicationId: this.get('applicationId')
+                })
+            };
 
             this.save(null, options);
 
@@ -74,7 +80,7 @@ define([
             });
         },
 
-        findOne: function (options) {
+        findOne: function () {
             var data = {
                     _id: this.get('_id')
                 },
