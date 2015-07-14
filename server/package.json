@@ -1,4 +1,14 @@
 {
+  "author": "Mishchenko Vitalii",
+  "name": "mue",
+  "version": "0.0.1",
+  "homepage": "htpp://mue.in.ua",
+  "description": "One account for all apps",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mueees/calendar.git"
+  },
+  "license": "MIT",
   "dependencies": {
     "express": "4.10.3",
     "errorhandler": "1.3.6",
@@ -21,6 +31,8 @@
     "dnode": "1.2.0",
     "crossroads": "0.12.0",
     "request": "latest",
-    "underscore": "latest"
+    "underscore": "latest",
+
+    "mocha": "2.2.5"
   }
 }
