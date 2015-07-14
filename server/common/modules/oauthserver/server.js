@@ -331,19 +331,57 @@ function getAllApplications(userId, callback) {
     });
 }
 
-function removeApplication(id, callback) {
-    if (!id || !id.length) {
+function removeApplication(_id, callback) {
+    if (!_id) {
         return callback(new OauthError(400, 'Invalid id'));
     }
 
-    Application.remove({
-        _id: id
-    }, function (err) {
+    Application.findOne({
+        _id: _id
+    }, null, function (err, application) {
         if (err) {
+            log.error("Server error");
             return callback(new OauthError(400, "Server error"));
         }
 
-        callback(null);
+        if (application) {
+            async.parallel([
+                function (cb) {
+                    // remove application
+                    Application.remove({
+                        _id: _id
+                    }, function (err) {
+                        if (err) {
+                            return cb("Server error");
+                        }
+
+                        cb();
+                    });
+                },
+                function (cb) {
+                    // remove all permissions
+                    Permission.remove({
+                        applicationId: application.applicationId
+                    }, function (err) {
+                        if (err) {
+                            return cb("Server error");
+                        }
+
+                        cb();
+                    });
+                }
+            ], function (err) {
+                if (err) {
+                    log.error(err);
+                    return callback(err);
+                }
+
+                callback();
+            });
+        } else {
+            log.error("Cannot find application");
+            return callback(new OauthError(400, "Cannot find application"));
+        }
     });
 }
 
