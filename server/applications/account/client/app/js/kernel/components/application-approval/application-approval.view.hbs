@@ -1,14 +1,19 @@
-<div class="panel panel-default">
-    <div class="panel-heading">Approval</div>
+<div class="panel mue-panel mue-approval-panel">
     <div class="panel-body">
+        <div class="mue-approval-name">
+            {{name}}
+        </div>
+        <div class="mue-approval-description">
+            {{description}}
+        </div>
 
-        <h1>Application: {{name}} </h1>
+        <br/>
 
         <p>
-            Want to get access to your account
+            Want to get full access to your account
         </p>
 
-        <button type="submit" class="btn btn-default cancel">Cancel</button>
-        <button type="submit" class="btn btn-success approve">Approve</button>
+        <button type="submit" data-link="cancel" class="btn btn-neutral">Cancel</button>
+        <button type="submit" data-link="approve" class="btn btn-banana btn-action">Approve</button>
     </div>
 </div>

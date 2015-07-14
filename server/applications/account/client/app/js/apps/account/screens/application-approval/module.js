@@ -41,9 +41,11 @@ define([
                             {
                                 name: 'application',
                                 fn: function () {
+                                    var applicationId = $mUrl.getTotal().query.applicationid;
+
                                     var def = $.Deferred(),
                                         application = new ApplicationModel({
-                                            applicationId: $mUrl.getTotal().query.applicationid
+                                            applicationId: applicationId
                                         });
 
                                     application.fetchByApplicationId().then(function () {
@@ -78,6 +80,7 @@ define([
                         });
 
                     App.body.show(layout);
+
                     approval.show();
 
                     this.listenTo(approval, 'approve', function (data) {

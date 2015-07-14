@@ -7,8 +7,8 @@ define([
         template: hbs.compile(template),
 
         triggers: {
-            "click .cancel": "cancel",
-            "click .approve": "approve"
+            "click [data-link='cancel']": "cancel",
+            "click [data-link='approve']": "approve"
         }
     });
 });
