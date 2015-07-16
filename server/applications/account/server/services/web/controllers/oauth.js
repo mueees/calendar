@@ -22,9 +22,10 @@ var controller = {
                 return next(new HttpError(400, err.message));
             }
 
+            var redirectHost = (request.production) ? 'http://proxy.mue.in.ua' : 'http://localhost:' + configuration.get('applications:proxy:services:web:port');
+
             response.send({
-                redirectUrl: 'http://localhost:' + configuration.get('applications:proxy:services:web:port') +
-                '/oauth/' + data.applicationId + '?ticket=' + ticket
+                redirectUrl: redirectHost + '/oauth/' + data.applicationId + '?ticket=' + ticket
             });
         });
     },
