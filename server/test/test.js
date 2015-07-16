@@ -1,1 +1,1 @@
-require('./applications/account');
+require('./applications/application');

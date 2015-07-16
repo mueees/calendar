@@ -6,7 +6,7 @@ var ServerError = require('../../../common/error/ServerError'),
     Event = require('../../../common/resources/event');
 
 module.exports = function (server) {
-    server.addRoute('/version', function (options, callback) {
+    server.addRoute('/version', function (callback) {
         callback(null, {
             version: calendarConfig.get('services:api:version')
         });

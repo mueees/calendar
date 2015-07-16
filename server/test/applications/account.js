@@ -1,1 +1,0 @@
-require('./api/account-api.test');
