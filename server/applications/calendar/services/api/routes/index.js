@@ -14,10 +14,8 @@ module.exports = function (server) {
 
     // Calendar
     server.addRoute('/calendar/create', function (options, callback) {
-        console.log('====calendar create handler=====');
-
         if (!options.data.name) {
-            callback(new ServerError(400, 'Name should exists'));
+            return callback(new ServerError(400, 'Name should exists'));
         }
 
         var data = options.data;
