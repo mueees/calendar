@@ -2,6 +2,7 @@ var Client = require('common/service').Client,
     _ = require('underscore'),
     log = require('common/log')(module),
     Calendar = require('../../../applications/calendar/common/resources/calendar');
+    Event = require('../../../applications/calendar/common/resources/event');
     configuration = require('configuration');
 require('applications/calendar/services/api');
 
@@ -23,6 +24,7 @@ describe('calendar-api', function () {
 
     after(function(done) {
         Calendar.remove().exec();
+        Event.remove().exec();
         done();
     });
 
@@ -157,6 +159,96 @@ describe('calendar-api', function () {
                 } else {
                     done(new Error('Something wrong with deletion specific calendar'));
                 }
+            });
+        });
+    });
+
+    it('should create an event in a calendar', function (done) {
+        client.exec('request', '/calendar/create', {
+            data: {
+                name: 'testEvent',
+                description: 'description'
+            },
+            userId: mockUseId
+        }, function (err, data) {
+            if (err) {
+                done('Some error');
+            }
+
+            var startDate = new Date();
+            var endDate = startDate + 10000;
+            var test4Id = data._id;
+
+            client.exec('request', '/event/create', {
+                data: {
+                    calendarId: test4Id,
+                    title: 'TestEvent',
+                    startDay: startDate,
+                    endDay: endDate,
+                    isAllDay: true,
+                    isRepeat: false
+                }
+            }, function (err, data) {
+                if (err) {
+                    done(err);
+                }
+
+                if(data._id) {
+                    done();
+                } else {
+                    done(new Error('Something wrong with creation of event'));
+                }
+            });
+        });
+    });
+
+    it('should delete an event in a calendar', function (done) {
+        client.exec('request', '/calendar/create', {
+            data: {
+                name: 'testEvent',
+                description: 'description'
+            },
+            userId: mockUseId
+        }, function (err, data) {
+            if (err) {
+                done('Some error');
+            }
+
+            var startDate = new Date();
+            var endDate = startDate + 10000;
+            var test4Id = data._id;
+
+            client.exec('request', '/event/create', {
+                data: {
+                    calendarId: test4Id,
+                    title: 'TestEvent',
+                    startDay: startDate,
+                    endDay: endDate,
+                    isAllDay: true,
+                    isRepeat: false
+                }
+            }, function (err, data) {
+                if (err) {
+                    done(err);
+                }
+
+                var eventId = data._id;
+
+                client.exec('request', '/event/delete', {
+                    data: {
+                        _id: eventId
+                    }
+                }, function (err, data) {
+                    if (err) {
+                        done('Some error');
+                    }
+
+                    if(_.isEmpty(data)) {
+                        done();
+                    } else {
+                        done(new Error('Something wrong with deletion specific event'));
+                    }
+                });
             });
         });
     });
