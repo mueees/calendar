@@ -1,13 +1,13 @@
 var Client = require('common/service').Client,
     _ = require('underscore'),
     log = require('common/log')(module),
-    Calendar = require('../../../applications/calendar/common/resources/calendar');
-    Event = require('../../../applications/calendar/common/resources/event');
+    Calendar = require('../../../applications/calendar/common/resources/calendar'),
+    Event = require('../../../applications/calendar/common/resources/event'),
     configuration = require('configuration');
+
 require('applications/calendar/services/api');
 
 var mockUseId = '559c00051f9eaee6089e6009';
-
 
 describe('calendar-api', function () {
     var client = null;
@@ -22,13 +22,13 @@ describe('calendar-api', function () {
         });
     });
 
-    after(function(done) {
+    after(function (done) {
         Calendar.remove().exec();
         Event.remove().exec();
         done();
     });
 
-    it('should retreive version in right format', function (done) {
+    it('should retrieve version in right format', function (done) {
         client.exec('request', '/version', function (err, data) {
             if (err) {
                 done('err');
@@ -42,12 +42,14 @@ describe('calendar-api', function () {
         });
     });
 
-    it('should Tthrow error when data is empty', function (done) {
+    it('should Throw error when data is empty', function (done) {
         client.exec('request', '/calendar/create', {
             data: {},
             userId: mockUseId
         }, function (err, data) {
-            if (err) { done();}
+            if (err) {
+                done();
+            }
         });
     });
 
@@ -63,7 +65,7 @@ describe('calendar-api', function () {
                 done('Some error');
             }
 
-            if(data._id){
+            if (data._id) {
                 done();
             } else {
                 done(new Error('Something wrong with calendar creation'));
@@ -91,7 +93,7 @@ describe('calendar-api', function () {
                     done('Some error');
                 }
 
-                if(_.some(data, 'name', 'test2')) {
+                if (_.some(data, 'name', 'test2')) {
                     done();
                 } else {
                     done(new Error('Something wrong with fetching all calendars'));
@@ -121,7 +123,7 @@ describe('calendar-api', function () {
                     done('Some error');
                 }
 
-                if(data.name == 'test3') {
+                if (data.name == 'test3') {
                     done();
                 } else {
                     done(new Error('Something wrong with fetching specific calendar'));
@@ -154,7 +156,7 @@ describe('calendar-api', function () {
                     done('Some error');
                 }
 
-                if(_.isEmpty(data)) {
+                if (_.isEmpty(data)) {
                     done();
                 } else {
                     done(new Error('Something wrong with deletion specific calendar'));
@@ -175,16 +177,16 @@ describe('calendar-api', function () {
                 done('Some error');
             }
 
-            var startDate = new Date();
-            var endDate = startDate + 10000;
+            var start = new Date();
+            var end = start + 10000;
             var test4Id = data._id;
 
             client.exec('request', '/event/create', {
                 data: {
                     calendarId: test4Id,
                     title: 'TestEvent',
-                    startDay: startDate,
-                    endDay: endDate,
+                    start: start,
+                    end: end,
                     isAllDay: true,
                     isRepeat: false
                 }
@@ -193,7 +195,7 @@ describe('calendar-api', function () {
                     done(err);
                 }
 
-                if(data._id) {
+                if (data._id) {
                     done();
                 } else {
                     done(new Error('Something wrong with creation of event'));
@@ -214,16 +216,16 @@ describe('calendar-api', function () {
                 done('Some error');
             }
 
-            var startDate = new Date();
-            var endDate = startDate + 10000;
+            var start = new Date();
+            var end = start + 10000;
             var test4Id = data._id;
 
             client.exec('request', '/event/create', {
                 data: {
                     calendarId: test4Id,
                     title: 'TestEvent',
-                    startDay: startDate,
-                    endDay: endDate,
+                    start: start,
+                    end: end,
                     isAllDay: true,
                     isRepeat: false
                 }
@@ -243,7 +245,7 @@ describe('calendar-api', function () {
                         done('Some error');
                     }
 
-                    if(_.isEmpty(data)) {
+                    if (_.isEmpty(data)) {
                         done();
                     } else {
                         done(new Error('Something wrong with deletion specific event'));

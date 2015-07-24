@@ -106,11 +106,11 @@ module.exports = function (server) {
             return callback(new ServerError(400, 'Title should exist'));
         }
 
-        if (!data.startDay) {
+        if (!data.start) {
             return callback(new ServerError(400, 'Start day should exist'));
         }
 
-        if (!data.endDay) {
+        if (!data.end) {
             return callback(new ServerError(400, 'End day should exist'));
         }
 
@@ -153,7 +153,7 @@ module.exports = function (server) {
 
     server.addRoute('/event/delete', function (options, callback) {
         if (!options.data._id) {
-            callback(new ServerError(400, 'Id should exists'));
+            return callback(new ServerError(400, 'Id should exists'));
         }
 
         Event.remove({
@@ -171,17 +171,39 @@ module.exports = function (server) {
     server.addRoute('/event/find', function (options, callback) {
         var data = options.data;
 
-        if (!data.startDay) {
-            callback(new ServerError(400, 'Start day should exists'));
+        if (!data) {
+            return callback(new ServerError(400, 'Options should exists'));
         }
 
-        if (!data.endDay) {
-            callback(new ServerError(400, 'End day should exists'));
+        if (!data.start) {
+            return callback(new ServerError(400, 'Start day should exists'));
         }
 
+        if (!data.end) {
+            return callback(new ServerError(400, 'End day should exists'));
+        }
+
+        // fields, which event fields api should return
         if (data.fields && !_.isArray(data.fields)) {
-            callback(new ServerError(400, 'Fields should be array'));
+            return callback(new ServerError(400, 'Fields should be array'));
         }
 
+        if (!data.fields.length) {
+            return callback(new ServerError(400, 'Fields cannot be empty'));
+        }
+
+        if (_.isArray(data.calendarIds)) {
+            return callback(new ServerError(400, 'Calendar ids should be array'));
+        }
+
+        if (data.calendarIds.length) {
+            return callback(new ServerError(400, 'Calendar ids cannot be empty'));
+        }
+
+        Event.find({
+            calendarId: 123
+        }, {}, function () {
+
+        });
     });
 };
