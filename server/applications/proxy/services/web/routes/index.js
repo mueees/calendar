@@ -10,12 +10,6 @@ var req = require('request'),
     configuration = require('configuration');
 
 module.exports = function (app) {
-    app.use(function(req, res, next) {
-        res.header("Access-Control-Allow-Origin", "*");
-        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-        next();
-    });
-
     app.get('/provide/:oauthKey', function (request, response) {
         oauthClient.exec('getApplicationByOauthKey', request.params.oauthKey, function (err, application) {
             if (err) {
@@ -147,8 +141,23 @@ module.exports = function (app) {
         });
     });
 
+    app.use(function (request, response, next) {
+        response.header("Access-Control-Allow-Origin", "*");
+        response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+
+        console.log('Cors was established');
+
+        next();
+    });
+
     // send all request to proxy server
-    app.use('/api/:application/*', [
+    app.get('/api/:application/*', [
+        passport.authenticate('bearer', {session: false}),
+        refreshAccessToken,
+        apiRequest
+    ]);
+
+    app.post('/api/:application/*', [
         passport.authenticate('bearer', {session: false}),
         refreshAccessToken,
         apiRequest
