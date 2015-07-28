@@ -2,8 +2,11 @@ var ServerError = require('../../../common/error/ServerError'),
     log = require('common/log')(module),
     calendarConfig = require('../../../config'),
     _ = require('underscore'),
+    moment = require('moment'),
     Calendar = require('../../../common/resources/calendar'),
     Event = require('../../../common/resources/event');
+
+require('moment-range');
 
 module.exports = function (server) {
     server.addRoute('/version', function (callback) {
@@ -165,13 +168,9 @@ module.exports = function (server) {
             d = new Date(start);
 
         for (d; d <= end; d.setDate(d.getDate() + 1)) {
-
             if (event.repeatEnd && d >= event.repeatEnd) {
                 continue;
             }
-
-
-
 
             var cloneEvent = _.clone(event);
 
@@ -183,7 +182,85 @@ module.exports = function (server) {
             result.push(cloneEvent);
         }
 
-        log.info(result.length);
+        return result;
+    }
+
+    function generateEventsByDays(event, start, end, days) {
+        var result = [],
+            d = new Date(start);
+
+        for(d; d <= end; d.setDate(d.getDate() + 1)){
+            if (event.repeatEnd && d >= event.repeatEnd || !_.contains(days, d.getDay())) {
+                continue;
+            }
+
+            var cloneEvent = _.clone(event);
+
+            cloneEvent.rawId = event._id;
+            cloneEvent._id = Math.random();
+            cloneEvent.start = setTime(d, event.start);
+            cloneEvent.end = setTime(d, event.end);
+
+            result.push(cloneEvent);
+        }
+
+        return result;
+    }
+
+    function generateWeeklyEvents(event, start, end){
+        return generateEventsByDays(event, start, end, [1, 2, 3, 4, 5]);
+    }
+
+    function generateMonthlyEvents(event, start, end){
+        var result = [],
+            d = new Date(event.start.getTime()),
+            endDate = end;
+
+        if( event.repeatEnd && event.repeatEnd < end ){
+            endDate = event.repeatEnd;
+        }
+
+        var range = moment.range(start, endDate);
+
+        while(range.contains(d)){
+            var cloneEvent = _.clone(event);
+
+            cloneEvent.rawId = event._id;
+            cloneEvent._id = Math.random();
+            cloneEvent.start = setTime(d, event.start);
+            cloneEvent.end = setTime(d, event.end);
+
+            result.push(cloneEvent);
+
+            d.setMonth(d.getMonth()+1);
+        }
+
+        return result;
+    }
+
+    function generateYearlyEvents(event, start, end){
+        var result = [],
+            d = new Date(event.start.getTime()),
+            endDate = end;
+
+        if( event.repeatEnd && event.repeatEnd < end ){
+            endDate = event.repeatEnd;
+        }
+
+        var range = moment.range(start, endDate);
+
+        while(range.contains(d)){
+            var cloneEvent = _.clone(event);
+
+            cloneEvent.rawId = event._id;
+            cloneEvent._id = Math.random();
+            cloneEvent.start = setTime(d, event.start);
+            cloneEvent.end = setTime(d, event.end);
+
+            result.push(cloneEvent);
+
+            d.setYear(d.getYear()+1);
+        }
 
         return result;
     }
@@ -210,8 +287,16 @@ module.exports = function (server) {
                     result = result.concat(generateDailyEvents(repeatedEvent, start, end));
                     break;
                 case 2:
+                    result = result.concat(generateWeeklyEvents(repeatedEvent, start, end));
                     break;
                 case 3:
+                    result = result.concat(generateEventsByDays(repeatedEvent, start, end, repeatedEvent.repeatDays));
+                    break;
+                case 4:
+                    result = result.concat(generateMonthlyEvents(repeatedEvent, start, end));
+                    break;
+                case 5:
+                    result = result.concat(generateYearlyEvents(repeatedEvent, start, end));
                     break;
             }
         });
@@ -300,7 +385,7 @@ module.exports = function (server) {
             }
 
             events = events.map(function (event) {
-                return event.toObject()
+                return event.toObject();
             });
 
             var result = [];
