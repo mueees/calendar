@@ -114,34 +114,19 @@ module.exports = function (server) {
             return callback(new ServerError(400, 'End day should exist'));
         }
 
-        if (!data.isAllDay) {
-            if (!data.startTime) {
-                return callback(new ServerError(400, 'Start time should exist'));
-            }
-
-            if (!data.endTime) {
-                return callback(new ServerError(400, 'End time should exist'));
-            }
-        }
-
         if (data.isRepeat) {
-            if (!data.repeat) {
-                return callback(new ServerError(400, 'Repeat data should exist'));
-            }
-
-            if (!data.repeat.type) {
+            if (!data.repeatType) {
                 return callback(new ServerError(400, 'Repeat type should exist'));
             }
 
-            if (data.repeat.type == 3 && !data.repeat.options.days) {
+            if (data.repeatType == 3 && !data.repeatDays) {
                 return callback(new ServerError(400, 'Repeat days should exist'));
             }
         }
 
         Event.create(data, function (err, event) {
             if (err) {
-                log.error(err);
-
+                log.error(err.message);
                 return callback(new ServerError(400, 'Server error'));
             }
 
@@ -168,6 +153,72 @@ module.exports = function (server) {
         });
     });
 
+    function setTime(dateTarget, dateSource) {
+        var date = new Date(dateTarget.getTime());
+
+        date.setHours(dateSource.getHours(), dateSource.getMinutes(), dateSource.getSeconds(), dateSource.getMilliseconds());
+        return date;
+    }
+
+    function generateDailyEvents(event, start, end) {
+        var result = [],
+            d = new Date(start);
+
+        for (d; d <= end; d.setDate(d.getDate() + 1)) {
+
+            if (event.repeatEnd && d >= event.repeatEnd) {
+                continue;
+            }
+
+
+
+
+            var cloneEvent = _.clone(event);
+
+            cloneEvent.rawId = event._id;
+            cloneEvent._id = Math.random();
+            cloneEvent.start = setTime(d, event.start);
+            cloneEvent.end = setTime(d, event.end);
+
+            result.push(cloneEvent);
+        }
+
+        log.info(result.length);
+
+        return result;
+    }
+
+    function generateEvents(repeatedEvents, start, end) {
+        var result = [];
+
+        repeatedEvents = repeatedEvents || [];
+
+        /*
+         http://doc.mue.in.ua/display/MUE/Application+API
+
+         repeatType:
+         1 - daily
+         2 - every week day
+         3 - weekly
+         4 - monthly
+         5 - yearly
+         */
+
+        _.each(repeatedEvents, function (repeatedEvent) {
+            switch (repeatedEvent.repeatType) {
+                case 1:
+                    result = result.concat(generateDailyEvents(repeatedEvent, start, end));
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+            }
+        });
+
+        return result;
+    }
+
     server.addRoute('/event/find', function (options, callback) {
         var data = options.data;
 
@@ -184,26 +235,87 @@ module.exports = function (server) {
         }
 
         // fields, which event fields api should return
-        if (data.fields && !_.isArray(data.fields)) {
-            return callback(new ServerError(400, 'Fields should be array'));
+        if (data.fields) {
+            if (_.isArray(data.fields)) {
+                if (!data.fields.length) {
+                    return callback(new ServerError(400, 'Fields cannot be empty'));
+                }
+            } else {
+                return callback(new ServerError(400, 'Fields should be array'));
+            }
         }
 
-        if (!data.fields.length) {
-            return callback(new ServerError(400, 'Fields cannot be empty'));
-        }
-
-        if (_.isArray(data.calendarIds)) {
+        if (!_.isArray(data.calendarIds)) {
             return callback(new ServerError(400, 'Calendar ids should be array'));
         }
 
-        if (data.calendarIds.length) {
+        if (!data.calendarIds.length) {
             return callback(new ServerError(400, 'Calendar ids cannot be empty'));
         }
 
-        Event.find({
-            calendarId: 123
-        }, {}, function () {
+        data.start = new Date(data.start);
+        data.start.setHours(0, 0, 0, 0);
 
+        data.end = new Date(data.end);
+        data.end.setHours(23, 59, 59, 999);
+
+        var query = {
+            $or: [
+                // no repeat, just between two dates
+                {
+                    start: {
+                        $gt: data.start,
+                        $lt: data.end
+                    },
+                    isRepeat: false
+                },
+                // repeated events without repeatEnd
+                {
+                    start: {
+                        $lt: data.end
+                    },
+                    repeatEnd: {
+                        $exists: false
+                    },
+                    isRepeat: true
+                },
+                // repeated events with repeatEnd
+                {
+                    start: {
+                        $lt: data.end
+                    },
+                    repeatEnd: {
+                        $exists: true,
+                        $gt: data.start
+                    },
+                    isRepeat: true
+                }
+            ]
+        };
+
+        Event.find(query, {}, function (err, events) {
+            if (err) {
+                log.error(err.message);
+                return callback(new ServerError(400, 'Server error'));
+            }
+
+            events = events.map(function (event) {
+                return event.toObject()
+            });
+
+            var result = [];
+
+            // add clear event, that doesn't repeat
+            result = result.concat(_.filter(events, function (event) {
+                return !event.isRepeat;
+            }));
+
+            // generate events from repeated events
+            result = result.concat(generateEvents(_.filter(events, function (event) {
+                return event.isRepeat;
+            }), data.start, data.end));
+
+            callback(null, result);
         });
     });
 };

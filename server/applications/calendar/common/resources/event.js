@@ -33,9 +33,14 @@ var eventSchema = new Schema({
         type: Boolean,
         required: true
     },
-    repeat: {
-        type: Object,
-        default: {}
+    repeatType: {
+        type: Number
+    },
+    repeatEnd: {
+        type: Date
+    },
+    repeatDays: {
+        type: Array
     },
     date_create: {
         type: Date,

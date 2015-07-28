@@ -1,13 +1,16 @@
 var Client = require('common/service').Client,
     _ = require('underscore'),
     log = require('common/log')(module),
+    async = require('async'),
+    moment = require('moment'),
     Calendar = require('../../../applications/calendar/common/resources/calendar'),
     Event = require('../../../applications/calendar/common/resources/event'),
     configuration = require('configuration');
 
 require('applications/calendar/services/api');
 
-var mockUseId = '559c00051f9eaee6089e6009';
+var mockUseId = '559c00051f9eaee6089e6009',
+    mockCalendarId = '559c00051f9eaee6089e6010';
 
 describe('calendar-api', function () {
     var client = null;
@@ -28,7 +31,7 @@ describe('calendar-api', function () {
         done();
     });
 
-    it('should retrieve version in right format', function (done) {
+    /*it('should retrieve version in right format', function (done) {
         client.exec('request', '/version', function (err, data) {
             if (err) {
                 done('err');
@@ -177,9 +180,9 @@ describe('calendar-api', function () {
                 done('Some error');
             }
 
-            var start = new Date();
-            var end = start + 10000;
-            var test4Id = data._id;
+            var start = new Date(),
+                end = start + 10000,
+                test4Id = data._id;
 
             client.exec('request', '/event/create', {
                 data: {
@@ -253,5 +256,150 @@ describe('calendar-api', function () {
                 });
             });
         });
+    });*/
+
+    /*it('should create few events, that no repeats, and find them', function (done) {
+        var now = new Date(),
+            methods = [],
+            events = [
+                {
+                    title: 'TestEvent 1',
+                    start: now,
+                    end: now,
+                    isRepeat: false,
+                    calendarId: mockCalendarId,
+                    isAllDay: true
+                },
+                {
+                    title: 'TestEvent 2',
+                    start: moment(new Date()).add(1, 'd').toDate(),
+                    end: moment(new Date()).add(1, 'd').toDate(),
+                    isRepeat: false,
+                    calendarId: mockCalendarId,
+                    isAllDay: true
+                },
+                {
+                    title: 'TestEvent 3',
+                    start: moment(new Date()).add(2, 'd').toDate(),
+                    end: moment(new Date()).add(2, 'd').toDate(),
+                    isRepeat: false,
+                    calendarId: mockCalendarId,
+                    isAllDay: true
+                },
+                {
+                    title: 'TestEvent 4',
+                    start: moment(new Date()).add(3, 'd').toDate(),
+                    end: moment(new Date()).add(3, 'd').toDate(),
+                    isRepeat: false,
+                    calendarId: mockCalendarId,
+                    isAllDay: true
+                }
+            ];
+
+        _.each(events, function (event) {
+            methods.push(function (cb) {
+                client.exec('request', '/event/create', {
+                    data: event,
+                    userId: mockUseId
+                }, cb);
+            });
+        });
+
+        async.parallel(methods, function (err) {
+            if (err) {
+                return done(new Error(err.message));
+            }
+
+            client.exec('request', '/event/find', {
+                data: {
+                    start: moment(new Date()).toDate(),
+                    end: moment(new Date()).add(2, 'd').toDate(),
+                    calendarIds: [mockCalendarId]
+                }
+            }, function (err, events) {
+                if (err) {
+                    return done(new Error(err.message));
+                }
+
+                if (events && events.length == 3) {
+                    return done();
+                } else {
+                    return done(new Error('Something wrong with find method'));
+                }
+            })
+        });
+    });*/
+
+    it('should create event that repeat every day without end and find them', function (done) {
+        client.exec('request', '/event/create', {
+            data: {
+                title: 'TestEvent 1',
+                start: new Date(),
+                end: new Date(),
+                isRepeat: true,
+                repeatType: 1,
+                calendarId: mockCalendarId,
+                isAllDay: false
+            }
+        }, function (err) {
+            if (err) {
+                return done(new Error(err.message));
+            }
+
+            client.exec('request', '/event/find', {
+                data: {
+                    start: moment(new Date()).add(1, 'd').toDate(),
+                    end: moment(new Date()).add(5, 'd').toDate(),
+                    calendarIds: [mockCalendarId]
+                }
+            }, function (err, events) {
+                if (err) {
+                    return done(new Error(err.message));
+                }
+
+                if (events && events.length == 5) {
+                    return done();
+                } else {
+                    return done(new Error('Something wrong with find method'));
+                }
+            })
+        })
+    });
+
+    it('should create event that repeat every day with end and find them', function (done) {
+        client.exec('request', '/event/create', {
+            data: {
+                title: 'TestEvent 1',
+                start: new Date(),
+                end: new Date(),
+                isRepeat: true,
+                repeatType: 1,
+                repeatEnd: moment(new Date()).add(2, 'd').toDate(),
+                calendarId: mockCalendarId,
+                isAllDay: false
+            }
+        }, function (err) {
+            if (err) {
+                return done(new Error(err.message));
+            }
+
+            client.exec('request', '/event/find', {
+                data: {
+                    start: moment(new Date()).toDate(),
+                    end: moment(new Date()).add(5, 'd').toDate(),
+                    calendarIds: [mockCalendarId]
+                }
+            }, function (err, events) {
+                if (err) {
+                    return done(new Error(err.message));
+                }
+
+                if (events && events.length == 3) {
+                    return done();
+                } else {
+                    return done(new Error('Something wrong with find method'));
+                }
+            })
+        })
     });
 });
