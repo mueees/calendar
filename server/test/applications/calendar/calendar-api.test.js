@@ -20,9 +20,7 @@ describe('calendar-api', function () {
             port: configuration.get('applications-api:calendar:port')
         });
 
-        client.on('remote', function () {
-            done();
-        });
+        client.on('remote', done);
     });
 
     afterEach(function (done) {
@@ -123,7 +121,6 @@ describe('calendar-api', function () {
             });
         });
     });
-
 
     it('should list all calendar for specific UserId', function (done) {
         client.exec('request', '/calendar/create', {
@@ -251,6 +248,116 @@ describe('calendar-api', function () {
                     done();
                 } else {
                     done(new Error('Something wrong with creation of event'));
+                }
+            });
+        });
+    });
+
+    it('should base edit an event in a calendar', function (done) {
+        var newTitle = 'newTitle',
+            isAllDay = false;
+
+        client.exec('request', '/event/create', {
+            data: {
+                title: 'TestEvent 1',
+                start: new Date(),
+                end: new Date(),
+                isRepeat: false,
+                calendarId: mockCalendarId,
+                isAllDay: true
+            }
+        }, function (err, event) {
+            if (err) {
+                return done(new Error(err.message));
+            }
+
+            client.exec('request', '/event/edit', {
+                data: {
+                    title: newTitle,
+                    isAllDay: isAllDay,
+                    _id: event._id
+                }
+            }, function (err, event) {
+                if (err) {
+                    return done(new Error(err.message));
+                }
+
+                if (event.title == newTitle && event.isAllDay == isAllDay) {
+                    return done();
+                } else {
+                    return done(new Error('Something wrong with edit method'));
+                }
+            });
+        });
+    });
+
+    it('should add repeat data an event in a calendar', function (done) {
+        client.exec('request', '/event/create', {
+            data: {
+                title: 'TestEvent 1',
+                start: new Date(),
+                end: new Date(),
+                isRepeat: false,
+                calendarId: mockCalendarId,
+                isAllDay: true
+            }
+        }, function (err, event) {
+            if (err) {
+                return done(new Error(err.message));
+            }
+
+            client.exec('request', '/event/edit', {
+                data: {
+                    isRepeat: true,
+                    repeatType: 3,
+                    repeatDays: [0, 4],
+                    _id: event._id
+                }
+            }, function (err, event) {
+                if (err) {
+                    return done(new Error(err.message));
+                }
+
+                if (event.isRepeat && event.repeatType == 3 && event.repeatDays) {
+                    return done();
+                } else {
+                    return done(new Error('Something wrong with edit method'));
+                }
+            });
+        });
+    });
+
+    it('should remove repeat data an event in a calendar', function (done) {
+        client.exec('request', '/event/create', {
+            data: {
+                title: 'TestEvent 1',
+                start: new Date(),
+                end: new Date(),
+                isRepeat: true,
+                repeatType: 3,
+                repeatDays: [0, 4],
+                calendarId: mockCalendarId,
+                isAllDay: true
+            }
+        }, function (err, event) {
+            if (err) {
+                return done(new Error(err.message));
+            }
+
+            client.exec('request', '/event/edit', {
+                data: {
+                    isRepeat: false,
+                    _id: event._id
+                }
+            }, function (err, event) {
+                if (err) {
+                    return done(new Error(err.message));
+                }
+
+                if (!event.isRepeat && !event.repeatType && !event.repeatDays && !event.repeatEnd) {
+                    return done();
+                } else {
+                    return done(new Error('Something wrong with edit method'));
                 }
             });
         });

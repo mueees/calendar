@@ -2,6 +2,7 @@ var ServerError = require('../../../common/error/ServerError'),
     log = require('common/log')(module),
     calendarConfig = require('../../../config'),
     _ = require('underscore'),
+    async = require('async'),
     moment = require('moment'),
     Calendar = require('../../../common/resources/calendar'),
     Event = require('../../../common/resources/event');
@@ -53,7 +54,7 @@ module.exports = function (server) {
             }
 
             if (!calendar) {
-                callback(new ServerError(400, 'Cannot find calendar'));
+                return callback(new ServerError(400, 'Cannot find calendar'));
             } else {
                 _.assign(calendar, updateData);
 
@@ -119,10 +120,19 @@ module.exports = function (server) {
             callback(new ServerError(400, 'Id should exists'));
         }
 
-        Calendar.remove({
-            _id: options.data._id,
-            userId: options.userId
-        }, function (err) {
+        async.parallel([
+            function (cb) {
+                Calendar.remove({
+                    _id: options.data._id,
+                    userId: options.userId
+                }, cb);
+            },
+            function (cb) {
+                Event.remove({
+                    calendarId: options.data._id
+                }, cb);
+            }
+        ], function (err) {
             if (err) {
                 log.error(err);
                 return callback(new ServerError(400, 'Server error'));
@@ -171,6 +181,58 @@ module.exports = function (server) {
             callback(null, {
                 _id: event._id
             });
+        });
+    });
+
+    server.addRoute('/event/edit', function (options, callback) {
+        if (!options.data._id) {
+            return callback(new ServerError(400, 'Id should exists'));
+        }
+
+        Event.findOne({
+            _id: options.data._id
+        }, null, function (err, event) {
+            if (err) {
+                log.error(err);
+                return callback(new ServerError(400, 'Server error'));
+            }
+
+            if (!event) {
+                return callback(new ServerError(400, 'Cannot find event'));
+            } else {
+                var updateData = _.pick(options.data, ['title', 'description', 'start', 'end', 'isRepeat', 'repeatType', 'repeatDays', 'repeatEnd', 'isAllDay']);
+
+                if (!updateData.isRepeat) {
+                    delete updateData.repeatType;
+                    delete updateData.repeatDays;
+                    delete updateData.repeatEnd;
+                }
+
+                if (updateData.isRepeat) {
+                    if (!updateData.repeatType) {
+                        return callback(new ServerError(400, 'Repeat type should exist'));
+                    }
+
+                    if (updateData.repeatType == 3 && !updateData.repeatDays) {
+                        return callback(new ServerError(400, 'Repeat days should exist'));
+                    }
+                }
+
+                if (event.isRepeat && !updateData.isRepeat) {
+                    event.repeatEnd = event.repeatType = event.repeatDays = null;
+                }
+
+                _.assign(event, updateData);
+
+                event.save(function (err) {
+                    if (err) {
+                        log.error(err);
+                        return callback(new ServerError(400, 'Server error'));
+                    }
+
+                    callback(null, event);
+                });
+            }
         });
     });
 
@@ -267,9 +329,9 @@ module.exports = function (server) {
                 cloneEvent.end = setTime(d, event.end);
 
                 result.push(cloneEvent);
-
-                d.setMonth(d.getMonth() + 1);
             }
+
+            d.setMonth(d.getMonth() + 1);
         }
 
         return result;
@@ -296,9 +358,9 @@ module.exports = function (server) {
                 cloneEvent.end = setTime(d, event.end);
 
                 result.push(cloneEvent);
-
-                d.setYear(d.getYear() + 1);
             }
+
+            d.setFullYear(d.getFullYear() + 1);
         }
 
         return result;
