@@ -222,15 +222,17 @@ module.exports = function (server) {
 
         var range = moment.range(start, endDate);
 
-        while(range.contains(d)){
-            var cloneEvent = _.clone(event);
+        while(d <= endDate){
+            if(range.contains(d)){
+                var cloneEvent = _.clone(event);
 
-            cloneEvent.rawId = event._id;
-            cloneEvent._id = Math.random();
-            cloneEvent.start = setTime(d, event.start);
-            cloneEvent.end = setTime(d, event.end);
+                cloneEvent.rawId = event._id;
+                cloneEvent._id = Math.random();
+                cloneEvent.start = setTime(d, event.start);
+                cloneEvent.end = setTime(d, event.end);
 
-            result.push(cloneEvent);
+                result.push(cloneEvent);
+            }
 
             d.setMonth(d.getMonth()+1);
         }
@@ -249,17 +251,19 @@ module.exports = function (server) {
 
         var range = moment.range(start, endDate);
 
-        while(range.contains(d)){
-            var cloneEvent = _.clone(event);
+        while(d <= endDate){
+            if(range.contains(d)){
+                var cloneEvent = _.clone(event);
 
-            cloneEvent.rawId = event._id;
-            cloneEvent._id = Math.random();
-            cloneEvent.start = setTime(d, event.start);
-            cloneEvent.end = setTime(d, event.end);
+                cloneEvent.rawId = event._id;
+                cloneEvent._id = Math.random();
+                cloneEvent.start = setTime(d, event.start);
+                cloneEvent.end = setTime(d, event.end);
 
-            result.push(cloneEvent);
+                result.push(cloneEvent);
+            }
 
-            d.setYear(d.getYear()+1);
+            d.setFullYear(d.getFullYear() + 1);
         }
 
         return result;
@@ -399,6 +403,21 @@ module.exports = function (server) {
             result = result.concat(generateEvents(_.filter(events, function (event) {
                 return event.isRepeat;
             }), data.start, data.end));
+
+            // filter fields
+            var fields = [];
+
+            if( data.fields ){
+                fields = data.fields
+            }else{
+                fields = ['_id', 'rowId', 'title', 'description',
+                    'calendarId', 'start', 'end', 'isAllDay', 'isRepeat',
+                'repeatType', 'repeatEnd', 'repeatDays'];
+            }
+
+            result = _.map(result, function (event) {
+                return _.pick(event, fields);
+            });
 
             callback(null, result);
         });
