@@ -16,6 +16,39 @@ module.exports = function (server) {
     });
 
     // Calendar
+    server.addRoute('/calendar/edit', function (options, callback) {
+        if (!options.data._id) {
+            return callback(new ServerError(400, 'Id should exists'));
+        }
+
+        var updateData = _.pick(options.data, ['name', 'description', 'active', 'color']);
+
+        Calendar.findOne({
+            _id: options.data._id,
+            userId: options.userId
+        }, function (err, calendar) {
+            if (err) {
+                log.error(err);
+                return callback(new ServerError(400, 'Server error'));
+            }
+
+            if (!calendar) {
+                callback(new ServerError(400, 'Cannot find calendar'));
+            } else {
+                _.assign(calendar, updateData);
+
+                calendar.save(function (err) {
+                    if (err) {
+                        log.error(err);
+                        return callback(new ServerError(400, 'Server error'));
+                    }
+
+                    callback(null, calendar);
+                });
+            }
+        });
+    });
+
     server.addRoute('/calendar/create', function (options, callback) {
         if (!options.data.name) {
             return callback(new ServerError(400, 'Name should exists'));
@@ -46,11 +79,13 @@ module.exports = function (server) {
             }
 
             calendars = _.map(calendars, function (calendar) {
-                return {
-                    _id: calendar._id,
-                    name: calendar.name,
-                    description: calendar.description
-                }
+                return _.pick(calendar, [
+                    '_id',
+                    'name',
+                    'description',
+                    'active',
+                    'color'
+                ]);
             });
 
             callback(null, calendars);
@@ -189,7 +224,7 @@ module.exports = function (server) {
         var result = [],
             d = new Date(start);
 
-        for(d; d <= end; d.setDate(d.getDate() + 1)){
+        for (d; d <= end; d.setDate(d.getDate() + 1)) {
             if (event.repeatEnd && d >= event.repeatEnd || !_.contains(days, d.getDay())) {
                 continue;
             }
@@ -207,59 +242,63 @@ module.exports = function (server) {
         return result;
     }
 
-    function generateWeeklyEvents(event, start, end){
+    function generateWeeklyEvents(event, start, end) {
         return generateEventsByDays(event, start, end, [1, 2, 3, 4, 5]);
     }
 
-    function generateMonthlyEvents(event, start, end){
+    function generateMonthlyEvents(event, start, end) {
         var result = [],
             d = new Date(event.start.getTime()),
             endDate = end;
 
-        if( event.repeatEnd && event.repeatEnd < end ){
+        if (event.repeatEnd && event.repeatEnd < end) {
             endDate = event.repeatEnd;
         }
 
         var range = moment.range(start, endDate);
 
-        while(range.contains(d)){
-            var cloneEvent = _.clone(event);
+        while (d <= endDate) {
+            if (range.contains(d)) {
+                var cloneEvent = _.clone(event);
 
-            cloneEvent.rawId = event._id;
-            cloneEvent._id = Math.random();
-            cloneEvent.start = setTime(d, event.start);
-            cloneEvent.end = setTime(d, event.end);
+                cloneEvent.rawId = event._id;
+                cloneEvent._id = Math.random();
+                cloneEvent.start = setTime(d, event.start);
+                cloneEvent.end = setTime(d, event.end);
 
-            result.push(cloneEvent);
+                result.push(cloneEvent);
+            }
 
-            d.setMonth(d.getMonth()+1);
+            d.setMonth(d.getMonth() + 1);
         }
 
         return result;
     }
 
-    function generateYearlyEvents(event, start, end){
+    function generateYearlyEvents(event, start, end) {
         var result = [],
             d = new Date(event.start.getTime()),
             endDate = end;
 
-        if( event.repeatEnd && event.repeatEnd < end ){
+        if (event.repeatEnd && event.repeatEnd < end) {
             endDate = event.repeatEnd;
         }
 
         var range = moment.range(start, endDate);
 
-        while(range.contains(d)){
-            var cloneEvent = _.clone(event);
+        while (d <= endDate) {
+            if (range.contains(d)) {
+                var cloneEvent = _.clone(event);
 
-            cloneEvent.rawId = event._id;
-            cloneEvent._id = Math.random();
-            cloneEvent.start = setTime(d, event.start);
-            cloneEvent.end = setTime(d, event.end);
+                cloneEvent.rawId = event._id;
+                cloneEvent._id = Math.random();
+                cloneEvent.start = setTime(d, event.start);
+                cloneEvent.end = setTime(d, event.end);
 
-            result.push(cloneEvent);
+                result.push(cloneEvent);
+            }
 
-            d.setYear(d.getYear()+1);
+            d.setFullYear(d.getFullYear() + 1);
         }
 
         return result;
@@ -352,7 +391,10 @@ module.exports = function (server) {
                         $gt: data.start,
                         $lt: data.end
                     },
-                    isRepeat: false
+                    isRepeat: false,
+                    calendarId: {
+                        '$in': data.calendarIds
+                    }
                 },
                 // repeated events without repeatEnd
                 {
@@ -362,7 +404,10 @@ module.exports = function (server) {
                     repeatEnd: {
                         $exists: false
                     },
-                    isRepeat: true
+                    isRepeat: true,
+                    calendarId: {
+                        '$in': data.calendarIds
+                    }
                 },
                 // repeated events with repeatEnd
                 {
@@ -373,7 +418,10 @@ module.exports = function (server) {
                         $exists: true,
                         $gt: data.start
                     },
-                    isRepeat: true
+                    isRepeat: true,
+                    calendarId: {
+                        '$in': data.calendarIds
+                    }
                 }
             ]
         };
@@ -399,6 +447,21 @@ module.exports = function (server) {
             result = result.concat(generateEvents(_.filter(events, function (event) {
                 return event.isRepeat;
             }), data.start, data.end));
+
+            // filter fields
+            var fields = [];
+
+            if (data.fields) {
+                fields = data.fields
+            } else {
+                fields = ['_id', 'rowId', 'title', 'description',
+                    'calendarId', 'start', 'end', 'isAllDay', 'isRepeat',
+                    'repeatType', 'repeatEnd', 'repeatDays'];
+            }
+
+            result = _.map(result, function (event) {
+                return _.pick(event, fields);
+            });
 
             callback(null, result);
         });

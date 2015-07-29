@@ -12,16 +12,12 @@ module.exports = function (request, response, next) {
 
     if (options.method == 'POST') {
         options.data = request.body;
-
-        log.info(options.data);
     }
 
     (new ApiRequestToProxy(options)).execute(function (err, data) {
         if (err) {
             log.error(err);
-            return next(new HttpError(400, {
-                message: err.message
-            }));
+            return next(new HttpError(400, err.message));
         }
 
         response.send(data);

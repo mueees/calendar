@@ -34,7 +34,7 @@ describe('calendar-api', function () {
                 Event.remove(cb);
             }
         ], function (err) {
-            if(err){
+            if (err) {
                 return done(new Error())
             }
 
@@ -42,7 +42,7 @@ describe('calendar-api', function () {
         });
     });
 
-    /*it('should retrieve version in right format', function (done) {
+    it('should retrieve version in right format', function (done) {
         client.exec('request', '/version', function (err, data) {
             if (err) {
                 done('err');
@@ -86,6 +86,44 @@ describe('calendar-api', function () {
             }
         });
     });
+
+    it('should edit calendar', function (done) {
+        var newName = 'newName',
+            active = false;
+
+        client.exec('request', '/calendar/create', {
+            data: {
+                name: 'test',
+                description: 'description'
+            },
+            userId: mockUseId
+        }, function (err, data) {
+            if (err) {
+                return done(new Error(err.message));
+            }
+
+            client.exec('request', '/calendar/edit', {
+                data: {
+                    name: newName,
+                    active: active,
+                    fakeField: 'fakeField',
+                    _id: data._id
+                },
+                userId: mockUseId
+            }, function (err, calendar) {
+                if (err) {
+                    return done(new Error(err.message));
+                }
+
+                if (calendar.name == newName && calendar.active == active && !calendar.fakeField) {
+                    done();
+                } else {
+                    done(new Error('Something wrong with calendar edition'));
+                }
+            });
+        });
+    });
+
 
     it('should list all calendar for specific UserId', function (done) {
         client.exec('request', '/calendar/create', {
@@ -597,7 +635,7 @@ describe('calendar-api', function () {
                 }
             });
         });
-    });*/
+    });
 
     it('should create event that repeat monthly without end and find them', function (done) {
         client.exec('request', '/event/create', {
@@ -617,8 +655,8 @@ describe('calendar-api', function () {
 
             client.exec('request', '/event/find', {
                 data: {
-                    start: moment('2017-07-01').toDate(),
-                    end: moment('2017-11-01').toDate(),
+                    start: moment('2015-07-01').toDate(),
+                    end: moment('2015-11-01').toDate(),
                     calendarIds: [mockCalendarId]
                 }
             }, function (err, events) {
@@ -672,7 +710,7 @@ describe('calendar-api', function () {
         });
     });
 
-    /*it('should create event that repeat yearly without end and find them', function (done) {
+    it('should create event that repeat yearly without end and find them', function (done) {
         client.exec('request', '/event/create', {
             data: {
                 title: 'TestEvent 1',
@@ -706,5 +744,80 @@ describe('calendar-api', function () {
                 }
             });
         });
-    });*/
+    });
+
+    it('should create event that repeat yearly with end and find them', function (done) {
+        client.exec('request', '/event/create', {
+            data: {
+                title: 'TestEvent 1',
+                start: moment('2015-07-02').toDate(),
+                end: moment('2015-07-02').toDate(),
+                isRepeat: true,
+                repeatEnd: moment('2019-07-01').toDate(),
+                repeatType: 5,
+                calendarId: mockCalendarId,
+                isAllDay: false
+            }
+        }, function (err) {
+            if (err) {
+                return done(new Error(err.message));
+            }
+
+            client.exec('request', '/event/find', {
+                data: {
+                    start: moment('2015-07-01').toDate(),
+                    end: moment('2020-07-01').toDate(),
+                    calendarIds: [mockCalendarId]
+                }
+            }, function (err, events) {
+                if (err) {
+                    return done(new Error(err.message));
+                }
+
+                if (events && events.length == 4) {
+                    return done();
+                } else {
+                    return done(new Error('Something wrong with find method'));
+                }
+            });
+        });
+    });
+
+    it('should return certain fields', function (done) {
+        client.exec('request', '/event/create', {
+            data: {
+                title: 'TestEvent 1',
+                start: moment('2015-07-02').toDate(),
+                end: moment('2015-07-02').toDate(),
+                isRepeat: true,
+                repeatEnd: moment('2019-07-01').toDate(),
+                repeatType: 5,
+                calendarId: mockCalendarId,
+                isAllDay: false
+            }
+        }, function (err) {
+            if (err) {
+                return done(new Error(err.message));
+            }
+
+            client.exec('request', '/event/find', {
+                data: {
+                    start: moment('2015-07-01').toDate(),
+                    end: moment('2020-07-01').toDate(),
+                    calendarIds: [mockCalendarId],
+                    fields: ['title']
+                }
+            }, function (err, events) {
+                if (err) {
+                    return done(new Error(err.message));
+                }
+
+                if (events && events[0].title && !events[0]._id) {
+                    return done();
+                } else {
+                    return done(new Error('Something wrong with find method'));
+                }
+            });
+        });
+    });
 });
