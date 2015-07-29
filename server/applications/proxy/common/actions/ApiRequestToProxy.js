@@ -55,10 +55,17 @@ _.extend(ApiRequestToProxy.prototype, {
             if (_.isString(data)) {
                 try {
                     data = JSON.parse(data);
-                } catch (e) {}
+                } catch (e) {
+                }
             }
 
-            callback(null, data);
+            if (response.statusCode == 400 || response.statusCode == 500) {
+                var message = (data && data.message) ? data.message : 'Server error';
+
+                callback(new Error(message));
+            } else {
+                callback(null, data);
+            }
         });
     }
 });

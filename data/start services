@@ -32,6 +32,12 @@ pm2 start index.js --name proxy
 export NODE_ENV=production
 export NODE_PATH=/vagrant/server
 
+// LAUNCH TEST
+export NODE_ENV=test;
+export NODE_PATH=/vagrant/server;
+cd /vagrant/server/test;
+mocha -t 2000
+
 
 UBUNTU
 -------------
@@ -58,6 +64,10 @@ pm2 start index.js --name account
 cd /home/mue/web/projects/calendar/server/applications/proxy/services/web
 pm2 start index.js --name proxy
 
+export NODE_ENV=test
+export NODE_PATH=/home/mue/web/projects/calendar/server/
+cd /home/mue/web/projects/calendar/server/test;
+mocha -t 2000
 
 LIVE
 -------------------

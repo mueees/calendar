@@ -17,11 +17,11 @@ var eventSchema = new Schema({
         type: ObjectId,
         required: true
     },
-    startDay: {
+    start: {
         type: Date,
         required: true
     },
-    endDay: {
+    end: {
         type: Date,
         required: true
     },
@@ -33,12 +33,17 @@ var eventSchema = new Schema({
         type: Boolean,
         required: true
     },
-    repeat: {
-        type: Object,
-        default: {}
+    repeatType: {
+        type: Number
+    },
+    repeatEnd: {
+        type: Date
+    },
+    repeatDays: {
+        type: Array
     },
     date_create: {
-        type: 'Date',
+        type: Date,
         default: new Date()
     }
 });

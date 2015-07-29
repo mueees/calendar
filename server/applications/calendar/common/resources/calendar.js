@@ -20,6 +20,20 @@ var calendarSchema = new Schema({
     userId: {
         type: ObjectId,
         required: true
+    },
+
+    // UI section
+
+    // is show events from this calendar on UI
+    active: {
+        type: Boolean,
+        default: true
+    },
+
+    // string, that determinate event color for this calendar
+    color: {
+        type: String,
+        default: 'lagoon'
     }
 });
 
