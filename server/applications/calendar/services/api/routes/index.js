@@ -167,7 +167,7 @@ module.exports = function (server) {
                 return callback(new ServerError(400, 'Repeat type should exist'));
             }
 
-            if (data.repeatType == 3 && !data.repeatDays) {
+            if (data.repeatType == 2 && !data.repeatDays) {
                 return callback(new ServerError(400, 'Repeat days should exist'));
             }
         }
@@ -304,10 +304,6 @@ module.exports = function (server) {
         return result;
     }
 
-    function generateWeeklyEvents(event, start, end) {
-        return generateEventsByDays(event, start, end, [1, 2, 3, 4, 5]);
-    }
-
     function generateMonthlyEvents(event, start, end) {
         var result = [],
             d = new Date(event.start.getTime()),
@@ -376,10 +372,9 @@ module.exports = function (server) {
 
          repeatType:
          1 - daily
-         2 - every week day
-         3 - weekly
-         4 - monthly
-         5 - yearly
+         2 - weekly
+         3 - monthly
+         4 - yearly
          */
 
         _.each(repeatedEvents, function (repeatedEvent) {
@@ -388,15 +383,12 @@ module.exports = function (server) {
                     result = result.concat(generateDailyEvents(repeatedEvent, start, end));
                     break;
                 case 2:
-                    result = result.concat(generateWeeklyEvents(repeatedEvent, start, end));
-                    break;
-                case 3:
                     result = result.concat(generateEventsByDays(repeatedEvent, start, end, repeatedEvent.repeatDays));
                     break;
-                case 4:
+                case 3:
                     result = result.concat(generateMonthlyEvents(repeatedEvent, start, end));
                     break;
-                case 5:
+                case 4:
                     result = result.concat(generateYearlyEvents(repeatedEvent, start, end));
                     break;
             }
