@@ -522,6 +522,42 @@ describe('calendar-api', function () {
         })
     });
 
+    it('should create event and  dont find them', function (done) {
+        client.exec('request', '/event/create', {
+            data: {
+                title: 'TestEvent 1',
+                start: new Date(),
+                end: new Date(),
+                isRepeat: true,
+                repeatType: 1,
+                calendarId: mockCalendarId,
+                isAllDay: false
+            }
+        }, function (err) {
+            if (err) {
+                return done(new Error(err.message));
+            }
+
+            client.exec('request', '/event/find', {
+                data: {
+                    start: moment(new Date()).add(1, 'd').toDate(),
+                    end: moment(new Date()).add(5, 'd').toDate(),
+                    calendarIds: ['559c00051f9eaee6089e6089']
+                }
+            }, function (err, events) {
+                if (err) {
+                    return done(new Error(err.message));
+                }
+
+                if (events && events.length == 0) {
+                    return done();
+                } else {
+                    return done(new Error('Something wrong with find method'));
+                }
+            })
+        })
+    });
+
     it('should create event that repeat every day with end and find them', function (done) {
         client.exec('request', '/event/create', {
             data: {
@@ -846,7 +882,7 @@ describe('calendar-api', function () {
                     return done(new Error(err.message));
                 }
 
-                if (events && events[0].title && !events[0]._id) {
+                if (events && events[0].title && events[0]._id  && !events[0].start) {
                     return done();
                 } else {
                     return done(new Error('Something wrong with find method'));

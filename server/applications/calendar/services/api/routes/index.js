@@ -446,6 +446,9 @@ module.exports = function (server) {
                         $gt: data.start,
                         $lt: data.end
                     },
+                    calendarId: {
+                        $in: data.calendarIds
+                    },
                     isRepeat: false
                 },
                 // repeated events without repeatEnd
@@ -456,7 +459,10 @@ module.exports = function (server) {
                     repeatEnd: {
                         $exists: false
                     },
-                    isRepeat: true
+                    isRepeat: true,
+                    calendarId: {
+                        $in: data.calendarIds
+                    }
                 },
                 // repeated events with repeatEnd
                 {
@@ -467,7 +473,10 @@ module.exports = function (server) {
                         $exists: true,
                         $gt: data.start
                     },
-                    isRepeat: true
+                    isRepeat: true,
+                    calendarId: {
+                        $in: data.calendarIds
+                    }
                 }
             ]
         };
