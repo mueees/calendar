@@ -3,6 +3,7 @@ var ServerError = require('../../../common/error/ServerError'),
     calendarConfig = require('../../../config'),
     _ = require('underscore'),
     async = require('async'),
+    helpers = require('common/helpers'),
     moment = require('moment'),
     Calendar = require('../../../common/resources/calendar'),
     Event = require('../../../common/resources/event');
@@ -272,7 +273,7 @@ module.exports = function (server) {
             var cloneEvent = _.clone(event);
 
             cloneEvent.rawId = event._id;
-            cloneEvent._id = Math.random();
+            cloneEvent._id = helpers.util.getUUID();
             cloneEvent.start = setTime(d, event.start);
             cloneEvent.end = setTime(d, event.end);
 
@@ -294,7 +295,7 @@ module.exports = function (server) {
             var cloneEvent = _.clone(event);
 
             cloneEvent.rawId = event._id;
-            cloneEvent._id = Math.random();
+            cloneEvent._id = helpers.util.getUUID();
             cloneEvent.start = setTime(d, event.start);
             cloneEvent.end = setTime(d, event.end);
 
@@ -320,7 +321,7 @@ module.exports = function (server) {
                 var cloneEvent = _.clone(event);
 
                 cloneEvent.rawId = event._id;
-                cloneEvent._id = Math.random();
+                cloneEvent._id = helpers.util.getUUID();
                 cloneEvent.start = setTime(d, event.start);
                 cloneEvent.end = setTime(d, event.end);
 
@@ -349,7 +350,7 @@ module.exports = function (server) {
                 var cloneEvent = _.clone(event);
 
                 cloneEvent.rawId = event._id;
-                cloneEvent._id = Math.random();
+                cloneEvent._id = helpers.util.getUUID();
                 cloneEvent.start = setTime(d, event.start);
                 cloneEvent.end = setTime(d, event.end);
 
@@ -497,9 +498,10 @@ module.exports = function (server) {
             var fields = [];
 
             if (data.fields) {
-                fields = data.fields
+                fields = data.fields;
+                fields.push('_id', 'rawId');
             } else {
-                fields = ['_id', 'rowId', 'title', 'description',
+                fields = ['_id', 'rowId', 'title', 'description', 'rawId',
                     'calendarId', 'start', 'end', 'isAllDay', 'isRepeat',
                     'repeatType', 'repeatEnd', 'repeatDays'];
             }
