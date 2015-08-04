@@ -10,6 +10,10 @@ var ServerError = require('../../../common/error/ServerError'),
 
 require('moment-range');
 
+var eventDefaultFields = ['_id', 'rowId', 'title', 'description', 'rawId',
+    'calendarId', 'start', 'end', 'isAllDay', 'isRepeat',
+    'repeatType', 'repeatEnd', 'repeatDays'];
+
 module.exports = function (server) {
     server.addRoute('/version', function (callback) {
         callback(null, {
@@ -144,6 +148,39 @@ module.exports = function (server) {
     });
 
     // Event
+    server.addRoute('/event/get/{id}', function (options, callback, id) {
+        Event.findOne({
+            _id: id
+        }, function (err, event) {
+            if (err) {
+                log.error(err);
+                return callback(new ServerError(400, 'Server error'));
+            }
+
+            if (!event) {
+                callback(new ServerError(400, 'Cannot find event'));
+            } else {
+
+                // check is user has access to this event
+                Calendar.findOne({
+                    _id: event.calendarId,
+                    userId: options.userId
+                }, function (err, calendar) {
+                    if (err) {
+                        log.error(err);
+                        return callback(new ServerError(400, 'Server error'));
+                    }
+
+                    if (!calendar) {
+                        return callback(new ServerError(400, 'You dont have access.'));
+                    } else {
+                        callback(null, _.pick(event, eventDefaultFields));
+                    }
+                });
+            }
+        });
+    });
+
     server.addRoute('/event/create', function (options, callback) {
         var data = options.data;
 
@@ -231,7 +268,7 @@ module.exports = function (server) {
                         return callback(new ServerError(400, 'Server error'));
                     }
 
-                    callback(null, event);
+                    callback(null, _.pick(event, eventDefaultFields));
                 });
             }
         });
@@ -510,9 +547,7 @@ module.exports = function (server) {
                 fields = data.fields;
                 fields.push('_id', 'rawId');
             } else {
-                fields = ['_id', 'rowId', 'title', 'description', 'rawId',
-                    'calendarId', 'start', 'end', 'isAllDay', 'isRepeat',
-                    'repeatType', 'repeatEnd', 'repeatDays'];
+                fields = eventDefaultFields;
             }
 
             result = _.map(result, function (event) {

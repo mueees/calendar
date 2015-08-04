@@ -253,6 +253,51 @@ describe('calendar-api', function () {
         });
     });
 
+    it('should return event by _id', function (done) {
+        client.exec('request', '/calendar/create', {
+            data: {
+                name: 'test',
+                description: 'description'
+            },
+            userId: mockUseId
+        }, function (err, calendar) {
+            if (err) {
+                done('Some error');
+            }
+
+            client.exec('request', '/event/create', {
+                data: {
+                    title: 'TestEvent 1',
+                    start: new Date(),
+                    end: new Date(),
+                    isRepeat: false,
+                    calendarId: calendar._id,
+                    isAllDay: true
+                },
+                userId: mockUseId
+            }, function (err, event) {
+                if (err) {
+                    return done(new Error(err.message));
+                }
+
+                client.exec('request', '/event/get/' + event._id, {
+                    data: {},
+                    userId: mockUseId
+                }, function (err, event) {
+                    if (err) {
+                        return done(new Error(err.message));
+                    }
+
+                    if (event.title && event._id) {
+                        return done();
+                    } else {
+                        return done(new Error('Something wrong with get method'));
+                    }
+                });
+            });
+        });
+    });
+
     it('should base edit an event in a calendar', function (done) {
         var newTitle = 'newTitle',
             isAllDay = false;
