@@ -3,6 +3,7 @@ var ServerError = require('../../../common/error/ServerError'),
     calendarConfig = require('../../../config'),
     _ = require('underscore'),
     async = require('async'),
+    helpers = require('common/helpers'),
     moment = require('moment'),
     Calendar = require('../../../common/resources/calendar'),
     Event = require('../../../common/resources/event');
@@ -167,7 +168,7 @@ module.exports = function (server) {
                 return callback(new ServerError(400, 'Repeat type should exist'));
             }
 
-            if (data.repeatType == 3 && !data.repeatDays) {
+            if (data.repeatType == 2 && !data.repeatDays) {
                 return callback(new ServerError(400, 'Repeat days should exist'));
             }
         }
@@ -272,7 +273,7 @@ module.exports = function (server) {
             var cloneEvent = _.clone(event);
 
             cloneEvent.rawId = event._id;
-            cloneEvent._id = Math.random();
+            cloneEvent._id = helpers.util.getUUID();
             cloneEvent.start = setTime(d, event.start);
             cloneEvent.end = setTime(d, event.end);
 
@@ -294,7 +295,7 @@ module.exports = function (server) {
             var cloneEvent = _.clone(event);
 
             cloneEvent.rawId = event._id;
-            cloneEvent._id = Math.random();
+            cloneEvent._id = helpers.util.getUUID();
             cloneEvent.start = setTime(d, event.start);
             cloneEvent.end = setTime(d, event.end);
 
@@ -302,10 +303,6 @@ module.exports = function (server) {
         }
 
         return result;
-    }
-
-    function generateWeeklyEvents(event, start, end) {
-        return generateEventsByDays(event, start, end, [1, 2, 3, 4, 5]);
     }
 
     function generateMonthlyEvents(event, start, end) {
@@ -324,7 +321,7 @@ module.exports = function (server) {
                 var cloneEvent = _.clone(event);
 
                 cloneEvent.rawId = event._id;
-                cloneEvent._id = Math.random();
+                cloneEvent._id = helpers.util.getUUID();
                 cloneEvent.start = setTime(d, event.start);
                 cloneEvent.end = setTime(d, event.end);
 
@@ -353,7 +350,7 @@ module.exports = function (server) {
                 var cloneEvent = _.clone(event);
 
                 cloneEvent.rawId = event._id;
-                cloneEvent._id = Math.random();
+                cloneEvent._id = helpers.util.getUUID();
                 cloneEvent.start = setTime(d, event.start);
                 cloneEvent.end = setTime(d, event.end);
 
@@ -376,10 +373,9 @@ module.exports = function (server) {
 
          repeatType:
          1 - daily
-         2 - every week day
-         3 - weekly
-         4 - monthly
-         5 - yearly
+         2 - weekly
+         3 - monthly
+         4 - yearly
          */
 
         _.each(repeatedEvents, function (repeatedEvent) {
@@ -388,15 +384,12 @@ module.exports = function (server) {
                     result = result.concat(generateDailyEvents(repeatedEvent, start, end));
                     break;
                 case 2:
-                    result = result.concat(generateWeeklyEvents(repeatedEvent, start, end));
-                    break;
-                case 3:
                     result = result.concat(generateEventsByDays(repeatedEvent, start, end, repeatedEvent.repeatDays));
                     break;
-                case 4:
+                case 3:
                     result = result.concat(generateMonthlyEvents(repeatedEvent, start, end));
                     break;
-                case 5:
+                case 4:
                     result = result.concat(generateYearlyEvents(repeatedEvent, start, end));
                     break;
             }
@@ -453,6 +446,9 @@ module.exports = function (server) {
                         $gt: data.start,
                         $lt: data.end
                     },
+                    calendarId: {
+                        $in: data.calendarIds
+                    },
                     isRepeat: false
                 },
                 // repeated events without repeatEnd
@@ -463,7 +459,10 @@ module.exports = function (server) {
                     repeatEnd: {
                         $exists: false
                     },
-                    isRepeat: true
+                    isRepeat: true,
+                    calendarId: {
+                        $in: data.calendarIds
+                    }
                 },
                 // repeated events with repeatEnd
                 {
@@ -474,7 +473,10 @@ module.exports = function (server) {
                         $exists: true,
                         $gt: data.start
                     },
-                    isRepeat: true
+                    isRepeat: true,
+                    calendarId: {
+                        $in: data.calendarIds
+                    }
                 }
             ]
         };
@@ -505,9 +507,10 @@ module.exports = function (server) {
             var fields = [];
 
             if (data.fields) {
-                fields = data.fields
+                fields = data.fields;
+                fields.push('_id', 'rawId');
             } else {
-                fields = ['_id', 'rowId', 'title', 'description',
+                fields = ['_id', 'rowId', 'title', 'description', 'rawId',
                     'calendarId', 'start', 'end', 'isAllDay', 'isRepeat',
                     'repeatType', 'repeatEnd', 'repeatDays'];
             }

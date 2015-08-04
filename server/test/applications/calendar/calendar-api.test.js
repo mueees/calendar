@@ -522,6 +522,42 @@ describe('calendar-api', function () {
         })
     });
 
+    it('should create event and  dont find them', function (done) {
+        client.exec('request', '/event/create', {
+            data: {
+                title: 'TestEvent 1',
+                start: new Date(),
+                end: new Date(),
+                isRepeat: true,
+                repeatType: 1,
+                calendarId: mockCalendarId,
+                isAllDay: false
+            }
+        }, function (err) {
+            if (err) {
+                return done(new Error(err.message));
+            }
+
+            client.exec('request', '/event/find', {
+                data: {
+                    start: moment(new Date()).add(1, 'd').toDate(),
+                    end: moment(new Date()).add(5, 'd').toDate(),
+                    calendarIds: ['559c00051f9eaee6089e6089']
+                }
+            }, function (err, events) {
+                if (err) {
+                    return done(new Error(err.message));
+                }
+
+                if (events && events.length == 0) {
+                    return done();
+                } else {
+                    return done(new Error('Something wrong with find method'));
+                }
+            })
+        })
+    });
+
     it('should create event that repeat every day with end and find them', function (done) {
         client.exec('request', '/event/create', {
             data: {
@@ -603,7 +639,7 @@ describe('calendar-api', function () {
                 start: moment('2015-07-02').toDate(),
                 end: moment('2015-07-02').toDate(),
                 isRepeat: true,
-                repeatType: 3,
+                repeatType: 2,
                 repeatDays: [0, 1],
                 calendarId: mockCalendarId,
                 isAllDay: false
@@ -640,7 +676,7 @@ describe('calendar-api', function () {
                 start: moment('2015-07-02').toDate(),
                 end: moment('2015-07-02').toDate(),
                 isRepeat: true,
-                repeatType: 3,
+                repeatType: 2,
                 repeatDays: [0, 1, 2, 3, 4, 5],
                 repeatEnd: moment('2015-07-14').toDate(),
                 calendarId: mockCalendarId,
@@ -671,79 +707,6 @@ describe('calendar-api', function () {
         });
     });
 
-    it('should create event that repeat weekly without end and find them', function (done) {
-        client.exec('request', '/event/create', {
-            data: {
-                title: 'TestEvent 1',
-                start: moment('2015-07-02').toDate(),
-                end: moment('2015-07-02').toDate(),
-                isRepeat: true,
-                repeatType: 2,
-                calendarId: mockCalendarId,
-                isAllDay: false
-            }
-        }, function (err) {
-            if (err) {
-                return done(new Error(err.message));
-            }
-
-            client.exec('request', '/event/find', {
-                data: {
-                    start: moment('2015-07-12').toDate(),
-                    end: moment('2015-07-18').toDate(),
-                    calendarIds: [mockCalendarId]
-                }
-            }, function (err, events) {
-                if (err) {
-                    return done(new Error(err.message));
-                }
-
-                if (events && events.length == 5) {
-                    return done();
-                } else {
-                    return done(new Error('Something wrong with find method'));
-                }
-            });
-        });
-    });
-
-    it('should create event that repeat weekly with end and find them', function (done) {
-        client.exec('request', '/event/create', {
-            data: {
-                title: 'TestEvent 1',
-                start: moment('2015-07-02').toDate(),
-                end: moment('2015-07-02').toDate(),
-                isRepeat: true,
-                repeatType: 2,
-                repeatEnd: moment('2015-07-17').toDate(),
-                calendarId: mockCalendarId,
-                isAllDay: false
-            }
-        }, function (err) {
-            if (err) {
-                return done(new Error(err.message));
-            }
-
-            client.exec('request', '/event/find', {
-                data: {
-                    start: moment('2015-07-12').toDate(),
-                    end: moment('2015-07-18').toDate(),
-                    calendarIds: [mockCalendarId]
-                }
-            }, function (err, events) {
-                if (err) {
-                    return done(new Error(err.message));
-                }
-
-                if (events && events.length == 4) {
-                    return done();
-                } else {
-                    return done(new Error('Something wrong with find method'));
-                }
-            });
-        });
-    });
-
     it('should create event that repeat monthly without end and find them', function (done) {
         client.exec('request', '/event/create', {
             data: {
@@ -751,7 +714,7 @@ describe('calendar-api', function () {
                 start: moment('2015-07-02').toDate(),
                 end: moment('2015-07-02').toDate(),
                 isRepeat: true,
-                repeatType: 4,
+                repeatType: 3,
                 calendarId: mockCalendarId,
                 isAllDay: false
             }
@@ -787,7 +750,7 @@ describe('calendar-api', function () {
                 start: moment('2015-07-02').toDate(),
                 end: moment('2015-07-02').toDate(),
                 isRepeat: true,
-                repeatType: 4,
+                repeatType: 3,
                 repeatEnd: moment('2015-09-01').toDate(),
                 calendarId: mockCalendarId,
                 isAllDay: false
@@ -824,7 +787,7 @@ describe('calendar-api', function () {
                 start: moment('2015-07-02').toDate(),
                 end: moment('2015-07-02').toDate(),
                 isRepeat: true,
-                repeatType: 5,
+                repeatType: 4,
                 calendarId: mockCalendarId,
                 isAllDay: false
             }
@@ -861,7 +824,7 @@ describe('calendar-api', function () {
                 end: moment('2015-07-02').toDate(),
                 isRepeat: true,
                 repeatEnd: moment('2019-07-01').toDate(),
-                repeatType: 5,
+                repeatType: 4,
                 calendarId: mockCalendarId,
                 isAllDay: false
             }
@@ -898,7 +861,7 @@ describe('calendar-api', function () {
                 end: moment('2015-07-02').toDate(),
                 isRepeat: true,
                 repeatEnd: moment('2019-07-01').toDate(),
-                repeatType: 5,
+                repeatType: 4,
                 calendarId: mockCalendarId,
                 isAllDay: false
             }
@@ -919,7 +882,7 @@ describe('calendar-api', function () {
                     return done(new Error(err.message));
                 }
 
-                if (events && events[0].title && !events[0]._id) {
+                if (events && events[0].title && events[0]._id  && !events[0].start) {
                     return done();
                 } else {
                     return done(new Error('Something wrong with find method'));
