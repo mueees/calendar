@@ -238,7 +238,7 @@ module.exports = function (server) {
             if (!event) {
                 return callback(new ServerError(400, 'Cannot find event'));
             } else {
-                var updateData = _.pick(options.data, ['title', 'description', 'start', 'end', 'isRepeat', 'repeatType', 'repeatDays', 'repeatEnd', 'isAllDay']);
+                var updateData = _.pick(options.data, ['title', 'description', 'start', 'end', 'isRepeat', 'repeatType', 'repeatDays', 'repeatEnd', 'isAllDay', 'calendarId']);
 
                 if (!updateData.isRepeat) {
                     delete updateData.repeatType;
@@ -251,7 +251,7 @@ module.exports = function (server) {
                         return callback(new ServerError(400, 'Repeat type should exist'));
                     }
 
-                    if (updateData.repeatType == 3 && !updateData.repeatDays) {
+                    if (updateData.repeatType == 2 && !updateData.repeatDays) {
                         return callback(new ServerError(400, 'Repeat days should exist'));
                     }
                 }
@@ -325,7 +325,7 @@ module.exports = function (server) {
             d = new Date(start);
 
         for (d; d <= end; d.setDate(d.getDate() + 1)) {
-            if (event.repeatEnd && d >= event.repeatEnd || !_.contains(days, d.getDay())) {
+            if (event.repeatEnd && d >= event.repeatEnd || !_.contains(days, String(d.getDay()))) {
                 continue;
             }
 
