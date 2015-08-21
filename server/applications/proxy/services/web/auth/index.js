@@ -4,7 +4,9 @@ var passport = require('passport'),
 
 passport.use(new BearerStrategy(
     function (client_token, done) {
-        Token.getTokenByClientToken(client_token, function (err, token) {
+        Token.findOne({
+            client_token: client_token
+        }, function (err, token) {
             if (err) {
                 return done(err);
             }

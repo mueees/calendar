@@ -1,6 +1,7 @@
 var req = require('request'),
     oauthClient = require('../../../clients/oauth'),
     Token = require('../../../common/resources/token'),
+    OauthAccess = require('../../../common/resources/oauth-access'),
     log = require('common/log')(module),
     async = require('async'),
     passport = require('passport'),
@@ -27,9 +28,9 @@ module.exports = function (app) {
 
             var approvalUrl;
 
-            if((process.env.NODE_ENV == "development")){
+            if ((process.env.NODE_ENV == "development")) {
                 approvalUrl = configuration.get("applications:proxy:services:web:approvalUrlDev");
-            }else{
+            } else {
                 approvalUrl = configuration.get("applications:proxy:services:web:approvalUrl");
             }
 
@@ -77,8 +78,6 @@ module.exports = function (app) {
                     return callback(err);
                 }
 
-                log.info(application.name);
-
                 callback(null, application, tokens);
             });
         }
@@ -89,25 +88,66 @@ module.exports = function (app) {
                     return callback(err);
                 }
 
-                log.info(application.name);
                 callback(null, application, tokens, email);
             });
         }
 
-        function createToken(application, tokens, email, callback) {
-            Token.create({
+        function createOrUpdateOauthAccess(application, tokens, email, callback) {
+            OauthAccess.findOne({
                 email: email,
                 applicationId: application.applicationId,
-                privateKey: application.privateKey,
-                access_token: tokens.access_token,
-                refresh_token: tokens.refresh_token,
-                exchange: tokens.exchange
+                privateKey: application.privateKey
+            }, function (err, oauthAccess) {
+                if (err) {
+                    return callback(err);
+                }
+
+                if (oauthAccess) {
+                    // should update existing oauthAccess
+                    OauthAccess.update({
+                        email: email,
+                        applicationId: application.applicationId,
+                        privateKey: application.privateKey
+                    }, {
+                        access_token: tokens.access_token,
+                        refresh_token: tokens.refresh_token,
+                        exchange: tokens.exchange
+                    }, function (err, oauthAccess) {
+                        if (err) {
+                            return callback(err);
+                        }
+
+                        callback(null, oauthAccess, application);
+                    });
+                } else {
+                    // should create oauthAccess
+                    OauthAccess.create({
+                        email: email,
+                        applicationId: application.applicationId,
+                        privateKey: application.privateKey,
+                        access_token: tokens.access_token,
+                        refresh_token: tokens.refresh_token,
+                        exchange: tokens.exchange
+                    }, function (err, oauthAccess) {
+                        if (err) {
+                            return callback(err);
+                        }
+
+                        callback(null, oauthAccess, application);
+                    });
+                }
+
+            });
+        }
+
+        function createToken(oauthAccess, application, callback) {
+            Token.create({
+                oathAccessId: oauthAccess._id
             }, function (err, token) {
                 if (err) {
                     return callback(err);
                 }
 
-                log.info(application.name);
                 callback(null, token, application);
             });
         }
@@ -116,11 +156,12 @@ module.exports = function (app) {
             getApplication,
             exchangeTicket,
             getUserEmail,
+            createOrUpdateOauthAccess,
             createToken
         ], function (err, token, application) {
             if (err) {
                 log.error(err);
-                
+
                 return response.render('postMessage', {
                     response: JSON.stringify({
                         status: 400,
