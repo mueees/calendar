@@ -5,7 +5,7 @@ var mongoose = require('mongoose'),
     helpers = require('common/helpers');
 
 var tokenSchema = new Schema({
-    oathAccessId: {
+    oauthAccessId: {
         type: ObjectId,
         required: true
     },
@@ -23,6 +23,7 @@ tokenSchema.statics.create = function (data, cb) {
     token.save(function (err, token) {
         if (err) {
             log.error(err);
+
             return cb('Server error');
         }
 

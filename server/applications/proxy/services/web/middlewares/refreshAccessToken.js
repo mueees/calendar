@@ -2,23 +2,23 @@ var HttpError = require('common/errors/HttpError'),
     log = require('common/log')(module);
 
 module.exports = function (request, response, next) {
-    var token = request.user;
+    var oauthAccess = request.user;
 
-    if (token.isNeedRefresh()) {
-        token.refreshAccessToken(function (err, token) {
+    if (oauthAccess.isNeedRefresh()) {
+        oauthAccess.refreshAccessToken(function (err, oauthAccess) {
             if (err) {
                 log.error(err);
+
                 return next(new HttpError(400, 'Server error'));
             }
 
-            log.info('Access Token has refreshed.');
+            oauthAccess.last_refresh = new Date();
+            request.user = oauthAccess;
 
-            token.last_refresh = new Date();
-            request.user = token;
             next();
 
-            token.save(function(err){
-                if(err){
+            oauthAccess.save(function (err) {
+                if (err) {
                     log.error(err);
                 }
             });

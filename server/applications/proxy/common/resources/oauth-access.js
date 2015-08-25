@@ -74,22 +74,6 @@ oauthAccessSchema.statics.create = function (data, cb) {
     });
 };
 
-oauthAccessSchema.statics.getTokenByClientToken = function (client_token, cb) {
-    this.findOne({
-        client_token: client_token
-    }, null, function (err, token) {
-        if (err) {
-            return cb("Server error");
-        }
+var OauthAccess = mongoose.model('OauthAccess', oauthAccessSchema);
 
-        if (!token) {
-            cb(null, false);
-        } else {
-            cb(null, token);
-        }
-    });
-};
-
-var Token = mongoose.model('Token', tokenSchema);
-
-module.exports = Token;
+module.exports = OauthAccess;

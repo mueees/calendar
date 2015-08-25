@@ -15,6 +15,7 @@ module.exports = function (app) {
         oauthClient.exec('getApplicationByOauthKey', request.params.oauthKey, function (err, application) {
             if (err) {
                 log.error(err.message);
+
                 return response.render('postMessage', {
                     response: JSON.stringify({
                         status: 400,
@@ -43,6 +44,7 @@ module.exports = function (app) {
     app.get('/oauth/:applicationId', function (request, response) {
         if (!request.query.ticket) {
             log.error('Cannot find ticket');
+
             return response.render('postMessage', {
                 response: JSON.stringify({
                     status: 400,
@@ -112,10 +114,14 @@ module.exports = function (app) {
                         access_token: tokens.access_token,
                         refresh_token: tokens.refresh_token,
                         exchange: tokens.exchange
-                    }, function (err, oauthAccess) {
+                    }, function (err) {
                         if (err) {
                             return callback(err);
                         }
+
+                        oauthAccess.access_token = tokens.access_token;
+                        oauthAccess.refresh_token = tokens.refresh_token;
+                        oauthAccess.exchange = tokens.exchange;
 
                         callback(null, oauthAccess, application);
                     });
@@ -136,13 +142,14 @@ module.exports = function (app) {
                         callback(null, oauthAccess, application);
                     });
                 }
-
             });
         }
 
         function createToken(oauthAccess, application, callback) {
+            log.info(oauthAccess);
+
             Token.create({
-                oathAccessId: oauthAccess._id
+                oauthAccessId: oauthAccess._id
             }, function (err, token) {
                 if (err) {
                     return callback(err);

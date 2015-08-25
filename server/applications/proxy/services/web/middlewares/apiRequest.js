@@ -3,10 +3,12 @@ var HttpError = require('common/errors/HttpError'),
     ApiRequestToProxy = require('../../../common/actions/ApiRequestToProxy');
 
 module.exports = function (request, response, next) {
+    var oauthAccess = request.user;
+
     var options = {
         application: request.params.application,
         request: request.params[0],
-        access_token: request.user.access_token,
+        access_token: oauthAccess.access_token,
         method: request.method
     };
 
