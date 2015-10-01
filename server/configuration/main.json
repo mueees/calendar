@@ -25,6 +25,10 @@
       "services": {
         "api": {
           "port": 9001
+        },
+        "web": {
+          "port": 9002,
+          "name": "Test OAuth Web API server"
         }
       }
     },
