@@ -1,11 +1,8 @@
-var request = require('request');
+var OauthRequest = require('common/request/oauth');
 
-request({
-    method: 'POST',
-    url: 'http://localhost:9002/api/application/create'
-}, function (err, response, data) {
-    data = JSON.parse(data);
-
-    console.log(data);
-    console.log(data._id);
+OauthRequest.create({
+    name: "REST REQUEST",
+    userId: '559bfe2016bd17920826b366',
+    useProxy: true
+}).then(function (data) {
 });

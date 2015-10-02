@@ -23,7 +23,7 @@ function Logger(module) {
                 extra: pathModule
             });
         }
-    };
+    }
 
     this.info = function (message) {
         send('info', message);
