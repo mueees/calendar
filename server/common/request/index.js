@@ -10,11 +10,10 @@ MueRequest.request = function (options) {
         def = Q.defer();
 
     options.url = 'http://localhost:' + port + '/api/' + options.app + options.url;
+
     options.timeout = 2000;
 
-    if (options.method == 'POST') {
-        options.json = true;
-    }
+    options.json = true;
 
     options.headers = {
         'mue-inner-request': 'true'

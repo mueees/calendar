@@ -13,6 +13,9 @@ export NODE_PATH=/vagrant/server
 cd /vagrant/server/applications/oauth-server/services/api
 pm2 start index.js --name oauth-api
 
+cd /vagrant/server/applications/oauth-server/services/web
+pm2 start index.js --name oauth-web-api
+
 cd /vagrant/server/applications/account/server/services/api
 pm2 start index.js --name account-api
 
@@ -48,6 +51,9 @@ export NODE_PATH=/home/mue/web/projects/calendar/server/
 
 cd /home/mue/web/projects/calendar/server/applications/oauth-server/services/api
 pm2 start index.js --name oauth-api
+
+cd /home/mue/web/projects/calendar/server/applications/oauth-server/services/web
+pm2 start index.js --name oauth-web-api
 
 cd /home/mue/web/projects/calendar/server/applications/account/server/services/api
 pm2 start index.js --name account-api

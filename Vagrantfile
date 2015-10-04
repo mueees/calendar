@@ -1,6 +1,6 @@
 Vagrant::Config.run do |config|
   config.vm.box = "precise64"
-  config.vm.customize ["modifyvm", :id, "--memory", 2048]
+  # config.vm.customize ["modifyvm", :id, "--memory", 2048]
 
   # Booting
 
@@ -37,6 +37,7 @@ Vagrant::Config.run do |config|
   # Needs build-essential cookbook from https://github.com/opscode/cookbooks
 
   config.vm.provision :chef_solo do |chef|
+      chef.version = "11.18"
       chef.cookbooks_path = "cookbooks"
 
       chef.json = {

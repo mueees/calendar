@@ -1,8 +1,10 @@
 var Application = require('common/resources/application'),
+    log = require('common/log')(module),
     HttpError = require('common/errors/HttpError');
 
 module.exports = function (app) {
-    app.put('/api/oauth/application', function (request, response, next) {
+    // create application
+    app.put('/api/oauth/applications', function (request, response, next) {
         var data = request.body;
 
         if (!data.name || !data.name.length) {
@@ -34,7 +36,49 @@ module.exports = function (app) {
         });
     });
 
-    app.post('/api/oauth/application', function (request, response, next) {
-        response.send({});
+    // edit application
+    app.post('/api/oauth/applications/:id', function (request, response, next) {
+        var data = request.body;
+
+        Application.update({
+            _id: request.params.id
+        }, data, function (err, application) {
+            if (err) {
+                log.error(err);
+                return next(new HttpError(400, 'Server error'));
+            }
+
+            response.send(application);
+        });
+    });
+
+    // get all applications
+    app.get('/api/oauth/applications', function (request, response, next) {
+        if (!request.query.userId) {
+            return next(new HttpError(400, 'Invalid user Id'));
+        }
+
+        Application.find({
+            userId: request.query.userId
+        }, {
+            _id: true,
+            applicationId: true,
+            date_create: true,
+            description: true,
+            domain: true,
+            oauthKey: true,
+            name: true,
+            privateKey: true,
+            useProxy: true,
+            redirectUrl: true,
+            status: true
+        }, function (err, applications) {
+            if (err) {
+                log.error(err.message);
+                return next(new HttpError(400, 'Server Error'));
+            }
+
+            response.send(applications);
+        });
     });
 };
