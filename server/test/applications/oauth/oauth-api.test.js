@@ -82,4 +82,32 @@ describe('oauth-api', function () {
             done(new Error(err));
         });
     });
+
+    it('should delete application', function (done) {
+        OauthRequest.createApplication(testApplication).then(function (data) {
+            OauthRequest.deleteApplication({
+                _id: data.body._id
+            }).then(function () {
+                done();
+            }, function (response) {
+                done(new Error(response.body));
+            });
+        }, function (response) {
+            done(new Error(response.body.message));
+        });
+    });
+
+/*    it('should exchange ticket', function (done) {
+        OauthRequest.createApplication(testApplication).then(function (data) {
+            OauthRequest.exchange({
+                _id: data.body._id
+            }).then(function () {
+                done();
+            }, function (response) {
+                done(new Error(response.body));
+            });
+        }, function (response) {
+            done(new Error(response.body.message));
+        });
+    });*/
 });

@@ -31,8 +31,7 @@ function deleteApplication(data) {
         app: app,
         service: service,
         method: 'DELETE',
-        url: '/applications',
-        body: data
+        url: '/applications/' + data._id
     });
 }
 
@@ -45,7 +44,28 @@ function getApplications(data) {
     });
 }
 
+function getApplicationByApplicationId(data) {
+    return MueRequest.request({
+        app: app,
+        service: service,
+        method: 'GET',
+        url: '/applications?applicationId=' + data.applicationId
+    });
+}
+
+function exchange(data) {
+    return MueRequest.request({
+        app: app,
+        service: service,
+        method: 'GET',
+        url: '/exchange',
+        body: data
+    });
+}
+
 exports.getApplications = getApplications;
+exports.getApplicationByApplicationId = getApplicationByApplicationId;
 exports.createApplication = createApplication;
 exports.editApplication = editApplication;
 exports.deleteApplication = deleteApplication;
+exports.exchange = exchange;
