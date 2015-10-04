@@ -5,4 +5,6 @@ OauthRequest.create({
     userId: '559bfe2016bd17920826b366',
     useProxy: true
 }).then(function (data) {
+    "use strict";
+
 });

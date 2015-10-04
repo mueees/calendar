@@ -31,8 +31,7 @@ function deleteApplication(data) {
         app: app,
         service: service,
         method: 'DELETE',
-        url: '/applications',
-        body: data
+        url: '/applications/' + data._id
     });
 }
 
@@ -45,7 +44,60 @@ function getApplications(data) {
     });
 }
 
+function getApplicationByApplicationId(data) {
+    return MueRequest.request({
+        app: app,
+        service: service,
+        method: 'GET',
+        url: '/applications?applicationId=' + data.applicationId
+    });
+}
+
+function auth(data) {
+    return MueRequest.request({
+        app: app,
+        service: service,
+        method: 'POST',
+        url: '/auth',
+        body: data
+    });
+}
+
+function exchange(data) {
+    return MueRequest.request({
+        app: app,
+        service: service,
+        method: 'POST',
+        url: '/exchange',
+        body: data
+    });
+}
+
+function refresh(data) {
+    return MueRequest.request({
+        app: app,
+        service: service,
+        method: 'POST',
+        url: '/refresh',
+        body: data
+    });
+}
+
+function newPrivateKey(data){
+    return MueRequest.request({
+        app: app,
+        service: service,
+        method: 'POST',
+        url: '/applications/' + data._id + '/command/newPrivateKey'
+    });
+}
+
 exports.getApplications = getApplications;
+exports.getApplicationByApplicationId = getApplicationByApplicationId;
 exports.createApplication = createApplication;
 exports.editApplication = editApplication;
 exports.deleteApplication = deleteApplication;
+exports.exchange = exchange;
+exports.refresh = refresh;
+exports.auth = auth;
+exports.newPrivateKey = newPrivateKey;

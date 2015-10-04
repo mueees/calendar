@@ -24,6 +24,42 @@ _.extend(Server.prototype, {
     getPermissionByAccessToken: getPermissionByAccessToken
 });
 
+function getPermissionByAccessToken(access_token, callback) {
+    if (!access_token) {
+        return callback(new OauthError(400, "Invalid Access Token"));
+    }
+
+    Permission.findOne({
+        access_token: access_token
+    }, null, function (err, permission) {
+        if (err) {
+            return callback(new OauthError(400, "Server error"));
+        }
+
+        if (!permission) {
+            return callback(new OauthError(400, "Invalid Access Token."));
+        }
+
+        if (permission.isExpired(expiredTime)) {
+            return callback(new OauthError(400, "Access token was expired. Please update it."));
+        }
+
+        callback(null, permission);
+    });
+}
+
+
+function newPrivateKey(applicationId, callback) {
+    Application.refreshPrivateKey(applicationId, function (err, newPrivateKey) {
+        if (err) {
+            log.error(err);
+            return callback(new OauthError(400, err));
+        }
+
+        callback(null, newPrivateKey)
+    });
+}
+
 function auth(data, callback) {
     if (!data.applicationId || !data.applicationId.length) {
         return callback(new OauthError(400, 'Invalid application Id'));
@@ -227,30 +263,6 @@ function refresh(data, callback) {
 
 }
 
-function getPermissionByAccessToken(access_token, callback) {
-    if (!access_token) {
-        return callback(new OauthError(400, "Invalid Access Token"));
-    }
-
-    Permission.findOne({
-        access_token: access_token
-    }, null, function (err, permission) {
-        if (err) {
-            return callback(new OauthError(400, "Server error"));
-        }
-
-        if (!permission) {
-            return callback(new OauthError(400, "Invalid Access Token."));
-        }
-
-        if (permission.isExpired(expiredTime)) {
-            return callback(new OauthError(400, "Access token was expired. Please update it."));
-        }
-
-        callback(null, permission);
-    });
-}
-
 function createApplication(data, callback) {
     if (!data.name || !data.name.length) {
         return callback(new OauthError(400, "Name should exists."));
@@ -426,15 +438,6 @@ function getApplicationByOauthKey(oauthKey, callback) {
 
 }
 
-function newPrivateKey(applicationId, callback) {
-    Application.refreshPrivateKey(applicationId, function (err, newPrivateKey) {
-        if (err) {
-            log.error(err);
-            return callback(new OauthError(400, err));
-        }
 
-        callback(null, newPrivateKey)
-    });
-}
 
 module.exports = Server;
