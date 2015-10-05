@@ -21,7 +21,7 @@ module.exports = function (request, response, next) {
             log.error('Access token invalid');
             next(new HttpError('Access token invalid'));
         }
-    }else{
+    } else {
         log.error('Cannot find access token');
 
         next(new HttpError(400, 'Cannot find access token'));

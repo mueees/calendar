@@ -1,21 +1,18 @@
-var ServerError = require('common/service').ServerError,
-    User = require('common/resources/user'),
+var Application = require('common/resources/application'),
+    Permission = require('common/resources/permission'),
     OauthRequest = require('common/request/oauth'),
+    User = require('common/resources/user'),
     log = require('common/log')(module),
-    _ = require('underscore'),
-    async = require('async');
+    async = require('async'),
+    HttpError = require('common/errors/HttpError');
 
-module.exports = function (server) {
-    server.addRoute('/user', function (data, callback) {
-        if (!data.userId) {
-            log.error('Cannot find user id');
-            return callback(new ServerError(400, 'Cannot find user id'));
-        }
-
+module.exports = function (app) {
+    // get user by id
+    app.get('/api/account/user', function (request, response, next) {
         async.parallel([
             function (cb) {
                 User.findOne({
-                    _id: data.userId
+                    _id: request.params.id
                 }, function (err, user) {
                     if (err) {
                         log.error(err);
@@ -32,17 +29,17 @@ module.exports = function (server) {
             },
             function (cb) {
                 OauthRequest.getApplications({
-                    userId: data.userId
+                    userId: request.params.id
                 }).then(function (res) {
                     cb(null, res.body);
-                }, function (res) {
+                }, function () {
                     cb('Server error');
                 });
             }
         ], function (err, results) {
             if (err) {
                 log.error(err);
-                return callback(new ServerError(400, err));
+                return next(new HttpError(400, err));
             }
 
             var user = results[0],
@@ -60,7 +57,7 @@ module.exports = function (server) {
                     }
                 });
 
-            callback(null, {
+            response.send({
                 email: user.email,
                 applications: apps
             });

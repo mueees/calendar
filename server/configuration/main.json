@@ -10,6 +10,12 @@
           "name": "Account",
           "port": 10000,
           "version": 1
+        },
+        "api": {
+          "name": "Account api",
+          "status": true,
+          "port": 8001,
+          "version": 1
         }
       }
     },
@@ -44,13 +50,6 @@
     }
   },
   "applications-api": {
-    "account": {
-      "name": "Account api",
-      "api-prefix": "account",
-      "status": true,
-      "port": 8001,
-      "version": 1
-    },
     "calendar": {
       "name": "Calendar api",
       "api-prefix": "calendar",

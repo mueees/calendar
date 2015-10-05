@@ -1,22 +1,19 @@
-var applicationsApi = require('configuration').get('applications-api'),
+var applications = require('configuration').get('applications'),
     log = require('common/log')(module),
     HttpError = require('common/errors/HttpError');
 
 module.exports = function (request, response, next) {
-    var application = request.params.application,
-        applicationApi = applicationsApi[application];
+    var applicationApi = applications[request.params.application].services.api;
 
     if (!applicationApi) {
-        log.error('Application "' + application + '" is not exist.');
-        return next(new HttpError(400, 'Application "' + application + '" is not exist.'));
+        log.error('Application "' + request.params.application + '" is not exist.');
+        return next(new HttpError(400, 'Application "' + request.params.application + '" is not exist.'));
     }
 
     if (!applicationApi.status) {
-        log.error(application + " offline.");
-        return next(new HttpError(400, application + " offline."));
+        log.error(request.params.application + " offline.");
+        return next(new HttpError(400, request.params.application + " offline."));
     }
-
-    request.application = application;
 
     next();
 };

@@ -10,7 +10,7 @@ var app = express();
 
 app.use(bodyParser.json({type: 'application/json'}));
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
@@ -34,6 +34,8 @@ app.use(function (err, req, res, next) {
     }
 });
 
-var server = http.createServer(app);
-server.listen(configuration.get("applications:api:services:web:port"));
-log.info(configuration.get("applications:api:services:web:name") + " server listening: " + configuration.get("applications:api:services:web:port"));
+var server = http.createServer(app),
+    servicePort = configuration.get("applications:api:services:web:port");
+
+server.listen(servicePort);
+log.info(configuration.get("applications:api:services:web:name") + " server listening: " + servicePort);
