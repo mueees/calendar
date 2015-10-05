@@ -5,6 +5,7 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     errorhandler = require('errorhandler'),
     accountConfig = require('../../config'),
+    log = require('common/log')(module),
     configuration = require('configuration');
 
 var app = express();

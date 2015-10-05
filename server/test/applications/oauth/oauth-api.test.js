@@ -201,4 +201,41 @@ describe('oauth-api', function () {
             done(new Error(response.body.message));
         });
     });
+
+    it('should get permission by access token', function (done) {
+        var application = null;
+
+        OauthRequest.createApplication(testApplication).then(function (data) {
+            application = data.body;
+
+            OauthRequest.auth({
+                userId: testApplication.userId,
+                applicationId: application.applicationId
+            }).then(function (data) {
+                OauthRequest.exchange({
+                    ticket: data.body,
+                    privateKey: application.privateKey,
+                    applicationId: application.applicationId
+                }).then(function (data) {
+                    OauthRequest.getPermissionByAccessToken({
+                        access_token:  data.body.access_token
+                    }).then(function (data) {
+                        if(data.body.access_token){
+                            done();
+                        }else {
+                            done(new Error('Cannot get permission by access token'));
+                        }
+                    }, function (response) {
+                        done(new Error(response.body.message));
+                    });
+                }, function (response) {
+                    done(new Error(response.body.message));
+                })
+            }, function (response) {
+                done(new Error(response.body.message));
+            });
+        }, function (response) {
+            done(new Error(response.body.message));
+        });
+    });
 });

@@ -1,9 +1,9 @@
 var validator = require('validator'),
     async = require('async'),
     HttpError = require('common/errors/HttpError'),
-    oauthClient = require('../../../clients/oauth'),
     log = require('common/log')(module),
     configuration = require('configuration'),
+    OauthRequest = require('common/request/oauth'),
     _ = require('underscore');
 
 var controller = {
@@ -16,18 +16,18 @@ var controller = {
 
         data.userId = request.user._id;
 
-        oauthClient.exec('auth', data, function (err, ticket) {
-            if (err) {
-                log.error(err);
-                return next(new HttpError(400, err.message));
-            }
+        OauthRequest.auth(data)
+            .then(function (res) {
+                var redirectHost = (request.production) ? 'http://proxy.mue.in.ua' : 'http://localhost:' + configuration.get('applications:proxy:services:web:port');
 
-            var redirectHost = (request.production) ? 'http://proxy.mue.in.ua' : 'http://localhost:' + configuration.get('applications:proxy:services:web:port');
+                response.send({
+                    redirectUrl: redirectHost + '/oauth/' + data.applicationId + '?ticket=' + res.body
+                });
+            }, function (res) {
+                log.error(res.body.message);
 
-            response.send({
-                redirectUrl: redirectHost + '/oauth/' + data.applicationId + '?ticket=' + ticket
+                next(new HttpError(400, res.body.message));
             });
-        });
     },
 
     exchange: function (request, response, next) {
@@ -45,14 +45,14 @@ var controller = {
             return next(new HttpError(400, "Invalid application id"));
         }
 
-        oauthClient.exec('exchange', data, function (err, tokens) {
-            if (err) {
-                log.error(err);
-                return next(new HttpError(400, err.message));
-            }
+        OauthRequest.exchange(data)
+            .then(function (res) {
+                response.send(res.body);
+            }, function (res) {
+                log.error(res.body.message);
 
-            response.send(tokens);
-        });
+                next(new HttpError(400, res.body.message));
+            });
     },
 
     refresh: function (request, response, next) {
@@ -70,14 +70,14 @@ var controller = {
             return next(new HttpError(400, "Invalid application id"));
         }
 
-        oauthClient.exec('refresh', data, function (err, tokens) {
-            if (err) {
-                log.error(err);
-                return next(new HttpError(400, err.message));
-            }
+        OauthRequest.refresh(data)
+            .then(function (res) {
+                response.send(res.body);
+            }, function (res) {
+                log.error(res.body.message);
 
-            response.send(tokens);
-        });
+                next(new HttpError(400, res.body.message));
+            });
     }
 };
 

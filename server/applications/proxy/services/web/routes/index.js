@@ -2,6 +2,7 @@ var req = require('request'),
     oauthClient = require('../../../clients/oauth'),
     Token = require('../../../common/resources/token'),
     OauthAccess = require('../../../common/resources/oauth-access'),
+    OauthRequest = require('common/request/oauth'),
     log = require('common/log')(module),
     async = require('async'),
     passport = require('passport'),
@@ -12,21 +13,7 @@ var req = require('request'),
 
 module.exports = function (app) {
     app.get('/provide/:oauthKey', function (request, response) {
-        oauthClient.exec('getApplicationByOauthKey', request.params.oauthKey, function (err, application) {
-            if (err) {
-                log.error(err.message);
-
-                return response.render('postMessage', {
-                    response: JSON.stringify({
-                        status: 400,
-                        message: 'Server error'
-                    }),
-                    meta: JSON.stringify({
-                        domain: null
-                    })
-                });
-            }
-
+        OauthRequest.getApplicationByOauthKey(request.params.oauthKey).then(function (res) {
             var approvalUrl;
 
             if ((process.env.NODE_ENV == "development")) {
@@ -35,9 +22,19 @@ module.exports = function (app) {
                 approvalUrl = configuration.get("applications:proxy:services:web:approvalUrl");
             }
 
-            var url = approvalUrl + '?applicationid=' + application.applicationId;
+            response.redirect(approvalUrl + '?applicationid=' + res.body.applicationId);
+        }, function (res) {
+            log.error(res.body.message);
 
-            response.redirect(url);
+            response.render('postMessage', {
+                response: JSON.stringify({
+                    status: 400,
+                    message: 'Server error'
+                }),
+                meta: JSON.stringify({
+                    domain: null
+                })
+            });
         });
     });
 
@@ -57,30 +54,22 @@ module.exports = function (app) {
         }
 
         function getApplication(callback) {
-            oauthClient.exec('getApplicationByApplicationId', request.params.applicationId, function (err, application) {
-                if (err) {
-                    return callback(err);
-                }
-
-                log.info(application.name);
-
-                callback(null, application);
+            OauthRequest.getApplicationByApplicationId(request.params.applicationId).then(function (res) {
+                callback(null, res.body);
+            }, function (res) {
+                callback(res.body.message);
             });
         }
 
         function exchangeTicket(application, callback) {
-            var data = {
+            OauthRequest.exchange({
                 ticket: request.query.ticket,
                 privateKey: application.privateKey,
                 applicationId: application.applicationId
-            };
-
-            oauthClient.exec('exchange', data, function (err, tokens) {
-                if (err) {
-                    return callback(err);
-                }
-
-                callback(null, application, tokens);
+            }).then(function (res) {
+                callback(null, application, res.body);
+            }, function (res) {
+                callback(res.body.message);
             });
         }
 

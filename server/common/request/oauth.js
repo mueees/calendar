@@ -44,12 +44,21 @@ function getApplications(data) {
     });
 }
 
-function getApplicationByApplicationId(data) {
+function getApplicationByApplicationId(applicationId) {
     return MueRequest.request({
         app: app,
         service: service,
         method: 'GET',
-        url: '/applications?applicationId=' + data.applicationId
+        url: '/applications/applicationId/' + applicationId
+    });
+}
+
+function getApplicationByOauthKey(oauthKey) {
+    return MueRequest.request({
+        app: app,
+        service: service,
+        method: 'GET',
+        url: '/applications/oauthKey/' + oauthKey
     });
 }
 
@@ -83,7 +92,7 @@ function refresh(data) {
     });
 }
 
-function newPrivateKey(data){
+function newPrivateKey(data) {
     return MueRequest.request({
         app: app,
         service: service,
@@ -92,8 +101,19 @@ function newPrivateKey(data){
     });
 }
 
+function getPermissionByAccessToken(data) {
+    return MueRequest.request({
+        app: app,
+        service: service,
+        method: 'GET',
+        url: '/permissions/accessToken/' + data.access_token
+    });
+}
+
 exports.getApplications = getApplications;
+exports.getApplicationByOauthKey = getApplicationByOauthKey;
 exports.getApplicationByApplicationId = getApplicationByApplicationId;
+
 exports.createApplication = createApplication;
 exports.editApplication = editApplication;
 exports.deleteApplication = deleteApplication;
@@ -101,3 +121,4 @@ exports.exchange = exchange;
 exports.refresh = refresh;
 exports.auth = auth;
 exports.newPrivateKey = newPrivateKey;
+exports.getPermissionByAccessToken = getPermissionByAccessToken;

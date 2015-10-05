@@ -1,6 +1,6 @@
 var ServerError = require('common/service').ServerError,
     User = require('common/resources/user'),
-    oauthClient = require('../../../clients/oauth'),
+    OauthRequest = require('common/request/oauth'),
     log = require('common/log')(module),
     _ = require('underscore'),
     async = require('async');
@@ -31,13 +31,12 @@ module.exports = function (server) {
                 });
             },
             function (cb) {
-                oauthClient.exec('getAllApplications', data.userId, function (err, applications) {
-                    if (err) {
-                        log.error(err);
-                        return cb('Server error');
-                    }
-
-                    cb(null, applications);
+                OauthRequest.getApplications({
+                    userId: data.userId
+                }).then(function (res) {
+                    cb(null, res.body);
+                }, function (res) {
+                    cb('Server error');
                 });
             }
         ], function (err, results) {

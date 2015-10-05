@@ -1,18 +1,16 @@
 var async = require('async'),
     HttpError = require('common/errors/HttpError'),
     log = require('common/log')(module),
-    oauthClient = require('../../../clients/oauth'),
+    OauthRequest = require('common/request/oauth'),
     _ = require("underscore");
 
 var controller = {
     getByApplicationId: function (request, response, next) {
-        oauthClient.exec('getApplicationByApplicationId', request.param("id"), function (err, application) {
-            if (err) {
-                log.error(err);
-                return next(new HttpError(400, err.message));
-            }
+        OauthRequest
+            .getApplicationByApplicationId(request.params.id)
+            .then(function (res) {
+                var application = res.body;
 
-            if (application) {
                 response.send({
                     _id: application._id,
                     name: application.name,
@@ -23,20 +21,18 @@ var controller = {
                     description: application.description,
                     applicationId: application.applicationId
                 });
-            } else {
-                return next(new HttpError(400, "Cannot find application."));
-            }
-        });
+            }, function (response) {
+                log.error(response.body.message);
+
+                next(new HttpError(400, response.body.message));
+            });
     },
 
     getAll: function (request, response, next) {
-        oauthClient.exec('getAllApplications', request.user._id, function (err, applications) {
-            if (err) {
-                log.error(err);
-                return next(new HttpError(400, err.message));
-            }
-
-            var apps = _.map(applications, function (application) {
+        OauthRequest.getApplications({
+            userId: request.user._id
+        }).then(function (res) {
+            var apps = _.map(res.body, function (application) {
                 return {
                     _id: application._id,
                     applicationId: application.applicationId,
@@ -53,6 +49,9 @@ var controller = {
             });
 
             response.send(apps);
+        }, function (response) {
+            log.error(response.body.message);
+            next(new HttpError(400, response.body.message));
         });
     },
 
@@ -69,13 +68,12 @@ var controller = {
 
         data.userId = request.user._id;
 
-        oauthClient.exec('createApplication', data, function (err, application) {
-            if (err) {
-                log.error(err);
-                return next(new HttpError(400, err.message));
-            }
+        OauthRequest.createApplication(data).then(function (res) {
+            response.send(res.body);
+        }, function (response) {
+            log.error(response.body.message);
 
-            response.send(application);
+            next(new HttpError(400, response.body.message));
         });
     },
 
@@ -83,7 +81,7 @@ var controller = {
         var data = request.body,
             edit = {};
 
-        if( !data._id ){
+        if (!data._id) {
             return next(new HttpError(400, "Cannot find id."));
         }
 
@@ -101,17 +99,16 @@ var controller = {
             edit.description = data.description;
         }
 
-        if( !Object.keys(edit).length ){
+        if (!Object.keys(edit).length) {
             return next(new HttpError(400, "Cannot find parameters for chnging."));
         }
 
-        oauthClient.exec('editApplication', edit, function (err, application) {
-            if (err) {
-                log.error(err);
-                return next(new HttpError(400, err.message));
-            }
+        OauthRequest.editApplication(data).then(function (res) {
+            response.send(res.body);
+        }, function (response) {
+            log.error(response.body.message);
 
-            response.send(application);
+            next(new HttpError(400, response.body.message));
         });
     },
 
@@ -122,16 +119,16 @@ var controller = {
             return next(new HttpError(400, "Application Id should exists."));
         }
 
-        oauthClient.exec('newPrivateKey', data.applicationId, function (err, privateKey) {
-            if (err) {
-                log.error(err);
-                return next(new HttpError(400, err.message));
-            }
+        OauthRequest.newPrivateKey({_id: data.applicationId})
+            .then(function (res) {
+                response.send({
+                    privateKey: res.body
+                });
+            }, function (response) {
+                log.error(response.body.message);
 
-            response.send({
-                privateKey: privateKey
+                next(new HttpError(400, response.body.message));
             });
-        });
     },
 
     remove: function (request, response, next) {
@@ -141,14 +138,14 @@ var controller = {
             return next(new HttpError(400, "Application id should exists."));
         }
 
-        oauthClient.exec('removeApplication', data._id, function (err) {
-            if (err) {
-                log.error(err);
-                return next(new HttpError(400, err.message));
-            }
+        OauthRequest.deleteApplication({_id: data._id})
+            .then(function () {
+                response.send({});
+            }, function (response) {
+                log.error(response.body.message);
 
-            response.send({});
-        });
+                next(new HttpError(400, response.body.message));
+            });
     }
 };
 

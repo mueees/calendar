@@ -81,6 +81,40 @@ module.exports = function (app) {
         });
     });
 
+    // get application by applicationId
+    app.get('/api/oauth/applications/applicationId/:id', function (request, response, next) {
+        Application.findOne({
+            applicationId: request.params.id
+        }, null, function (err, application) {
+            if (err) {
+                return next(new HttpError(400, "Server error"));
+            }
+
+            if (!application) {
+                return next(new HttpError(400, "Cannot find application"));
+            }
+
+            response.send(application);
+        });
+    });
+
+    // get application by oauthKey
+    app.get('/api/oauth/applications/oauthKey/:oauthKey', function (request, response, next) {
+        Application.findOne({
+            oauthKey: request.params.oauthKey
+        }, null, function (err, application) {
+            if (err) {
+                return next(new HttpError(400, "Server error"));
+            }
+
+            if (!application) {
+                return next(new HttpError(400, "Cannot find application"));
+            }
+
+            response.send(application);
+        });
+    });
+
     // delete application
     app.delete('/api/oauth/applications/:id', function (request, response, next) {
         Application.findOne({
@@ -344,6 +378,7 @@ module.exports = function (app) {
         });
     });
 
+    // update application private key
     app.post('/api/oauth/applications/:id/command/newPrivateKey', function (request, response, next) {
         Application.refreshPrivateKey(request.params.id, function (err, newPrivateKey) {
             if (err) {
@@ -353,6 +388,27 @@ module.exports = function (app) {
             }
 
             response.send(newPrivateKey)
+        });
+    });
+
+    // get permission by accessToken
+    app.get('/api/oauth/permissions/accessToken/:accessToken', function (request, response, next) {
+        Permission.findOne({
+            access_token: request.params.accessToken,
+        }, null, function (err, permission) {
+            if (err) {
+                return next(new HttpError(400, "Server error"));
+            }
+
+            if (!permission) {
+                return next(new HttpError(400, "Invalid Access Token."));
+            }
+
+            if (permission.isExpired(expiredTime)) {
+                return next(new HttpError(400, "Access token was expired. Please update it."));
+            }
+
+            response.send(permission);
         });
     });
 };
