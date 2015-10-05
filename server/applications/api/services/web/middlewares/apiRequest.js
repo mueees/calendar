@@ -1,12 +1,15 @@
 var HttpError = require('common/errors/HttpError'),
     log = require('common/log')(module),
+    request = require('request'),
     _ = require('underscore'),
     clients = {
         account: require('../../../clients/account'),
         calendar: require('../../../clients/calendar')
     };
 
-module.exports = function (request, response, next) {
+module.exports = function (req, res, next) {
+    // req.pipe(request(url)).pipe(res);
+
     var options = {
         userId: request.permission.userId
     };

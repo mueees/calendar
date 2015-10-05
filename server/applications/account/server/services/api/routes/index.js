@@ -7,7 +7,6 @@ var Application = require('common/resources/application'),
     HttpError = require('common/errors/HttpError');
 
 module.exports = function (app) {
-    // get user by id
     app.get('/api/account/user', function (request, response, next) {
         async.parallel([
             function (cb) {

@@ -101,12 +101,12 @@ function newPrivateKey(data) {
     });
 }
 
-function getPermissionByAccessToken(data) {
+function getPermissionByAccessToken(access_token) {
     return MueRequest.request({
         app: app,
         service: service,
         method: 'GET',
-        url: '/permissions/accessToken/' + data.access_token
+        url: '/permissions/accessToken/' + access_token
     });
 }
 

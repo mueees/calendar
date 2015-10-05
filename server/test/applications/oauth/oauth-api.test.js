@@ -217,12 +217,10 @@ describe('oauth-api', function () {
                     privateKey: application.privateKey,
                     applicationId: application.applicationId
                 }).then(function (data) {
-                    OauthRequest.getPermissionByAccessToken({
-                        access_token:  data.body.access_token
-                    }).then(function (data) {
-                        if(data.body.access_token){
+                    OauthRequest.getPermissionByAccessToken(data.body.access_token).then(function (data) {
+                        if (data.body.access_token) {
                             done();
-                        }else {
+                        } else {
                             done(new Error('Cannot get permission by access token'));
                         }
                     }, function (response) {
