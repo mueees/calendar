@@ -3,15 +3,18 @@ var Application = require('common/resources/application'),
     OauthRequest = require('common/request/oauth'),
     User = require('common/resources/user'),
     log = require('common/log')(module),
+    _ = require('underscore'),
     async = require('async'),
     HttpError = require('common/errors/HttpError');
 
 module.exports = function (app) {
     app.get('/api/account/user', function (request, response, next) {
+        var userId = request.headers.userid;
+
         async.parallel([
             function (cb) {
                 User.findOne({
-                    _id: request.params.id
+                    _id: userId
                 }, function (err, user) {
                     if (err) {
                         log.error(err);
@@ -28,7 +31,7 @@ module.exports = function (app) {
             },
             function (cb) {
                 OauthRequest.getApplications({
-                    userId: request.params.id
+                    userId: userId
                 }).then(function (res) {
                     cb(null, res.body);
                 }, function () {

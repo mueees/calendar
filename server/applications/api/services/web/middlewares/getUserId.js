@@ -1,11 +1,10 @@
-var oauth = require('../../../clients/oauth'),
-    log = require('common/log')(module),
+var log = require('common/log')(module),
     OauthRequest = require('common/request/oauth'),
     HttpError = require('common/errors/HttpError');
 
 module.exports = function (request, response, next) {
     OauthRequest.getPermissionByAccessToken(request.access_token).then(function (res) {
-        request.permission = res.body;
+        request.headers.userId = res.body.userId;
         next();
     }, function (res) {
         log.error(res.body.message);

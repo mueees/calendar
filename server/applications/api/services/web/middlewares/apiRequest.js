@@ -1,41 +1,24 @@
-var HttpError = require('common/errors/HttpError'),
-    log = require('common/log')(module),
-    request = require('request'),
-    _ = require('underscore'),
-    clients = {
-        account: require('../../../clients/account'),
-        calendar: require('../../../clients/calendar')
-    };
+var request = require('request'),
+    HttpError = require('common/errors/HttpError');
 
 module.exports = function (req, res, next) {
-    // req.pipe(request(url)).pipe(res);
-
     var options = {
-        userId: request.permission.userId
+        url: 'http://localhost:' + req.service.port + req.originalUrl,
+        method: req.method,
+        headers: req.headers,
+        json: true,
+        timeout: 3000
     };
 
-    if (request.method == 'GET') {
-        options.data = request.query;
+    if (JSON.stringify(req.body) != '{}') {
+        options.body = req.body;
     }
 
-    if (request.method == 'POST') {
-        options.data = request.body;
-    }
+    var r = request(options);
 
-    options.originalUrl = request.originalUrl;
-
-    clients[request.application].exec('request', '/' + request.params[0], options, function (err, data) {
-        if (err) {
-            log.error(err.message);
-            return next(new HttpError(400, err.message));
-        }
-
-        if (_.isString(data)) {
-            data = {
-                data: data
-            }
-        }
-
-        response.send(data);
+    r.on('error', function (err) {
+        next(new HttpError('Request timeout'));
     });
+
+    r.pipe(res);
 };

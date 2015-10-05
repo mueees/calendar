@@ -4,7 +4,7 @@ var Application = require('common/resources/application'),
     async = require('async'),
     HttpError = require('common/errors/HttpError');
 
-var expiredTime = 1000 * 60 * 3; // 3 minutes
+var expiredTime = 1000 * 60 * 3 * 100000000000000000000000000000000000000000000000; // 3 minutes
 
 module.exports = function (app) {
     // create application
