@@ -47,7 +47,7 @@ export NODE_ENV=development
 export NODE_PATH=/home/mue/web/projects/calendar/server/
 
 cd /home/mue/web/projects/calendar/server/applications/oauth-server/services/web
-pm2 start index.js --name oauth-web-api
+pm2 start index.js --name oauth-api
 
 cd /home/mue/web/projects/calendar/server/applications/account/server/services/api
 pm2 start index.js --name account-api
