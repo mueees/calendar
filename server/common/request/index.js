@@ -15,9 +15,8 @@ MueRequest.request = function (options) {
 
     options.json = true;
 
-    options.headers = {
-        'mue-inner-request': 'true'
-    };
+    options.headers = options.headers || {};
+    options.headers['mue-inner-request'] = 'true';
 
     request(options, function (err, response, body) {
         if (err) {

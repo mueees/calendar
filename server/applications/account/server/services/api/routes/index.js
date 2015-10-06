@@ -9,7 +9,7 @@ var Application = require('common/resources/application'),
 
 module.exports = function (app) {
     app.get('/api/account/user', function (request, response, next) {
-        var userId = request.headers.userid;
+        var userId = request.userId;
 
         async.parallel([
             function (cb) {
@@ -17,12 +17,10 @@ module.exports = function (app) {
                     _id: userId
                 }, function (err, user) {
                     if (err) {
-                        log.error(err);
                         return cb('Server error');
                     }
 
                     if (!user) {
-                        log.error('Cannot find user');
                         return cb('Cannot find user');
                     }
 
@@ -34,8 +32,8 @@ module.exports = function (app) {
                     userId: userId
                 }).then(function (res) {
                     cb(null, res.body);
-                }, function () {
-                    cb('Server error');
+                }, function (res) {
+                    cb(res.body.message);
                 });
             }
         ], function (err, results) {

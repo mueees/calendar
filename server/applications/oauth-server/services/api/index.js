@@ -34,8 +34,8 @@ app.use(function (err, req, res, next) {
 // connect to database
 require("common/mongooseConnect").initConnection(oauthConfig);
 
-var servicePort = configuration.get("applications:oauth:services:web:port");
+var servicePort = configuration.get("applications:oauth:services:api:port");
 
 http.createServer(app).listen(servicePort);
 
-log.info(configuration.get("applications:oauth:services:web:name") + ' server listening: ' + servicePort + ' port');
+log.info(configuration.get("applications:oauth:services:api:name") + ' server listening: ' + servicePort + ' port');

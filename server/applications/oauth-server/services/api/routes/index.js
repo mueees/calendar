@@ -4,11 +4,12 @@ var Application = require('common/resources/application'),
     async = require('async'),
     HttpError = require('common/errors/HttpError');
 
-var expiredTime = 1000 * 60 * 3 * 100000000000000000000000000000000000000000000000; // 3 minutes
+var expiredTime = 1000 * 60 * 3 * 100000000000000000000000000000000000000000000000, // 3 minutes
+    prefix = '/api/oauth';
 
 module.exports = function (app) {
     // create application
-    app.put('/api/oauth/applications', function (request, response, next) {
+    app.put(prefix + '/applications', function (request, response, next) {
         var data = request.body;
 
         if (!data.name || !data.name.length) {
@@ -41,7 +42,7 @@ module.exports = function (app) {
     });
 
     // edit application
-    app.post('/api/oauth/applications/:id', function (request, response, next) {
+    app.post(prefix + '/applications/:id', function (request, response, next) {
         var data = request.body;
 
         Application.update({
@@ -57,7 +58,7 @@ module.exports = function (app) {
     });
 
     // find applications by criteria
-    app.get('/api/oauth/applications', function (request, response, next) {
+    app.get(prefix + '/applications', function (request, response, next) {
         Application.find(request.query, {
             _id: true,
             applicationId: true,
@@ -82,7 +83,7 @@ module.exports = function (app) {
     });
 
     // get application by applicationId
-    app.get('/api/oauth/applications/applicationId/:id', function (request, response, next) {
+    app.get(prefix + '/applications/applicationId/:id', function (request, response, next) {
         Application.findOne({
             applicationId: request.params.id
         }, null, function (err, application) {
@@ -99,7 +100,7 @@ module.exports = function (app) {
     });
 
     // get application by oauthKey
-    app.get('/api/oauth/applications/oauthKey/:oauthKey', function (request, response, next) {
+    app.get(prefix + '/applications/oauthKey/:oauthKey', function (request, response, next) {
         Application.findOne({
             oauthKey: request.params.oauthKey
         }, null, function (err, application) {
@@ -116,7 +117,7 @@ module.exports = function (app) {
     });
 
     // delete application
-    app.delete('/api/oauth/applications/:id', function (request, response, next) {
+    app.delete(prefix + '/applications/:id', function (request, response, next) {
         Application.findOne({
             _id: request.params.id
         }, null, function (err, application) {
@@ -170,7 +171,7 @@ module.exports = function (app) {
     });
 
     // generate permission with ticket, that client has to exchange
-    app.post('/api/oauth/auth', function (request, response, next) {
+    app.post(prefix + '/auth', function (request, response, next) {
         var data = request.body;
 
         if (!data.applicationId || !data.applicationId.length) {
@@ -234,7 +235,7 @@ module.exports = function (app) {
     });
 
     // exchange ticket to token
-    app.post('/api/oauth/exchange', function (request, response, next) {
+    app.post(prefix + '/exchange', function (request, response, next) {
         var data = request.body;
 
         if (!data.ticket) {
@@ -309,7 +310,7 @@ module.exports = function (app) {
     });
 
     // refresh access token by refresh token
-    app.post('/api/oauth/refresh', function (request, response, next) {
+    app.post(prefix + '/refresh', function (request, response, next) {
         var data = request.body;
 
         if (!data.privateKey) {
@@ -379,7 +380,7 @@ module.exports = function (app) {
     });
 
     // update application private key
-    app.post('/api/oauth/applications/:id/command/newPrivateKey', function (request, response, next) {
+    app.post(prefix + '/applications/:id/command/newPrivateKey', function (request, response, next) {
         Application.refreshPrivateKey(request.params.id, function (err, newPrivateKey) {
             if (err) {
                 log.error(err);
@@ -392,7 +393,7 @@ module.exports = function (app) {
     });
 
     // get permission by accessToken
-    app.get('/api/oauth/permissions/accessToken/:accessToken', function (request, response, next) {
+    app.get(prefix + '/permissions/accessToken/:accessToken', function (request, response, next) {
         Permission.findOne({
             access_token: request.params.accessToken,
         }, null, function (err, permission) {

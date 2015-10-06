@@ -3,6 +3,16 @@
     "name": "Mue"
   },
   "applications": {
+    "calendar": {
+      "services": {
+        "api": {
+          "name": "Calendar api",
+          "status": true,
+          "port": 8003,
+          "version": 1
+        }
+      }
+    },
     "account": {
       "services": {
         "web": {
@@ -29,7 +39,7 @@
     },
     "oauth": {
       "services": {
-        "web": {
+        "api": {
           "port": 9002,
           "name": "OAuth API server"
         }
@@ -44,15 +54,6 @@
           "approvalUrl": "http://mue.in.ua/#approval"
         }
       }
-    }
-  },
-  "applications-api": {
-    "calendar": {
-      "name": "Calendar api",
-      "api-prefix": "calendar",
-      "status": true,
-      "port": 8003,
-      "version": 1
     }
   }
 }
