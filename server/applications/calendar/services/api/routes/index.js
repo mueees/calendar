@@ -207,4 +207,51 @@ module.exports = function (app) {
             }
         });
     });
+
+    // delete event
+    app.delete(prefix + '/events/:id', function (request, response, next) {
+        Event.remove({
+            _id: request.params.is
+        }, function (err) {
+            if (err) {
+                log.error(err);
+                return next(new HttpError(400, 'Server error'));
+            }
+
+            response.send({});
+        });
+    });
+
+    // get event by id
+    app.get(prefix + '/events/:id', function (request, response, next) {
+        Event.findOne({
+            _id: request.params.id
+        }, function (err, event) {
+            if (err) {
+                log.error(err);
+                return next(new HttpError(400, 'Server error'));
+            }
+
+            if (!event) {
+                next(new HttpError(400, 'Cannot find event'));
+            } else {
+                // check is user has access to this event
+                Calendar.findOne({
+                    _id: event.calendarId,
+                    userId: request.userId
+                }, function (err, calendar) {
+                    if (err) {
+                        log.error(err);
+                        return next(new HttpError(400, 'Server error'));
+                    }
+
+                    if (!calendar) {
+                        return next(new HttpError(400, 'You dont have access.'));
+                    } else {
+                        next(_.pick(event, eventDefaultFields));
+                    }
+                });
+            }
+        });
+    });
 };

@@ -135,4 +135,37 @@ describe('calendar-api', function () {
             done(new Error(res.body.message));
         });
     });
+
+    it('should delete event', function (done) {
+        CalendarRequest.createEvent(event, userId).then(function (res) {
+            CalendarRequest.deleteEvent(res.body._id, userId).then(function () {
+                done();
+            }, function (res) {
+                done(new Error(res.body.message));
+            });
+        }, function (res) {
+            done(new Error(res.body.message));
+        });
+    });
+
+    it('should get event by id', function (done) {
+        CalendarRequest.createCalendar(calendar, userId).then(function (res) {
+            event.calendarId = res.body._id;
+
+            CalendarRequest.createEvent(event, userId).then(function (res) {
+                CalendarRequest.getEventById(res.body._id, userId).then(function (res) {
+                    if (res.body.title) {
+                        done();
+                    } else {
+                        done(new Error('Cannot get event by id'));
+                    }
+                }, function (res) {
+                    done(new Error(res.body.message));
+                });
+            }, function (res) {
+                done(new Error(res.body.message));
+            });
+        });
+
+    });
 });

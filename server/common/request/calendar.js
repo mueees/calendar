@@ -74,6 +74,30 @@ function deleteCalendar(id, userId) {
     });
 }
 
+function deleteEvent(id, userId) {
+    return MueRequest.request({
+        app: app,
+        service: service,
+        method: 'DELETE',
+        url: '/events/' + id,
+        headers: {
+            userid: userId
+        }
+    });
+}
+
+function getEventById(id, userId) {
+    return MueRequest.request({
+        app: app,
+        service: service,
+        method: 'GET',
+        url: '/events/' + id,
+        headers: {
+            userid: userId
+        }
+    });
+}
+
 function getCalendars(data, userId){
     return MueRequest.request({
         app: app,
@@ -87,8 +111,10 @@ function getCalendars(data, userId){
     });
 }
 
+exports.getEventById = getEventById;
 exports.editEvent = editEvent;
 exports.editCalendar = editCalendar;
+exports.deleteEvent = deleteEvent;
 exports.deleteCalendar = deleteCalendar;
 exports.createEvent = createEvent;
 exports.createCalendar = createCalendar;
