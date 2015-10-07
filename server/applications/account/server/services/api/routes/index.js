@@ -5,10 +5,12 @@ var Application = require('common/resources/application'),
     log = require('common/log')(module),
     _ = require('underscore'),
     async = require('async'),
-    HttpError = require('common/errors/HttpError');
+    HttpError = require('common/errors/HttpError'),
+    prefix = '/api/account';
 
 module.exports = function (app) {
-    app.get('/api/account/user', function (request, response, next) {
+    // get user information
+    app.get(prefix + '/user', function (request, response, next) {
         var userId = request.userId;
 
         async.parallel([

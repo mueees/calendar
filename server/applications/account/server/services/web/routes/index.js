@@ -48,11 +48,4 @@ module.exports = function (app) {
     app.post(prefix + '/oauth/auth',
         passport.authenticate('bearer', {session: false}),
         oauthController.auth);
-
-    app.post(prefix + '/oauth/exchange',
-        oauthController.exchange);
-
-    // refresh access token using refresh token
-    app.post(prefix + '/oauth/refresh',
-        oauthController.refresh);
 };

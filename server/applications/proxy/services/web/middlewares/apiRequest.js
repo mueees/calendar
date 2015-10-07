@@ -1,27 +1,34 @@
 var HttpError = require('common/errors/HttpError'),
     log = require('common/log')(module),
-    ApiRequestToProxy = require('../../../common/actions/ApiRequestToProxy');
+    configuration = require('configuration'),
+    request = require('request');
 
-module.exports = function (request, response, next) {
-    var oauthAccess = request.user;
-
+module.exports = function (req, res, next) {
     var options = {
-        application: request.params.application,
-        request: request.params[0],
-        access_token: oauthAccess.access_token,
-        method: request.method
+        url: 'http://api.mue.in.ua' + req.originalUrl,
+        method: req.method,
+        headers: {
+            'x-requested-with': 'XMLHttpRequest',
+            Authorization: 'Bearer ' + req.user.access_token
+        },
+        json: true,
+        timeout: 3000
     };
 
-    if (options.method == 'POST') {
-        options.data = request.body;
+    if (!request.development) {
+        options.url = 'http://localhost:' + configuration.get('applications:api:services:web:port') + req.originalUrl;
     }
 
-    (new ApiRequestToProxy(options)).execute(function (err, data) {
-        if (err) {
-            log.error(err);
-            return next(new HttpError(400, err.message));
-        }
+    if (JSON.stringify(req.body) != '{}') {
+        options.body = req.body;
+    }
 
-        response.send(data);
+    var r = request(options);
+
+    r.on('error', function (err) {
+        log.error(err.body);
+        next(new HttpError('Request timeout'));
     });
+
+    r.pipe(res);
 };

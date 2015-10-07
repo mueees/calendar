@@ -41,7 +41,8 @@
       "services": {
         "api": {
           "port": 9002,
-          "name": "OAuth API server"
+          "name": "OAuth API server",
+          "status": true
         }
       }
     },

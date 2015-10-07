@@ -4,6 +4,16 @@ var isApiExist = require('../middlewares/isApiExist'),
     getUserId = require('../middlewares/getUserId');
 
 module.exports = function (app) {
+    app.post('/api/:application/exchange', [
+        isApiExist,
+        apiRequest
+    ]);
+
+    app.post('/api/:application/refresh', [
+        isApiExist,
+        apiRequest
+    ]);
+
     app.use('/api/:application/*', [
         isApiExist,
         getAccessToken,

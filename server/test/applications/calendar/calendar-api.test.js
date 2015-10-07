@@ -1,9 +1,3 @@
-var CalendarRequest = require('common/request/calendar'),
-    Calendar = require('applications/calendar/common/resources/calendar'),
-    Q = require('q'),
-    log = require('common/log')(module),
-    calendarConfig = require('applications/calendar/config');
-
 var calendar = {
         name: 'test calendar'
     },
@@ -15,7 +9,16 @@ var calendar = {
         isAllDay: true,
         isRepeat: false
     },
+    calendarId = '559bfe2016bd17920826b366',
     userId = '559bfe2016bd17920826b366';
+
+var CalendarRequest = require('common/request/calendar'),
+    Calendar = require('applications/calendar/common/resources/calendar'),
+    Event = require('applications/calendar/common/resources/event'),
+    Q = require('q'),
+    moment = require('moment'),
+    log = require('common/log')(module),
+    calendarConfig = require('applications/calendar/config');
 
 
 describe('calendar-api', function () {
@@ -27,7 +30,9 @@ describe('calendar-api', function () {
     });
 
     afterEach(function (done) {
-        Calendar.remove(done);
+        Calendar.remove(function () {
+            Event.remove(done)
+        });
     });
 
     it('should create calendar', function (done) {
@@ -116,14 +121,16 @@ describe('calendar-api', function () {
     });
 
     it('should edit event', function (done) {
-        var newTitle = 'Test title';
+        var newTitle = 'Test title',
+            newCalendarID = '559bfe2016bd17920826b361';
 
         CalendarRequest.createEvent(event, userId).then(function (res) {
             CalendarRequest.editEvent({
                 _id: res.body._id,
-                title: newTitle
+                title: newTitle,
+                calendarId: newCalendarID
             }, userId).then(function (res) {
-                if (res.body.title == newTitle) {
+                if (res.body.title == newTitle && res.body.calendarId == newCalendarID) {
                     done();
                 } else {
                     done(new Error('Cannot edit event'));
@@ -160,12 +167,79 @@ describe('calendar-api', function () {
                         done(new Error('Cannot get event by id'));
                     }
                 }, function (res) {
-                    done(new Error(res.body.message));
+                    done(new Error(res.body));
                 });
             }, function (res) {
                 done(new Error(res.body.message));
             });
         });
+    });
 
+    it('should find several events that not repeat', function (done) {
+        var firstEvent = {
+                title: 'test title',
+                start: new Date(),
+                end: new Date(),
+                isAllDay: true,
+                isRepeat: false,
+                calendarId: calendarId
+            },
+            secondEvent = {
+                title: 'test title 2',
+                start: moment(new Date()).add(1, 'd').toDate(),
+                end: moment(new Date()).add(1, 'd').toDate(),
+                isAllDay: true,
+                isRepeat: false,
+                calendarId: calendarId
+            };
+
+        Q.all([
+            CalendarRequest.createEvent(firstEvent, userId),
+            CalendarRequest.createEvent(secondEvent, userId)
+        ]).then(function () {
+            CalendarRequest.findEvent({
+                start: moment(new Date()).toDate(),
+                end: moment(new Date()).add(2, 'd').toDate(),
+                calendarIds: [calendarId]
+            }, userId).then(function (res) {
+                if (res.body.length == 2) {
+                    done();
+                } else {
+                    done(new Error('Cannot find events'));
+                }
+            }, function (res) {
+                done(new Error(res.body.message));
+            });
+        }, function (err) {
+            done(new Error(err));
+        });
+    });
+
+    it('should create event that repeat every day without end and find them', function (done) {
+        CalendarRequest.createEvent({
+            title: 'TestEvent 1',
+            start: new Date(),
+            end: new Date(),
+            isRepeat: true,
+            repeatType: 1,
+            calendarId: calendarId,
+            isAllDay: false
+        }, userId).then(function () {
+            CalendarRequest.findEvent({
+                start: moment(new Date()).add(1, 'd').toDate(),
+                end: moment(new Date()).add(5, 'd').toDate(),
+                calendarIds: calendarId
+            }, userId).then(function (res) {
+                if (res.body.length == 5) {
+                    done();
+                } else {
+                    done(new Error('Cannot find repeated events'));
+                }
+            }, function (res) {
+                done(new Error(res.body.message));
+            });
+        }, function (res) {
+            done(new Error(res.body.message));
+        });
     });
 });

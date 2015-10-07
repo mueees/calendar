@@ -22,14 +22,13 @@ route(app);
 app.use(function (err, req, res, next) {
     if (typeof err == "number") {
         err = new HttpError(err);
+    } else if (err instanceof HttpError) {
+
+    } else {
+        err = new HttpError(500, 'Fatal server error');
     }
 
-    if (err instanceof HttpError) {
-        res.sendHttpError(err);
-    } else {
-        res.status(500);
-        res.send('Fatal server error');
-    }
+    res.sendHttpError(err);
 });
 
 // connect to database

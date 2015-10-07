@@ -98,7 +98,20 @@ function getEventById(id, userId) {
     });
 }
 
-function getCalendars(data, userId){
+function findEvent(data, userId) {
+    return MueRequest.request({
+        app: app,
+        service: service,
+        method: 'POST',
+        url: '/events/find',
+        body: data,
+        headers: {
+            userid: userId
+        }
+    });
+}
+
+function getCalendars(data, userId) {
     return MueRequest.request({
         app: app,
         service: service,
@@ -111,6 +124,7 @@ function getCalendars(data, userId){
     });
 }
 
+exports.findEvent = findEvent;
 exports.getEventById = getEventById;
 exports.editEvent = editEvent;
 exports.editCalendar = editCalendar;

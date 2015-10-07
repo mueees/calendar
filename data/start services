@@ -58,11 +58,11 @@ pm2 start index.js --name calendar-api
 cd /home/mue/web/projects/calendar/server/applications/api/services/web
 pm2 start index.js --name api
 
-cd /home/mue/web/projects/calendar/server/applications/account/server/services/web
-pm2 start index.js --name account
-
 cd /home/mue/web/projects/calendar/server/applications/proxy/services/web
 pm2 start index.js --name proxy
+
+cd /home/mue/web/projects/calendar/server/applications/account/server/services/web
+pm2 start index.js --name account
 
 export NODE_ENV=test
 export NODE_PATH=/home/mue/web/projects/calendar/server/

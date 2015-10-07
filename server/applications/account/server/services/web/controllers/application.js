@@ -58,7 +58,7 @@ var controller = {
     create: function (request, response, next) {
         var data = request.body;
 
-        if (!data.name || !data.name.length) {
+        if (!data.name) {
             return next(new HttpError(400, "Name should exists."));
         }
 

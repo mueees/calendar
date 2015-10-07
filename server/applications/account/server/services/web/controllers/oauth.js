@@ -28,56 +28,6 @@ var controller = {
 
                 next(new HttpError(400, res.body.message));
             });
-    },
-
-    exchange: function (request, response, next) {
-        var data = request.body;
-
-        if (!data.ticket || !data.ticket.length) {
-            return next(new HttpError(400, "Invalid ticket"));
-        }
-
-        if (!data.privateKey || !data.privateKey.length) {
-            return next(new HttpError(400, "Invalid private key"));
-        }
-
-        if (!data.applicationId || !data.applicationId.length) {
-            return next(new HttpError(400, "Invalid application id"));
-        }
-
-        OauthRequest.exchange(data)
-            .then(function (res) {
-                response.send(res.body);
-            }, function (res) {
-                log.error(res.body.message);
-
-                next(new HttpError(400, res.body.message));
-            });
-    },
-
-    refresh: function (request, response, next) {
-        var data = request.body;
-
-        if (!data.privateKey) {
-            return next(new HttpError(400, "Invalid private key"));
-        }
-
-        if (!data.refresh_token) {
-            return next(new HttpError(400, "Invalid refresh token"));
-        }
-
-        if (!data.applicationId || !data.applicationId.length) {
-            return next(new HttpError(400, "Invalid application id"));
-        }
-
-        OauthRequest.refresh(data)
-            .then(function (res) {
-                response.send(res.body);
-            }, function (res) {
-                log.error(res.body.message);
-
-                next(new HttpError(400, res.body.message));
-            });
     }
 };
 

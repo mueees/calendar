@@ -1,6 +1,6 @@
 var MueRequest = require('./index'),
     app = 'oauth',
-    service = 'web';
+    service = 'api';
 
 function createApplication(data) {
     return MueRequest.request({

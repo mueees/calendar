@@ -25,13 +25,13 @@ route(app);
 app.use(function (err, req, res, next) {
     if (typeof err == "number") {
         err = new HttpError(err);
+    } else if (err instanceof HttpError) {
+
+    } else {
+        err = new HttpError(500, 'Fatal server error');
     }
 
-    if (err instanceof HttpError) {
-        res.sendHttpError(err);
-    } else {
-        log.error('end error');
-    }
+    res.sendHttpError(err);
 });
 
 var server = http.createServer(app),
