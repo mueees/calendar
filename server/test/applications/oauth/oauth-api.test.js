@@ -1,6 +1,7 @@
 var OauthRequest = require('common/request/oauth'),
     Application = require('common/resources/application'),
     Q = require('q'),
+    dbConnect = require("common/mongooseConnect"),
     oauthConfig = require('applications/oauth-server/config');
 
 describe('oauth-api', function () {
@@ -12,7 +13,7 @@ describe('oauth-api', function () {
 
     before(function (done) {
         // database connection
-        require("common/mongooseConnect").initConnection(oauthConfig).then(function () {
+        dbConnect.initConnection(oauthConfig).then(function () {
             done();
         });
     });

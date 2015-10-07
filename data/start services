@@ -43,7 +43,7 @@ UBUNTU
 -------------
 
 // DEVELOPMENT
-export NODE_ENV=development
+export NODE_ENV=test
 export NODE_PATH=/home/mue/web/projects/calendar/server/
 
 cd /home/mue/web/projects/calendar/server/applications/oauth-server/services/api

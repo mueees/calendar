@@ -8,11 +8,11 @@ var testUser = {
     passwords: '123123'
 };
 
-function createUser(){
+function createUser() {
     var def = Q.defer();
 
-    User.signup(testUser.email, testUser.password, function(err, user){
-        if(err){
+    User.signup(testUser.email, testUser.password, function (err, user) {
+        if (err) {
             return def.reject();
         }
 
@@ -36,20 +36,18 @@ describe('account-api', function () {
 
     it('should get user info', function (done) {
         createUser().then(function (user) {
-            console.log('1')
-
             AccountRequest.getUser({
                 userId: user._id
             }).then(function (res) {
-                if(res.body.email){
+                if (res.body.email) {
                     done();
-                }else{
+                } else {
                     done(new Error('Cannot get user info'))
                 }
             }, function (res) {
                 done(new Error(res.body.message));
             });
-        }, function (err) {
+        }, function () {
             done(new Error('Cannot create user'));
         });
     });
