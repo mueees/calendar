@@ -55,6 +55,16 @@
           "approvalUrl": "http://mue.in.ua/#approval"
         }
       }
+    },
+    "rabbit": {
+      "services": {
+        "api": {
+          "name": "Rabbit api",
+          "status": true,
+          "port": 8004,
+          "version": 1
+        }
+      }
     }
   }
 }
