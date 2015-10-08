@@ -193,12 +193,28 @@ module.exports = function (app) {
     app.use(function (request, response, next) {
         response.header("Access-Control-Allow-Origin", "*");
         response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+        response.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE");
 
         next();
     });
 
     // send all request to proxy server
-    app.use('/api/:application/*', [
+    app.get('/api/:application/*', [
+        passport.authenticate('bearer', {session: false}),
+        refreshAccessToken,
+        apiRequest
+    ]);
+    app.post('/api/:application/*', [
+        passport.authenticate('bearer', {session: false}),
+        refreshAccessToken,
+        apiRequest
+    ]);
+    app.put('/api/:application/*', [
+        passport.authenticate('bearer', {session: false}),
+        refreshAccessToken,
+        apiRequest
+    ]);
+    app.delete('/api/:application/*', [
         passport.authenticate('bearer', {session: false}),
         refreshAccessToken,
         apiRequest

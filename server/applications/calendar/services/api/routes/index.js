@@ -482,7 +482,7 @@ module.exports = function (app) {
     // delete event
     app.delete(prefix + '/events/:id', function (request, response, next) {
         Event.remove({
-            _id: request.params.is
+            _id: request.params.id
         }, function (err) {
             if (err) {
                 log.error(err);
