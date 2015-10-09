@@ -75,8 +75,8 @@ LIVE
 export NODE_ENV=production
 export NODE_PATH=/home/mue/web/public/calendar/server/
 
-cd /home/mue/web/public/calendar/server/applications/oauth-server/services/web
-pm2 start index.js --name oauth-web-api
+cd /home/mue/web/public/calendar/server/applications/oauth-server/services/api
+pm2 start index.js --name oauth-api
 
 cd /home/mue/web/public/calendar/server/applications/account/server/services/api
 pm2 start index.js --name account-api
@@ -87,8 +87,8 @@ pm2 start index.js --name calendar-api
 cd /home/mue/web/public/calendar/server/applications/api/services/web
 pm2 start index.js --name api
 
-cd /home/mue/web/public/calendar/server/applications/account/server/services/web
-pm2 start index.js --name account
-
 cd /home/mue/web/public/calendar/server/applications/proxy/services/web
 pm2 start index.js --name proxy
+
+cd /home/mue/web/public/calendar/server/applications/account/server/services/web
+pm2 start index.js --name account

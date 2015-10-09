@@ -1,4 +1,5 @@
 var request = require('request'),
+    log = require('common/log')(module),
     HttpError = require('common/errors/HttpError');
 
 module.exports = function (req, res, next) {
@@ -20,6 +21,7 @@ module.exports = function (req, res, next) {
     var r = request(options);
 
     r.on('error', function (err) {
+        log.error(err.body);
         next(new HttpError(400, 'Request timeout'));
     });
 
