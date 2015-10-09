@@ -4,7 +4,10 @@ var Calendar = require('../../../common/resources/calendar'),
     async = require('async'),
     helpers = require('common/helpers'),
     _ = require('underscore'),
+    moment = require('moment'),
     HttpError = require('common/errors/HttpError');
+
+require('moment-range');
 
 var prefix = '/api/calendar',
     eventDefaultFields = ['_id', 'rowId', 'title', 'description', 'rawId',
