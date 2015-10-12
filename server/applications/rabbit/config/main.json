@@ -1,1 +1,7 @@
-{}
+{
+  "queue": {
+    "port": 6379,
+    "ip": "127.0.0.1",
+    "queues": ["feedForUpdate", "preparePost", "savePost"]
+  }
+}

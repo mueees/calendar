@@ -3,6 +3,10 @@ var winston = require('winston'),
     ENV = process.env.NODE_ENV;
 
 function Logger(module) {
+    if(!module){
+        throw new Error('Cannot find module');
+    }
+
     var pathModule = module.filename.split("/").slice(-2).join('/');
 
     var win = new winston.Logger({

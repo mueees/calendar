@@ -58,6 +58,11 @@
     },
     "rabbit": {
       "services": {
+        "delivery": {
+          "name": "Deliver feed to update",
+          "status": true,
+          "port": 9010
+        },
         "api": {
           "name": "Rabbit api",
           "status": true,
