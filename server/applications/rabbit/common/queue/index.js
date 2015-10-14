@@ -11,11 +11,11 @@ function getQueue(queueName) {
         throw new Error("Queue don't containe " + queueName + ' queue');
     }
 
-    if (!queues.queueName) {
-        queues.queueName = Queue(queueName, rabbitConfig.get('queue:port'), rabbitConfig.get('queue:ip'));
+    if (!queues[queueName]) {
+        queues[queueName] = Queue(queueName, rabbitConfig.get('queue:port'), rabbitConfig.get('queue:ip'));
     }
 
-    return queues.queueName;
+    return queues[queueName];
 }
 
 // calculate count job on requested queue

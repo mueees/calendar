@@ -1,25 +1,31 @@
 var Queue = require('../../common/queue'),
-    Job = require('../../common/queue/job'),
     Feed = require('../../common/resources/feed'),
     Q = require('q'),
     log = require('common/log')(module),
     request = require('request'),
+    rabbitConfig = require('../../config'),
+    RabbitRequest = require('common/request/rabbit'),
     feedForUpdateQueue = Queue.getQueue('feedForUpdate'),
     preparePostQueue = Queue.getQueue('preparePost');
 
 function getNewPosts(posts, lastPost) {
-    var result = posts;
+    var result = [];
 
     if (lastPost) {
         posts.forEach(function (post) {
-            if (new Date(post.pubdate) > new Date(lastPost.public_date)) {
+            if (new Date(post.public_date) > new Date(lastPost.public_date)) {
                 result.push(post);
             }
         });
+    } else {
+        result = posts;
     }
 
     return result;
 }
+
+// connect to database
+require("common/mongooseConnect").initConnection(rabbitConfig);
 
 feedForUpdateQueue.process(function (job, done) {
     Q.all([
@@ -27,8 +33,8 @@ feedForUpdateQueue.process(function (job, done) {
             url: job.data.feed.url,
             feedId: job.data.feed._id,
             timeout: 4000
-        })/*,
-        Feed.getLastPost(job.data.feed._id)*/
+        }),
+        Feed.getLastPost(job.data.feed._id)
     ])
         .then(function (results) {
             var newPosts = getNewPosts(results[0], results[1]);
@@ -39,9 +45,15 @@ feedForUpdateQueue.process(function (job, done) {
                 });
             });
 
-            log.info(newPosts.length + ' were added for prepare');
+            if (newPosts.length) {
+                log.info(newPosts.length + ' posts were added for prepare');
+            } else {
+                log.info('Any new posts');
+            }
 
             done();
+
+            RabbitRequest.setLastUpdateDate(job.data.feed._id);
         })
         .catch(function (err) {
             log.error(err);

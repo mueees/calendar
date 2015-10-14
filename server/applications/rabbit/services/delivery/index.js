@@ -1,15 +1,17 @@
 var Queue = require('../../common/queue'),
-    Job = require('../../common/queue/job'),
     Feed = require('../../common/resources/feed'),
     Q = require('q'),
+    _ = require('underscore'),
     log = require('common/log')(module),
     rabbitConfig = require('../../config'),
+    RabbitRequest = require('common/request/rabbit'),
     feedForUpdateQueue = Queue.getQueue('feedForUpdate'),
     cronJob = require('cron').CronJob;
 
 var settings = {
-    maxJobInFeedForUpdateQueue: 5,
-    maxJobInQueues: 1000
+    maxJobInFeedForUpdateQueue: 10000,
+    maxJobInQueues: 1000,
+    timeBeforeUpdateSameFeed: 120 // seconds
 };
 
 function canAddFeedToUpdate() {
@@ -41,7 +43,6 @@ function canAddFeedToUpdate() {
 function getFeedForUpdate() {
     var def = Q.defer();
 
-    // todo: choose statistic service for choosing feed for update
     Feed.find({}, function (err, feeds) {
         if (err) {
             log.error(err.message);
@@ -49,8 +50,46 @@ function getFeedForUpdate() {
             return;
         }
 
-        def.resolve(feeds[0]);
+        RabbitRequest.feedsStatistic().then(function (data) {
+            var statisticFeeds = data.body,
+                feedWithoutStatistic;
+
+            if (!statisticFeeds.length) {
+                def.resolve(feeds[0]);
+                return;
+            }
+
+            _.each(statisticFeeds, function (statisticFeed) {
+                statisticFeed.last_update_date = new Date(statisticFeed.last_update_date);
+            });
+
+            statisticFeeds.sort(function (a, b) {
+                return new Date(b.last_update_date) - new Date(a.last_update_date);
+            });
+
+            _.each(feeds, function (feed) {
+                feed = feed.toObject();
+
+                var statisticFeed = _.filter(statisticFeeds, {
+                    feedId: feed._id
+                });
+
+                if (!statisticFeed.length) {
+                    feedWithoutStatistic = feed;
+                    return false;
+                }
+            });
+
+            if (feedWithoutStatistic) {
+                def.resolve(feedWithoutStatistic);
+            } else if ((new Date() > statisticFeeds[0].last_update_date) / 1000 > settings.timeBeforeUpdateSameFeed) {
+                def.resolve(statisticFeeds[0]);
+            } else {
+                def.reject('No feed for update');
+            }
+        });
     });
+
 
     return def.promise;
 }
@@ -63,13 +102,11 @@ new cronJob('* * * * * *', function () {
     canAddFeedToUpdate()
         .then(getFeedForUpdate)
         .then(function (feed) {
-            var job = new Job({
-                feed: feed.toObject()
-            });
-
             log.info('Feed for update was added');
 
-            feedForUpdateQueue.add(job);
+            feedForUpdateQueue.add({
+                feed: feed
+            });
         })
         .catch(function (error) {
             log.warning(error);

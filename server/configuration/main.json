@@ -63,6 +63,11 @@
           "status": true,
           "port": 9010
         },
+        "statistic": {
+          "name": "Calculate Rabbit statistic",
+          "status": true,
+          "port": 9011
+        },
         "api": {
           "name": "Rabbit api",
           "status": true,

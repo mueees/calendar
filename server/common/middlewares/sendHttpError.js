@@ -1,7 +1,5 @@
 module.exports = function(req, res, next){
     res.sendHttpError = function(error){
-        console.log(req.headers);
-
         if( req.headers['x-requested-with'] == "XMLHttpRequest" || req.headers['mue-inner-request'] == "true" ){
             res.status( error.status );
             res.send({
