@@ -84,6 +84,9 @@ pm2 start index.js --name rabbit-delivery
 cd /home/mue/web/projects/calendar/server/applications/rabbit/services/api
 pm2 start index.js --name rabbit-api
 
+cd /home/mue/web/projects/calendar/server/applications/rabbit/services/cron
+pm2 start index.js --name rabbit-cron
+
 export NODE_ENV=test
 export NODE_PATH=/home/mue/web/projects/calendar/server/
 cd /home/mue/web/projects/calendar/server/test;
@@ -131,3 +134,6 @@ pm2 start index.js --name rabbit-delivery
 
 cd /home/mue/web/public/calendar/server/applications/rabbit/services/api
 pm2 start index.js --name rabbit-api
+
+cd /home/mue/web/public/calendar/server/applications/rabbit/services/cron
+pm2 start index.js --name rabbit-cron
