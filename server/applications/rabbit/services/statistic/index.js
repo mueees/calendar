@@ -29,5 +29,5 @@ function countJobInQueues() {
 
 // each second
 new cronJob('* * * * * *', function () {
-    countJobInQueues();
+    // countJobInQueues();
 }, null, true);
