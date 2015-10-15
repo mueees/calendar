@@ -8,7 +8,7 @@ var Queue = require('../../common/queue'),
 var postsToSave = [],
     settings = {
         collectCount: 100,
-        intervalPeriod: 15 // seconds
+        intervalPeriod: 1000*15 // seconds
     };
 
 // connect to database
