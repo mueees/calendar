@@ -24,6 +24,10 @@ var feedSchema = new Schema({
         type: String,
         default: 'en'
     },
+    author: {
+        type: String,
+        default: ''
+    },
 
     // base64
     ico: {
@@ -116,6 +120,41 @@ feedSchema.statics.isValidFeed = function (url) {
             def.reject('This is not feed');
         }).on('readable', function () {
             def.resolve();
+        });
+
+    return def.promise;
+};
+
+feedSchema.methods.updateInfo = function () {
+    var def = Q.defer(),
+        me = this;
+
+    request({
+        url: this.url,
+        timeout: 2000
+    }).on('error', function (error) {
+        log.error(error.message);
+
+        def.reject('Wrong url');
+    })
+        .pipe(new FeedParser())
+        .on('error', function (error) {
+            log.error(error.message);
+            def.reject('This is not feed');
+        }).on('readable', function () {
+            me.title = this.meta.title ? this.meta.title : me.title;
+            me.description = this.meta.description ? this.meta.description : me.description;
+            me.author = this.meta.author ? this.meta.author : me.author;
+            me.language = this.meta.author ? this.meta.language : me.language;
+
+            me.save(function (err) {
+                if (err) {
+                    log.error(err.message);
+                    return def.reject(err.message);
+                }
+
+                def.resolve();
+            });
         });
 
     return def.promise;

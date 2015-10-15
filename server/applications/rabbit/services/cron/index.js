@@ -3,17 +3,12 @@ var Queue = require('../../common/queue'),
     Q = require('q'),
     _ = require('underscore'),
     log = require('common/log')(module),
-    Feed = require('../../common/resources/feed'),
+    async = require('async'),
     rabbitConfig = require('../../config'),
     cronJob = require('cron').CronJob;
 
 // connect to database
 require("common/mongooseConnect").initConnection(rabbitConfig);
-
-// update name, description, icon
-function _updateFeed(feed, cb) {
-
-}
 
 function updateFeedInfo() {
     Feed.find({}, function (err, feeds) {
@@ -25,22 +20,27 @@ function updateFeedInfo() {
 
         _.each(feeds, function (feed) {
             series.push(function (cb) {
-                updateFeedInfo(feed).then(function () {
+                feed.updateInfo().then(function () {
+                    log.info(feed.title + ' was updated');
+
                     cb();
                 }, function (err) {
-                    cb(err);
+                    log.error(err);
+                    cb();
                 });
             });
         });
 
         async.series(series, function (err, results) {
-            if(err){
+            if (err) {
                 log.error(err);
             }
         });
     })
 }
 
-new cronJob('* * * * * *', function () {
-    // updateFeedInfo();
+updateFeedInfo();
+
+new cronJob('* 00 12 * * *', function () {
+    updateFeedInfo();
 }, null, true);
