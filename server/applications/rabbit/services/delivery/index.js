@@ -11,7 +11,7 @@ var Queue = require('../../common/queue'),
 var settings = {
     maxJobInFeedForUpdateQueue: 0,
     maxJobInQueues: 50,
-    timeBeforeUpdateSameFeed: 60 // seconds
+    timeBeforeUpdateSameFeed: 60*10 // seconds
 };
 
 function canAddFeedToUpdate() {
