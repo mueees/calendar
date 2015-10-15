@@ -52,8 +52,6 @@ feedForUpdateQueue.process(function (job, done) {
             }
 
             done();
-
-            RabbitRequest.setLastUpdateDate(job.data.feed._id);
         })
         .catch(function (err) {
             log.error(err);

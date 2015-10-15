@@ -30,6 +30,8 @@ function getFeedStatistic(feedId) {
 
                 def.resolve(feedStatistic);
             });
+        }else {
+            def.resolve(feedStatistic);
         }
     });
 

@@ -64,12 +64,25 @@ pm2 start index.js --name proxy
 cd /home/mue/web/projects/calendar/server/applications/account/server/services/web
 pm2 start index.js --name account
 
-cd /home/mue/web/projects/calendar/server/applications/rabbit/services/delivery
-pm2 start index.js --name rabbit-delivery
+
+# RABBIT
+cd /home/mue/web/projects/calendar/server/applications/rabbit/services/statistic
+pm2 start index.js --name rabbit-statistic
+
+cd /home/mue/web/projects/calendar/server/applications/rabbit/services/save
+pm2 start index.js --name rabbit-save
+
+cd /home/mue/web/projects/calendar/server/applications/rabbit/services/prepare
+pm2 start index.js --name rabbit-prepare
 
 cd /home/mue/web/projects/calendar/server/applications/rabbit/services/update
 pm2 start index.js --name rabbit-update
 
+cd /home/mue/web/projects/calendar/server/applications/rabbit/services/delivery
+pm2 start index.js --name rabbit-delivery
+
+cd /home/mue/web/projects/calendar/server/applications/rabbit/services/api
+pm2 start index.js --name rabbit-api
 
 export NODE_ENV=test
 export NODE_PATH=/home/mue/web/projects/calendar/server/

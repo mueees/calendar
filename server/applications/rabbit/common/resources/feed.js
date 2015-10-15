@@ -10,7 +10,7 @@ var mongoose = require('mongoose'),
 var feedSchema = new Schema({
     title: {
         type: String,
-        required: true
+        default: ''
     },
     description: {
         type: String,
@@ -95,6 +95,28 @@ feedSchema.statics.getLastPost = function (feedId) {
 
         def.resolve(lastPost);
     });
+
+    return def.promise;
+};
+
+feedSchema.statics.isValidFeed = function (url) {
+    var def = Q.defer();
+
+    request({
+        url: url,
+        timeout: 2000
+    }).on('error', function (error) {
+        log.error(error.message);
+
+        def.reject('Wrong url');
+    })
+        .pipe(new FeedParser())
+        .on('error', function (error) {
+            log.error(error.message);
+            def.reject('This is not feed');
+        }).on('readable', function () {
+            def.resolve();
+        });
 
     return def.promise;
 };

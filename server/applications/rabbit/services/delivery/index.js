@@ -9,9 +9,9 @@ var Queue = require('../../common/queue'),
     cronJob = require('cron').CronJob;
 
 var settings = {
-    maxJobInFeedForUpdateQueue: 10000,
-    maxJobInQueues: 1000,
-    timeBeforeUpdateSameFeed: 120 // seconds
+    maxJobInFeedForUpdateQueue: 0,
+    maxJobInQueues: 50,
+    timeBeforeUpdateSameFeed: 60 // seconds
 };
 
 function canAddFeedToUpdate() {
@@ -50,12 +50,18 @@ function getFeedForUpdate() {
             return;
         }
 
+        if (!feeds.length) {
+            return def.reject('Cannot find any feeds');
+        }
+
         RabbitRequest.feedsStatistic().then(function (data) {
             var statisticFeeds = data.body,
                 feedWithoutStatistic;
 
+            // if we don't have any statistic, choose first feed
             if (!statisticFeeds.length) {
                 def.resolve(feeds[0]);
+                RabbitRequest.setLastUpdateDate(String(feeds[0]._id));
                 return;
             }
 
@@ -64,14 +70,14 @@ function getFeedForUpdate() {
             });
 
             statisticFeeds.sort(function (a, b) {
-                return new Date(b.last_update_date) - new Date(a.last_update_date);
+                return new Date(a.last_update_date) - new Date(b.last_update_date);
             });
 
             _.each(feeds, function (feed) {
                 feed = feed.toObject();
 
                 var statisticFeed = _.filter(statisticFeeds, {
-                    feedId: feed._id
+                    feedId: String(feed._id)
                 });
 
                 if (!statisticFeed.length) {
@@ -80,16 +86,29 @@ function getFeedForUpdate() {
                 }
             });
 
+
+            var feedForUpdate;
+
+            // if we have feed that doesn't have statistic, choose them
             if (feedWithoutStatistic) {
-                def.resolve(feedWithoutStatistic);
-            } else if ((new Date() > statisticFeeds[0].last_update_date) / 1000 > settings.timeBeforeUpdateSameFeed) {
-                def.resolve(statisticFeeds[0]);
+                feedForUpdate = feedWithoutStatistic;
+                // choose last updated feed
+            } else if ((new Date() - statisticFeeds[0].last_update_date) / 1000 > settings.timeBeforeUpdateSameFeed) {
+                feedForUpdate = _.filter(feeds, function (feed) {
+                    return feed.id == statisticFeeds[0].feedId;
+                })[0];
+            }
+
+            if (feedForUpdate) {
+                def.resolve(feedForUpdate);
+                RabbitRequest.setLastUpdateDate(String(feedForUpdate._id));
             } else {
                 def.reject('No feed for update');
             }
+        }, function () {
+            def.resolve(feeds[0]);
         });
     });
-
 
     return def.promise;
 }
