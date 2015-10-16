@@ -13,7 +13,8 @@ var postSchema = new Schema({
     },
     link: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     public_date: {
         type: Date,
@@ -25,7 +26,8 @@ var postSchema = new Schema({
     },
     guid: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     feedId: {
         type: ObjectId,

@@ -44,6 +44,28 @@ var categorySchema = new Schema({
     }
 });
 
+categorySchema.statics.isExist = function (id, userId) {
+    var def = Q.defer();
+
+    this.findOne({
+        _id: id,
+        userId: userId
+    }, function (err, category) {
+        if (err) {
+            log.error(err.message);
+            return def.reject('Server error');
+        }
+
+        if (category) {
+            def.resolve(category);
+        } else {
+            def.reject('Cannot find category');
+        }
+    });
+
+    return def.promise;
+};
+
 var Category = mongoose.model('Category', categorySchema);
 
 module.exports = Category;

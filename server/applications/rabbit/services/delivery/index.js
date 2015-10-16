@@ -11,7 +11,7 @@ var Queue = require('../../common/queue'),
 var settings = {
     maxJobInFeedForUpdateQueue: 0,
     maxJobInQueues: 50,
-    timeBeforeUpdateSameFeed: 60*10 // seconds
+    timeBeforeUpdateSameFeed: 60 * 10 // seconds
 };
 
 function canAddFeedToUpdate() {
@@ -117,7 +117,7 @@ function getFeedForUpdate() {
 require("common/mongooseConnect").initConnection(rabbitConfig);
 
 // each second
-new cronJob('* * * * * *', function () {
+new cronJob('30 * * * * *', function () {
     canAddFeedToUpdate()
         .then(getFeedForUpdate)
         .then(function (feed) {

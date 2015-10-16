@@ -11,7 +11,7 @@ MueRequest.request = function (options) {
 
     options.url = 'http://localhost:' + port + '/api/' + options.app + options.url;
 
-    options.timeout = 2000;
+    options.timeout = 4000;
 
     options.json = true;
 

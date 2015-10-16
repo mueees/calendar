@@ -3,6 +3,7 @@ var mongoose = require('mongoose'),
     ObjectId = Schema.ObjectId,
     log = require('common/log')(module),
     request = require('request'),
+    validator = require('validator'),
     FeedParser = require('feedparser'),
     Post = require('./post'),
     Q = require('q');
@@ -18,7 +19,8 @@ var feedSchema = new Schema({
     },
     url: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     language: {
         type: String,
@@ -125,6 +127,66 @@ feedSchema.statics.isValidFeed = function (url) {
     return def.promise;
 };
 
+feedSchema.statics.findByQuery = function (query) {
+    var def = Q.defer();
+
+    this.find({
+        $or: [
+            {
+                title: {
+                    $regex: query,
+                    $options: 'i'
+                }
+            },
+            {
+                url: {
+                    $regex: query,
+                    $options: 'i'
+                }
+            }
+        ]
+    }, function (err, feeds) {
+        if (err) {
+            logger.error(err.message);
+            return def.reject('Server error');
+        }
+
+        def.resolve(feeds);
+    });
+
+    return def.promise;
+};
+
+feedSchema.statics.track = function (url) {
+    var def = Q.defer(),
+        isUrl = validator.isURL(url, {
+            require_protocol: true
+        });
+
+    if (!isUrl) {
+        return def.reject('Its not url');
+    }
+
+    Feed.isValidFeed(url).then(function () {
+        Feed.create({url: url}, function (err, feed) {
+            if (err) {
+                log.error(err.message);
+                return def.reject('Server error');
+            }
+
+            feed.updateInfo().then(function (feed) {
+                def.resolve(feed);
+            }, function () {
+                def.reject('Cannot update feed');
+            });
+        });
+    }, function (err) {
+        def.reject(err);
+    });
+
+    return def.promise;
+};
+
 feedSchema.methods.updateInfo = function () {
     var def = Q.defer(),
         me = this;
@@ -153,7 +215,7 @@ feedSchema.methods.updateInfo = function () {
                     return def.reject(err.message);
                 }
 
-                def.resolve();
+                def.resolve(me);
             });
         });
 
