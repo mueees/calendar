@@ -17,6 +17,8 @@ function preparePost(post) {
 
 preparePostQueue.process(function (job, done) {
     preparePost(job.data.post).then(function (post) {
+
+
         savePostQueue.add({
             post: post
         });

@@ -36,7 +36,7 @@ function updateFeedInfo() {
                 log.error(err);
             }
         });
-    })
+    });
 }
 
 updateFeedInfo();
