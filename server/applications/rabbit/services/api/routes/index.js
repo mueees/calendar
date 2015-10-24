@@ -2,7 +2,9 @@ var log = require('common/log')(module),
     _ = require('underscore'),
     async = require('async'),
     Feed = require('../../../common/resources/feed'),
+    Post = require('../../../common/resources/post'),
     Category = require('../../../common/resources/category'),
+    UserPostMap = require('../../../common/resources/userPostMap'),
     HttpError = require('common/errors/HttpError'),
     validator = require('validator'),
     prefix = '/api/rabbit';
@@ -64,6 +66,49 @@ module.exports = function (app) {
 
     /* FEED*/
 
+    // add feed for tracking
+    app.put(prefix + '/feeds/track', function (request, response, next) {
+        if (!request.body.url) {
+            return next(new HttpError('Cannot find url'));
+        }
+
+        Feed.track(request.body.url).then(function (feed) {
+            response.send(feed);
+        }, function (err) {
+            log.error(err);
+            next(new HttpError(400, err));
+        });
+    });
+
+    // delete feed from category
+    app.delete(prefix + '/feeds', function (request, response, next) {
+        if (!request.body.feedId) {
+            return next(new HttpError(400, 'Cannot find feed id'));
+        }
+
+        Category.findOne({
+            userId: request.userId,
+            'feeds.feedId': request.body.feedId
+        }, function (err, category) {
+            if (err) {
+                log.error(err.message);
+                return next(new HttpError(400, 'Server error'));
+            }
+
+            _.remove(category.feeds, {
+                feedId: request.body.feedId
+            });
+
+            category.save(function (err) {
+                if (err) {
+                    log.error(err.message);
+                }
+            });
+
+            response.send({});
+        });
+    });
+
     // add feed to category
     app.put(prefix + '/feeds', function (request, response, next) {
         var data = request.body;
@@ -124,20 +169,12 @@ module.exports = function (app) {
         });
     });
 
-    // add feed for tracking
-    app.put(prefix + '/feeds/track', function (request, response, next) {
-        if (!request.body.url) {
-            return next(new HttpError('Cannot find url'));
-        }
-
-        Feed.track(request.body.url).then(function (feed) {
-            response.send(feed);
-        }, function (err) {
-            log.error(err);
-            next(new HttpError(400, err));
-        });
-    });
-
+    /*
+     * Can find feed in
+     * 1. url
+     * 2. title
+     * 3. like direct url
+     * */
     app.post(prefix + '/feeds/find', function (request, response, next) {
         var query = request.body.query,
             isUrl = validator.isURL(query, {
@@ -172,6 +209,94 @@ module.exports = function (app) {
                 response.send(feeds);
             }, function (err) {
                 next(new HttpError(400, err));
+            });
+        }
+    });
+
+    /**
+     * Find posts by cretirea
+     * 1. posts from feedId
+     *
+     * /posts?feedId=<feedId>
+     *
+     * 2. posts marked as readLater for userId
+     *
+     * /posts?readLater=true
+     *
+     * */
+    app.get(prefix + '/posts', function (request, response, next) {
+        var postQuery = _.pick(request.query, [
+            'feedId'
+        ]);
+
+        var postOptionalQuery = _.extend({
+            skip: 0,
+            limit: 20
+        }, _.pick(request.query, [
+            'skip',
+            'limit'
+        ]));
+
+        if (postQuery.feedId) {
+            // get posts from certain feed
+            async.waterfall([
+                function (cb) {
+                    Post.find(postQuery, null, postOptionalQuery, function (err, posts) {
+                        if (err) {
+                            log.error(err.message);
+                            return cb('Server error');
+                        }
+
+                        cb(null, posts);
+                    });
+                },
+                function (posts, cb) {
+                    UserPostMap.find({
+                        postId: {
+                            $in: _.map(posts, function (post) {
+                                return post._id;
+                            })
+                        }
+                    }, function (err, userPostMaps) {
+                        if (err) {
+                            log.error(err.message);
+                            return cb('Server error');
+                        }
+
+                        posts = posts.map(function (post) {
+                            return post.toObject();
+                        });
+
+                        _.each(posts, function (post) {
+                            var userInfo = _.findWhere(userPostMaps, function (userPostMap) {
+                                return String(userPostMap.feedId) == String(post._id)
+                            });
+
+                            if (userInfo) {
+                                userInfo = userInfo.toObject();
+
+                                userInfo = _.pick(userInfo, [
+                                    'isRead',
+                                    'readLater',
+                                    'tags'
+                                ]);
+                            } else {
+                                userInfo = {};
+                            }
+
+                            post.user = userInfo;
+                        });
+
+                        cb(null, posts);
+                    });
+                }
+            ], function (err, posts) {
+                if (err) {
+                    log.error(err.message);
+                    return next(new Error(err.message));
+                }
+
+                response.send(posts);
             });
         }
     });

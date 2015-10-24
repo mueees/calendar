@@ -3,6 +3,18 @@ var MueRequest = require('./index'),
     statisticService = 'statistic',
     apiService = 'api';
 
+function findPosts(queryString, userId){
+    return MueRequest.request({
+        app: app,
+        service: apiService,
+        method: 'GET',
+        url: '/posts?' + queryString,
+        headers: {
+            userid: userId
+        }
+    });
+}
+
 function findFeed(query, userId){
     return MueRequest.request({
         app: app,
@@ -84,6 +96,21 @@ function addFeed(feedId, categoryId, userId) {
     });
 }
 
+function deleteFeed(feedId, userId) {
+    return MueRequest.request({
+        app: app,
+        service: apiService,
+        method: 'DELETE',
+        url: '/feeds',
+        body: {
+            feedId: feedId
+        },
+        headers: {
+            userid: userId
+        }
+    });
+}
+
 function feedsStatistic() {
     return MueRequest.request({
         app: app,
@@ -111,8 +138,10 @@ function setLastUpdateDate(feedId) {
     });
 }
 
+exports.findPosts = findPosts;
 exports.findFeed = findFeed;
 exports.addFeed = addFeed;
+exports.deleteFeed = deleteFeed;
 exports.trackFeed = trackFeed;
 exports.getCategories = getCategories;
 exports.createCategory = createCategory;
