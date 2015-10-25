@@ -216,9 +216,7 @@ describe('account-api', function () {
         });
     });
 
-    //
-
-    it.only('should find posts by feedId with user information', function (done) {
+    it('should find posts by feedId with user information', function (done) {
         Q.all([
             createPost(),
             createUserPostMap()
