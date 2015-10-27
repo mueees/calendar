@@ -187,6 +187,9 @@ module.exports = function (app) {
 
         if (isUrl) {
             Feed.isValidFeed(query).then(function () {
+
+                // todo: check, maybe we have the same feed in database
+
                 Feed.create({
                     url: query
                 }, function (err, feed) {
@@ -196,7 +199,7 @@ module.exports = function (app) {
                     }
 
                     feed.updateInfo().then(function (feed) {
-                        response.send(feed);
+                        response.send([feed]);
                     }, function () {
                         next(new HttpError(400, 'Cannot update feed'));
                     });
