@@ -169,12 +169,7 @@ module.exports = function (app) {
         });
     });
 
-    /*
-     * Can find feed in
-     * 1. url
-     * 2. title
-     * 3. like direct url
-     * */
+    // find feeds by query
     app.post(prefix + '/feeds/find', function (request, response, next) {
         var query = request.body.query,
             isUrl = validator.isURL(query, {
@@ -214,6 +209,27 @@ module.exports = function (app) {
                 next(new HttpError(400, err));
             });
         }
+    });
+
+    // get feed by id
+
+    // todo: need test for this api request
+
+    app.get(prefix + '/feeds/:id', function (request, response, next) {
+        Feed.findOne({
+            _id: request.params.id
+        }, function (err, feed) {
+            if (err) {
+                log.error(err.message);
+                return next(new Error(err.message));
+            }
+
+            if (!feed) {
+                return next(new HttpError(400, 'Cannot find feed'));
+            }
+
+            response.send(feed);
+        });
     });
 
     /**
