@@ -35,6 +35,27 @@ module.exports = function (app) {
         });
     });
 
+    // edit category
+    app.post(prefix + '/categories/:id', function (request, response, next) {
+        var updateData = _.pick(request.body, [
+            'name',
+            'open'
+        ]);
+
+        Category.update({
+            _id: request.params.id
+        }, updateData, function (err) {
+            if (err) {
+                log.error(err);
+                return next(new HttpError(400, 'Server error'));
+            }
+
+            updateData._id = request.params.id;
+
+            response.send(updateData);
+        });
+    });
+
     // delete category
     app.delete(prefix + '/categories/:id', function (request, response, next) {
         Category.remove({
@@ -275,7 +296,8 @@ module.exports = function (app) {
                             $in: _.map(posts, function (post) {
                                 return post._id;
                             })
-                        }
+                        },
+                        userId: request.userId
                     }, function (err, userPostMaps) {
                         if (err) {
                             log.error(err.message);
@@ -287,8 +309,8 @@ module.exports = function (app) {
                         });
 
                         _.each(posts, function (post) {
-                            var userInfo = _.findWhere(userPostMaps, function (userPostMap) {
-                                return String(userPostMap.feedId) == String(post._id)
+                            var userInfo = _.find(userPostMaps, function (userPostMap) {
+                                return String(userPostMap.postId) == String(post._id)
                             });
 
                             if (userInfo) {
@@ -318,5 +340,67 @@ module.exports = function (app) {
                 response.send(posts);
             });
         }
+    });
+
+    // todo: need test for this api request
+
+    app.post(prefix + '/posts/:id/read', function (request, response, next) {
+        UserPostMap.findOne({
+            userId: request.userId,
+            postId: request.params.id
+        }, function (err, userPost) {
+            if (err) {
+                log.error(err.message);
+                return next(new Error('Server error'));
+            }
+
+            if (!userPost) {
+                userPost = new UserPostMap();
+
+                userPost.postId = request.params.id;
+                userPost.userId = request.userId;
+            }
+
+            userPost.isRead = true;
+
+            userPost.save(function (err) {
+                if (err) {
+                    log.error(err.message);
+                }
+            });
+
+            response.send({});
+        });
+    });
+
+    // todo: need test for this api request
+
+    app.post(prefix + '/posts/:id/unread', function (request, response, next) {
+        UserPostMap.findOne({
+            userId: request.userId,
+            postId: request.params.id
+        }, function (err, userPost) {
+            if (err) {
+                log.error(err.message);
+                return next(new Error('Server error'));
+            }
+
+            if (!userPost) {
+                userPost = new UserPostMap();
+
+                userPost.postId = request.params.id;
+                userPost.userId = request.userId;
+            }
+
+            userPost.isRead = false;
+
+            userPost.save(function (err) {
+                if (err) {
+                    log.error(err.message);
+                }
+            });
+
+            response.send({});
+        });
     });
 };
