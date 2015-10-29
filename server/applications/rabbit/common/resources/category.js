@@ -19,6 +19,7 @@ var feedSchema = new Schema({
     name: {
         type: String
     },
+
     date_added: {
         type: Date,
         default: new Date()
@@ -29,6 +30,10 @@ var categorySchema = new Schema({
     name: {
         type: String,
         require: true
+    },
+    open: {
+        type: Boolean,
+        default: true
     },
     userId: {
         type: ObjectId,
