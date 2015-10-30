@@ -43,6 +43,8 @@ function canAddFeedToUpdate() {
 function getFeedForUpdate() {
     var def = Q.defer();
 
+    console.log('Get feed for update');
+
     Feed.find({}, function (err, feeds) {
         if (err) {
             log.error(err.message);
@@ -86,7 +88,6 @@ function getFeedForUpdate() {
                 }
             });
 
-
             var feedForUpdate;
 
             // if we have feed that doesn't have statistic, choose them
@@ -118,8 +119,8 @@ require("common/mongooseConnect").initConnection(rabbitConfig);
 
 // each second
 
-// 00, 05, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55
-new cronJob('* * * * * *', function () {
+//
+new cronJob('10,15,20,25,30,35,40,45,50,55 * * * * *', function () {
     canAddFeedToUpdate()
         .then(getFeedForUpdate)
         .then(function (feed) {
