@@ -1,7 +1,8 @@
 db.posts.find({}).count();
 
 // find posts with the same parameters
-db.posts.aggregate({
+db.posts.aggregate(
+    {
         $group: {
             // Group by fields to match on (a,b)
             _id: {
@@ -27,4 +28,12 @@ db.posts.aggregate({
         $sort: {
             count: -1
         }
-    });
+    }
+);
+
+// find documents that doesn't have some field
+db.posts.find({
+    title_image: {
+        $exists: false
+    }
+}).limit(5);

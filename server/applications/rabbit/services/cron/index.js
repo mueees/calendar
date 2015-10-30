@@ -1,5 +1,6 @@
 var Queue = require('../../common/queue'),
     Feed = require('../../common/resources/feed'),
+    Post = require('../../common/resources/post'),
     Q = require('q'),
     _ = require('underscore'),
     log = require('common/log')(module),
@@ -39,7 +40,17 @@ function updateFeedInfo() {
     });
 }
 
+function updatePostInfo() {
+    Post.find({
+        title_image: {
+            $exists: false
+        }
+    });
+}
+
 updateFeedInfo();
+
+updatePostInfo();
 
 new cronJob('* 00 12 * * *', function () {
     updateFeedInfo();
