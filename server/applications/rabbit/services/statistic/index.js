@@ -11,6 +11,11 @@ var FeedStatistic = require('../../common/resources/feedStatistic'),
 require('./api');
 
 function updateCountPosts() {
+    // update count post
+    log.info('Update Count Posts');
+
+    var start = new Date();
+
     Feed.find({}, function (err, feeds) {
         if (err) {
             log.error(err.message);
@@ -45,6 +50,8 @@ function updateCountPosts() {
             if (err) {
                 log.error(err);
             }
+
+            log.info('Update count posts takes: ' + ((new Date()).getTime() - start) / 1000 + ' seconds');
         });
     });
 }

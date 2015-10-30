@@ -277,6 +277,10 @@ module.exports = function (app) {
             'limit'
         ]));
 
+        postOptionalQuery.sort = {
+            public_date: -1
+        };
+
         if (postQuery.feedId) {
             // get posts from certain feed
             async.waterfall([

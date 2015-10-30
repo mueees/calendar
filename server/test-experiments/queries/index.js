@@ -37,3 +37,12 @@ db.posts.find({
         $exists: false
     }
 }).limit(5);
+
+// find documents using regexp
+db.posts.find({
+    title_image: {
+        $regex: /htt*/
+    }
+}, {
+    title_image: 1
+});

@@ -7,7 +7,7 @@ var Queue = require('../../common/queue'),
 
 var postsToSave = [],
     settings = {
-        collectCount: 100,
+        collectCount: 1000,
         intervalPeriod: 15*1000 // seconds
     };
 
@@ -25,7 +25,6 @@ setInterval(function () {
         Post.create(posts, function (err) {
             if (err) {
                 log.error(err.message);
-                return;
             }
 
             log.info(posts.length + ' was saved');
@@ -42,8 +41,6 @@ savePostQueue.process(function (job, done) {
         Post.create(postsToSave, function (err) {
             if (err) {
                 log.error(err.message);
-                postsToSave = [];
-                return;
             }
 
             var executeTime = (new Date() - start) / 1000;

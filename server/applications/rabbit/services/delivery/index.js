@@ -117,7 +117,9 @@ function getFeedForUpdate() {
 require("common/mongooseConnect").initConnection(rabbitConfig);
 
 // each second
-new cronJob('10 * * * * *', function () {
+
+// 00, 05, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55
+new cronJob('* * * * * *', function () {
     canAddFeedToUpdate()
         .then(getFeedForUpdate)
         .then(function (feed) {
