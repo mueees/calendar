@@ -68,8 +68,6 @@ function updatePostInfo() {
     });
 }
 
-updatePostInfo();
-
 new cronJob('* 00 12 * * *', function () {
     updateFeedInfo();
     updatePostInfo();
