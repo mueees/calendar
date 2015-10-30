@@ -56,6 +56,6 @@ function updateCountPosts() {
     });
 }
 
-new cronJob('* 01,15,30,45,59 * * * *', function () {
+new cronJob('00 01,15,30,45 * * * *', function () {
     updateCountPosts();
 }, null, true);
