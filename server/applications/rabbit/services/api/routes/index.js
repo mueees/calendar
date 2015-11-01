@@ -39,7 +39,8 @@ module.exports = function (app) {
     app.post(prefix + '/categories/:id', function (request, response, next) {
         var updateData = _.pick(request.body, [
             'name',
-            'open'
+            'open',
+            'feeds'
         ]);
 
         Category.update({
@@ -232,10 +233,9 @@ module.exports = function (app) {
         }
     });
 
-    // get feed by id
-
     // todo: need test for this api request
 
+    // get feed by id
     app.get(prefix + '/feeds/:id', function (request, response, next) {
         Feed.findOne({
             _id: request.params.id
