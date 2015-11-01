@@ -1,10 +1,12 @@
 var log = require('common/log')(module),
     _ = require('underscore'),
+    Q = require('q'),
     async = require('async'),
     Feed = require('../../../common/resources/feed'),
     Post = require('../../../common/resources/post'),
     Category = require('../../../common/resources/category'),
     UserPostMap = require('../../../common/resources/userPostMap'),
+    FeedStatistic = require('../../../common/resources/feedStatistic'),
     HttpError = require('common/errors/HttpError'),
     validator = require('validator'),
     prefix = '/api/rabbit';
@@ -192,45 +194,118 @@ module.exports = function (app) {
     });
 
     // find feeds by query
-    app.post(prefix + '/feeds/find', function (request, response, next) {
-        var query = request.body.query,
-            isUrl = validator.isURL(query, {
+
+    function findFeeds(query) {
+        var isUrl = validator.isURL(query, {
                 require_protocol: true
-            });
+            }),
+            def = Q.defer();
 
         if (!query) {
-            return next(new HttpError(400, 'Cannot find query'));
-        }
+            def.reject('Cannot find query');
+        } else if (isUrl) {
+            Feed.findOne({
+                url: query
+            }, function (err, feed) {
+                if (err) {
+                    log.error(err.message);
+                    return def.reject('Server error');
+                }
 
-        if (isUrl) {
-            Feed.isValidFeed(query).then(function () {
+                if (feed) {
+                    def.resolve([feed]);
+                } else {
+                    Feed.isValidFeed(query).then(function () {
+                        Feed.create({
+                            url: query
+                        }, function (err, feed) {
+                            if (err) {
+                                log.error(err.message);
+                                return def.reject('Server error');
+                            }
 
-                // todo: check, maybe we have the same feed in database
-
-                Feed.create({
-                    url: query
-                }, function (err, feed) {
-                    if (err) {
-                        log.error(err.message);
-                        return next(new HttpError(400, 'Server error'));
-                    }
-
-                    feed.updateInfo().then(function (feed) {
-                        response.send([feed]);
+                            feed.updateInfo().then(function (feed) {
+                                def.resolve([feed]);
+                            }, function () {
+                                def.reject('Cannot update feed');
+                            });
+                        });
                     }, function () {
-                        next(new HttpError(400, 'Cannot update feed'));
+                        def.resolve([]);
                     });
-                });
-            }, function () {
-                response.send([]);
+                }
             });
         } else {
             Feed.findByQuery(query).then(function (feeds) {
-                response.send(feeds);
+                def.resolve(feeds);
             }, function (err) {
-                next(new HttpError(400, err));
+                def.reject(err);
             });
         }
+
+        return def.promise;
+    }
+
+    app.post(prefix + '/feeds/find', function (request, response, next) {
+        async.parallel([
+            function (cb) {
+                findFeeds(request.body.query).then(function (feeds) {
+                    cb(null, feeds);
+                }, function (err) {
+                    cb(err);
+                });
+            },
+            function (cb) {
+                Category.find({
+                    userId: request.userId
+                }, function (err, categories) {
+                    if (err) {
+                        return cb(err.message);
+                    }
+
+                    var feedIds = _.reduce(categories, function (result, category) {
+                        result = result.concat(_.pluck(category.feeds, 'feedId'));
+                        return result;
+                    }, []);
+
+                    cb(null, feedIds);
+                });
+            },
+            function (cb) {
+                FeedStatistic.find({}, cb);
+            }
+        ], function (err, results) {
+            if (err) {
+                log.error(err);
+                return next(new HttpError(err));
+            }
+
+            var feeds = results[0].map(function (feed) {
+                    return feed.toObject();
+                }),
+                userFeedIds = results[1],
+                feedStatistics = results[2];
+
+            _.forEach(feeds, function (currentFeed) {
+                if (_.find(userFeedIds, function (userFeedId) {
+                        return String(userFeedId) == String(currentFeed._id)
+                    })) {
+                    currentFeed.isFollowed = true;
+                }
+
+                currentFeed.statistic = {};
+
+                var feedStatistic = _.find(feedStatistics, function (feedStatistic) {
+                    return String(feedStatistic.feedId) == String(currentFeed._id);
+                });
+
+                if (feedStatistic) {
+                    currentFeed.statistic = _.pick(feedStatistic, 'countPosts', 'countPostPerMonth');
+                }
+            });
+
+            response.send(feeds);
+        });
     });
 
     // todo: need test for this api request
@@ -402,6 +477,92 @@ module.exports = function (app) {
                 if (err) {
                     log.error(err.message);
                 }
+            });
+
+            response.send({});
+        });
+    });
+
+    // todo: need test for this api request
+
+    app.post(prefix + '/posts/unread', function (request, response, next) {
+        UserPostMap.find({
+            userId: request.userId,
+            postId: {
+                $in: request.body.ids
+            }
+        }, function (err, userPosts) {
+            if (err) {
+                log.error(err.message);
+                return next(new Error('Server error'));
+            }
+
+            _.forEach(request.body.ids, function (postId) {
+                var userPost = _.find(userPosts, {
+                    postId: postId
+                });
+
+                if (!userPost) {
+                    userPost = new UserPostMap();
+
+                    userPost.postId = postId;
+                    userPost.userId = request.userId;
+
+                    userPosts.push(userPost);
+                }
+            });
+
+            _.forEach(userPosts, function (userPost) {
+                userPost.isRead = false;
+
+                userPost.save(function (err) {
+                    if (err) {
+                        log.error(err);
+                    }
+                });
+            });
+
+            response.send({});
+        });
+    });
+
+    // todo: need test for this api request
+
+    app.post(prefix + '/posts/read', function (request, response, next) {
+        UserPostMap.find({
+            userId: request.userId,
+            postId: {
+                $in: request.body.ids
+            }
+        }, function (err, userPosts) {
+            if (err) {
+                log.error(err.message);
+                return next(new Error('Server error'));
+            }
+
+            _.forEach(request.body.ids, function (postId) {
+                var userPost = _.find(userPosts, {
+                    postId: postId
+                });
+
+                if (!userPost) {
+                    userPost = new UserPostMap();
+
+                    userPost.postId = postId;
+                    userPost.userId = request.userId;
+
+                    userPosts.push(userPost);
+                }
+            });
+
+            _.forEach(userPosts, function (userPost) {
+                userPost.isRead = true;
+
+                userPost.save(function (err) {
+                    if (err) {
+                        log.error(err);
+                    }
+                });
             });
 
             response.send({});

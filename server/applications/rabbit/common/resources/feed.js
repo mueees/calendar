@@ -72,7 +72,7 @@ feedSchema.statics.getPostsFromUrl = function (options) {
                     link: post.link || "",
                     public_date: new Date(post.pubdate) || null,
                     guid: post.guid || "",
-                    image: post.image || "",
+                    title_image: post.image || "",
                     feedId: options.feedId
                 });
             }
@@ -95,11 +95,32 @@ feedSchema.statics.getLastPost = function (feedId) {
         }
     }, function (err, lastPost) {
         if (err) {
-            logger.error(err.message);
+            logger.error(err);
             return def.reject(err.message);
         }
 
         def.resolve(lastPost);
+    });
+
+    return def.promise;
+};
+
+feedSchema.statics.getFirstPost = function (feedId) {
+    var def = Q.defer();
+
+    Post.findOne({
+        feedId: feedId
+    }, {}, {
+        sort: {
+            public_date: 1
+        }
+    }, function (err, firstPost) {
+        if (err) {
+            logger.error(err);
+            return def.reject(err.message);
+        }
+
+        def.resolve(firstPost);
     });
 
     return def.promise;

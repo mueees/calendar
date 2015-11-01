@@ -28,6 +28,9 @@ pm2 start index.js --name account
 cd /home/mue/web/projects/calendar/server/applications/rabbit/services/statistic
 pm2 start index.js --name rabbit-statistic
 
+cd /home/mue/web/projects/calendar/server/applications/rabbit/services/api
+pm2 start index.js --name rabbit-api
+
 cd /home/mue/web/projects/calendar/server/applications/rabbit/services/save
 pm2 start index.js --name rabbit-save
 
@@ -39,9 +42,6 @@ pm2 start index.js --name rabbit-update
 
 cd /home/mue/web/projects/calendar/server/applications/rabbit/services/delivery
 pm2 start index.js --name rabbit-delivery
-
-cd /home/mue/web/projects/calendar/server/applications/rabbit/services/api
-pm2 start index.js --name rabbit-api
 
 cd /home/mue/web/projects/calendar/server/applications/rabbit/services/cron
 pm2 start index.js --name rabbit-cron

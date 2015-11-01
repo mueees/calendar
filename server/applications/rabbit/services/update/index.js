@@ -4,7 +4,6 @@ var Queue = require('../../common/queue'),
     log = require('common/log')(module),
     request = require('request'),
     rabbitConfig = require('../../config'),
-    RabbitRequest = require('common/request/rabbit'),
     feedForUpdateQueue = Queue.getQueue('feedForUpdate'),
     preparePostQueue = Queue.getQueue('preparePost');
 
