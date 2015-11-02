@@ -1,7 +1,14 @@
 module.exports = function(req, res, next){
     res.sendHttpError = function(error){
-        if( req.headers['x-requested-with'] == "XMLHttpRequest" || req.headers['mue-inner-request'] == "true" ){
+        res.status( error.status || 500 );
+            
+        res.send({
+            message: error.message
+        });
+
+        /*if( req.headers['x-requested-with'] == "XMLHttpRequest" || req.headers['mue-inner-request'] == "true" ){
             res.status( error.status );
+            
             res.send({
                 message: error.message
             });
@@ -12,7 +19,7 @@ module.exports = function(req, res, next){
                 message: error.message,
                 status: error.status
             });
-        }
+        }*/
     };
 
     next();

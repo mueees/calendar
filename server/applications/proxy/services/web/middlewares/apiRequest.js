@@ -26,8 +26,9 @@ module.exports = function (req, res, next) {
     var r = request(options);
 
     r.on('error', function (err) {
-        log.error(err.body);
-        next(new HttpError('Request timeout'));
+        log.error(err);
+        
+        next(new HttpError(400, 'Request timeout'));
     });
 
     r.pipe(res);
