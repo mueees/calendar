@@ -11,7 +11,7 @@ module.exports = function (req, res, next) {
             userId: req.headers.userId
         },
         json: true,
-        timeout: 3000
+        timeout: 15000
     };
 
     if (JSON.stringify(req.body) != '{}') {
