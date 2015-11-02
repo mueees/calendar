@@ -12,7 +12,11 @@ function getNewPosts(posts, lastPost) {
 
     if (lastPost) {
         posts.forEach(function (post) {
-            if (new Date(post.public_date) > new Date(lastPost.public_date)) {
+            var postDate = new Date(post.public_date);
+
+            log.info('Current post public date: ' + postDate);
+
+            if (postDate > lastPost.public_date) {
                 result.push(post);
             }
         });
@@ -36,6 +40,11 @@ feedForUpdateQueue.process(function (job, done) {
         Feed.getLastPost(job.data.feed._id)
     ])
         .then(function (results) {
+            results[1].public_date = new Date(results[1].public_date);
+
+            log.info('Got ' + results[0].length + ' posts from ' + job.data.feed.url);
+            log.info('Last post public date was ' + results[1].public_date);
+
             var newPosts = getNewPosts(results[0], results[1]);
 
             newPosts.forEach(function (post) {

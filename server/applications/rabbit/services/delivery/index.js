@@ -11,7 +11,7 @@ var Queue = require('../../common/queue'),
 var settings = {
     maxJobInFeedForUpdateQueue: 0,
     maxJobInQueues: 50,
-    timeBeforeUpdateSameFeed: 60 * 10 // seconds
+    timeBeforeUpdateSameFeed: 60 // seconds
 };
 
 function canAddFeedToUpdate() {
@@ -42,8 +42,6 @@ function canAddFeedToUpdate() {
 // Choose feed based on Statistic service
 function getFeedForUpdate() {
     var def = Q.defer();
-
-    console.log('Get feed for update');
 
     Feed.find({}, function (err, feeds) {
         if (err) {
@@ -92,6 +90,8 @@ function getFeedForUpdate() {
 
             // if we have feed that doesn't have statistic, choose them
             if (feedWithoutStatistic) {
+                log.info('Feed ' + String(feedWithoutStatistic._id) + ' does not have statistic');
+
                 feedForUpdate = feedWithoutStatistic;
                 // choose last updated feed
             } else if ((new Date() - statisticFeeds[0].last_update_date) / 1000 > settings.timeBeforeUpdateSameFeed) {
@@ -101,6 +101,8 @@ function getFeedForUpdate() {
             }
 
             if (feedForUpdate) {
+                log.info('Update ' + String(feedForUpdate._id) + ' feed with url: ' + feedForUpdate.url);
+
                 def.resolve(feedForUpdate);
                 RabbitRequest.setLastUpdateDate(String(feedForUpdate._id));
             } else {
