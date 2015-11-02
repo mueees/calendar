@@ -77,6 +77,6 @@ function updateCountPosts() {
 
 updateCountPosts();
 
-new cronJob('00 15 * * * *', function () {
+new cronJob('00 00 07,23 * * *', function () {
     updateCountPosts();
 }, null, true);

@@ -39,6 +39,10 @@ function canAddFeedToUpdate() {
     return def.promise;
 }
 
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 // Choose feed based on Statistic service
 function getFeedForUpdate() {
     var def = Q.defer();
@@ -103,14 +107,15 @@ function getFeedForUpdate() {
             if (feedForUpdate) {
                 log.info('Update ' + String(feedForUpdate._id) + ' feed with url: ' + feedForUpdate.url);
 
-                def.resolve(feedForUpdate);
                 RabbitRequest.setLastUpdateDate(String(feedForUpdate._id));
+                def.resolve(feedForUpdate);
             } else {
                 def.reject('No feed for update');
             }
-        }, function () {
+        }, function (err) {
             log.error(err);
-            def.resolve(feeds[0]);
+
+            def.resolve(feeds[getRandomInt(0, feeds.length)]);
         });
     });
 
@@ -120,7 +125,7 @@ function getFeedForUpdate() {
 // connect to database
 require("common/mongooseConnect").initConnection(rabbitConfig);
 
-new cronJob('10,13,16,19,22,25,28,31,34,37,40,43,46,49,52,55,58 * * * * *', function () {
+function deliveryFeed() {
     canAddFeedToUpdate()
         .then(getFeedForUpdate)
         .then(function (feed) {
@@ -129,8 +134,18 @@ new cronJob('10,13,16,19,22,25,28,31,34,37,40,43,46,49,52,55,58 * * * * *', func
             feedForUpdateQueue.add({
                 feed: feed
             });
+
+            setTimeout(function () {
+                deliveryFeed();
+            }, 1500);
         })
         .catch(function (error) {
             log.warning(error);
+
+            setTimeout(function () {
+                deliveryFeed();
+            }, 1500);
         });
-}, null, true);
+}
+
+deliveryFeed();
