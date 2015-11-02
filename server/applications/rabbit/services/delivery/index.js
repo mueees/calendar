@@ -10,7 +10,7 @@ var Queue = require('../../common/queue'),
 
 var settings = {
     maxJobInFeedForUpdateQueue: 0,
-    maxJobInQueues: 50,
+    maxJobInQueues: 100,
     timeBeforeUpdateSameFeed: 60 // seconds
 };
 
@@ -119,10 +119,7 @@ function getFeedForUpdate() {
 // connect to database
 require("common/mongooseConnect").initConnection(rabbitConfig);
 
-// each second
-
-//
-new cronJob('10,15,20,25,30,35,40,45,50,55 * * * * *', function () {
+new cronJob('10,13,16,19,22,25,28,31,34,37,40,43,46,49,52,55,58 * * * * *', function () {
     canAddFeedToUpdate()
         .then(getFeedForUpdate)
         .then(function (feed) {

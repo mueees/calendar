@@ -52,7 +52,7 @@ feedSchema.statics.getPostsFromUrl = function (options) {
 
     request({
         url: options.url,
-        timeout: options.timeout || 5000
+        timeout: options.timeout || 10000
     }).on('error', function (error) {
         log.error(error.message);
         def.reject(error.message);

@@ -34,8 +34,7 @@ feedForUpdateQueue.process(function (job, done) {
     Q.all([
         Feed.getPostsFromUrl({
             url: job.data.feed.url,
-            feedId: job.data.feed._id,
-            timeout: 4000
+            feedId: job.data.feed._id
         }),
         Feed.getLastPost(job.data.feed._id)
     ])
