@@ -109,6 +109,7 @@ function getFeedForUpdate() {
                 def.reject('No feed for update');
             }
         }, function () {
+            log.error(err);
             def.resolve(feeds[0]);
         });
     });
