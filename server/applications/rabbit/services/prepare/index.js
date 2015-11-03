@@ -89,7 +89,7 @@ preparePostQueue.process(function (job, done) {
             post: post
         });
 
-        log.info('Post with guid ' + post.guid + ' was prepared.');
+        log.info('Post with guid ' + post.guid + ' was prepared. Description length: ' + post.description.length);
 
         done();
     }, function (err) {
