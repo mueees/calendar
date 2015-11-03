@@ -5,12 +5,11 @@ var Queue = require('../../common/queue'),
     log = require('common/log')(module),
     rabbitConfig = require('../../config'),
     RabbitRequest = require('common/request/rabbit'),
-    feedForUpdateQueue = Queue.getQueue('feedForUpdate'),
-    cronJob = require('cron').CronJob;
+    feedForUpdateQueue = Queue.getQueue('feedForUpdate');
 
 var settings = {
     maxJobInFeedForUpdateQueue: 0,
-    maxJobInQueues: 100,
+    maxJobInQueues: 50,
     timeBeforeUpdateSameFeed: 60 // seconds
 };
 
@@ -21,15 +20,16 @@ function canAddFeedToUpdate() {
         if (jobCount > settings.maxJobInFeedForUpdateQueue) {
             def.reject("So many jobs in feedForUpdateQueue queue: " + jobCount);
         } else {
+
             // find, how much uncomplited job in rabbit queue in general
             Queue.countJobs(["feedForUpdate", "preparePost"]).then(function (count) {
-                if (count > settings.maxJobInQueue) {
-                    def.reject('So many jobs in feedForUpdate and preparePost queues.');
+                if (count > settings.maxJobInQueues) {
+                    def.reject('So many jobs in feedForUpdate and preparePost queues: ' + count);
                 } else {
+                    log.info(count + ' jobs in feedForUpdate and preparePost queues');
                     def.resolve();
                 }
             });
-            def.resolve();
         }
     }, function (err) {
         log.error(err);
@@ -129,8 +129,6 @@ function deliveryFeed() {
     canAddFeedToUpdate()
         .then(getFeedForUpdate)
         .then(function (feed) {
-            log.info('Feed for update was added');
-
             feedForUpdateQueue.add({
                 feed: feed
             });

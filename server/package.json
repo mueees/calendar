@@ -38,6 +38,8 @@
     "request": "latest",
     "underscore": "latest",
     "cron": "1.0.9",
+    "unfluff": "0.11.0",
+    "sanitize-html": "1.11.1",
 
     "mocha": "2.2.5"
   }

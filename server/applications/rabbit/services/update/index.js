@@ -39,12 +39,22 @@ feedForUpdateQueue.process(function (job, done) {
         Feed.getLastPost(job.data.feed._id)
     ])
         .then(function (results) {
-            results[1].public_date = new Date(results[1].public_date);
+            var latestPosts = results[0],
+                lastPost = results[1];
 
-            log.info('Got ' + results[0].length + ' posts from ' + job.data.feed.url);
-            log.info('Last post public date was ' + results[1].public_date);
+            if (lastPost) {
+                lastPost.public_date = new Date(lastPost.public_date);
+            }
 
-            var newPosts = getNewPosts(results[0], results[1]);
+            log.info('Got ' + latestPosts.length + ' posts from ' + job.data.feed.url);
+
+            if (lastPost) {
+                log.info('Last post public date was ' + lastPost.public_date);
+            } else {
+                log.info('Last post is not exist');
+            }
+
+            var newPosts = getNewPosts(latestPosts, lastPost);
 
             newPosts.forEach(function (post) {
                 preparePostQueue.add({
