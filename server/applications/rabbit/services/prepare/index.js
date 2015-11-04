@@ -4,7 +4,6 @@ var Queue = require('../../common/queue'),
     log = require('common/log')(module),
     request = require('request'),
     cheerio = require('cheerio'),
-/*readability = require('node-readability'),*/
     unfluff = require('unfluff'),
     sanitizeHtml = require('sanitize-html'),
     rabbitConfig = require('../../config'),
@@ -15,10 +14,8 @@ function findImg(html) {
     return cheerio.load(html)('img').eq(0).attr('src') || '';
 }
 
-function preparePost(post) {
-    var def = Q.defer();
-
-    post.description = sanitizeHtml(post.body, {
+function getDescription(html) {
+    return sanitizeHtml(html, {
         allowedTags: ['p', 'div', 'span', 'b', 'i', 'em', 'strong'],
         transformTags: {
             p: 'span',
@@ -29,56 +26,39 @@ function preparePost(post) {
             i: 'span'
         }
     });
+}
 
-    var data = unfluff(post.body);
+function preparePost(post) {
+    var def = Q.defer();
 
-    if (data.image) {
-        post.title_image = data.image;
+    request({
+        url: post.link,
+        timeout: 6000
+    }, function (err, response, body) {
+        if (err) {
+            log.error(err.message);
 
-        def.resolve(post);
-    } else {
-        request({
-            url: post.link,
-            timeout: 6000
-        }, function (err, response, body) {
-            if (err) {
-                log.error(err.message);
+            post.title_image = findImg(post.body);
 
-                post.title_image = findImg(post.body);
-            } else {
-                post.title_image = unfluff(body).image;
+            post.description = getDescription(post.body);
+        } else {
+            var data = unfluff(body);
+
+            if (!data.image) {
+                log.error('Unfluff cannot find img');
             }
 
-            def.resolve(post);
-        });
-    }
+            if (!data.description) {
+                log.error('Unfluff cannot find description');
+            }
 
-    /*readability(post.link, function (err, article, meta) {
-     var body = err ? post.body : article.content;
+            post.title_image = data.image ? data.image : findImg(post.body);
 
-     post.description = sanitizeHtml(body, {
-     allowedTags: ['p', 'div', 'span', 'b', 'i', 'em', 'strong'],
-     transformTags: {
-     p: 'span',
-     div: 'span',
-     b: 'span',
-     em: 'span',
-     strong: 'span',
-     i: 'span'
-     }
-     });
+            post.description = data.description ? data.description : getDescription(post.body);
+        }
 
-     post.title_image = findImg(body);
-
-     // Close article to clean up jsdom and prevent leaks
-     if (!err) {
-     article.close();
-     }
-
-     gc();
-
-     def.resolve(post);
-     });*/
+        def.resolve(post);
+    });
 
     return def.promise;
 }
@@ -89,7 +69,7 @@ preparePostQueue.process(function (job, done) {
             post: post
         });
 
-        log.info('Post with guid ' + post.guid + ' was prepared. Description length: ' + post.description.length);
+        log.info('Description: ' + post.description.length + '. Post ' + post.guid + ' was prepared.');
 
         done();
     }, function (err) {
