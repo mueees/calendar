@@ -10,6 +10,9 @@ var Queue = require('../../common/queue'),
     preparePostQueue = Queue.getQueue('preparePost'),
     savePostQueue = Queue.getQueue('savePost');
 
+var inQueue = 0,
+    maxInQueue = 10;
+
 function findImg(html) {
     return cheerio.load(html)('img').eq(0).attr('src') || '';
 }
@@ -63,17 +66,33 @@ function preparePost(post) {
     return def.promise;
 }
 
-preparePostQueue.process(function (job, done) {
-    preparePost(job.data.post).then(function (post) {
-        savePostQueue.add({
-            post: post
-        });
+function processJob(job, done) {
+    log.info('Jobs in queue: ' + inQueue);
 
-        log.info('Description: ' + post.description.length + '. Post ' + post.guid + ' was prepared.');
-
+    if (inQueue < maxInQueue) {
         done();
-    }, function (err) {
-        log.error(err.message);
-        done(err);
-    });
+
+        inQueue++;
+
+        preparePost(job.data.post).then(function (post) {
+            savePostQueue.add({
+                post: post
+            });
+
+            log.info('Description: ' + post.description.length + '. Post ' + post.guid + ' was prepared.');
+
+        }, function (err) {
+            log.error(err.message);
+        }).fin(function () {
+            inQueue--;
+        });
+    } else {
+        setTimeout(function () {
+            processJob(job, done);
+        }, 1000);
+    }
+}
+
+preparePostQueue.process(function (job, done) {
+    processJob(job, done);
 });
