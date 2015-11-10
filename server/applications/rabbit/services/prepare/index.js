@@ -36,7 +36,7 @@ function preparePost(post) {
 
     request({
         url: post.link,
-        timeout: 6000
+        timeout: 10000
     }, function (err, response, body) {
         if (err) {
             log.error(err.message);
@@ -93,7 +93,7 @@ function processJob(job, done) {
 
         setTimeout(function () {
             processJob(job, done);
-        }, 200);
+        }, 1000);
     }
 }
 
