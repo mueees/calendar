@@ -75,6 +75,8 @@ function processJob(job, done) {
         inQueue++;
 
         preparePost(job.data.post).then(function (post) {
+            inQueue--;
+
             savePostQueue.add({
                 post: post
             });
@@ -82,17 +84,17 @@ function processJob(job, done) {
             log.info('Description: ' + post.description.length + '. Post ' + post.guid + ' was prepared.');
 
         }, function (err) {
-            log.error(err.message);
-        }).fin(function () {
             inQueue--;
+
+            log.error(err.message);
         });
     } else {
+        log.info('So many jobs: ' + inQueue);
+
         setTimeout(function () {
             processJob(job, done);
-        }, 1000);
+        }, 200);
     }
 }
 
-preparePostQueue.process(function (job, done) {
-    processJob(job, done);
-});
+preparePostQueue.process(processJob);
