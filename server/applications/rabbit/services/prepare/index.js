@@ -11,7 +11,7 @@ var Queue = require('../../common/queue'),
     savePostQueue = Queue.getQueue('savePost');
 
 var inQueue = 0,
-    maxInQueue = 10;
+    maxInQueue = 3;
 
 function findImg(html) {
     return cheerio.load(html)('img').eq(0).attr('src') || '';
