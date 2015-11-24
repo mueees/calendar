@@ -5,9 +5,7 @@ var unfluff = require('unfluff'),
     Q = require('q'),
     sanitizeHtml = require('sanitize-html'),
     Feed = require('../../applications/rabbit/common/resources/feed'),
-    linkFeed = 'http://feeds.gawker.com/lifehacker/vip',
     linkPost = 'http://edition.cnn.com/2015/11/03/africa/russian-plane-crash-egypt-sinai/index.html';
-
 
 var tasks = [];
 
