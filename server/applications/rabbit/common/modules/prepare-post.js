@@ -30,27 +30,29 @@ function prepare(post) {
         url: post.link,
         timeout: 10000
     }, function (err, response, body) {
-        /*if (err) {
+        if (err) {
             log.error(err.message);
 
             post.title_image = findImg(post.body);
 
             post.description = getDescription(post.body);
         } else {
-            var data = unfluff(body);
+            var data = unfluff.lazy(body),
+                image = data.image(),
+                description = data.description();
 
-            if (!data.image) {
+            if (!image) {
                 log.error('Unfluff cannot find img');
             }
 
-            if (!data.description) {
+            if (!description) {
                 log.error('Unfluff cannot find description');
             }
 
-            post.title_image = data.image ? data.image : findImg(post.body);
+            post.title_image = image ? image : findImg(post.body);
 
-            post.description = data.description ? data.description : getDescription(post.body);
-        }*/
+            post.description = description ? description : getDescription(post.body);
+        }
 
         def.resolve(post);
     });
