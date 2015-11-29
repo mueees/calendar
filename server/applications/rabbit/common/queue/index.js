@@ -13,6 +13,11 @@ function getQueue(queueName) {
 
     if (!queues[queueName]) {
         queues[queueName] = Queue(queueName, rabbitConfig.get('queue:port'), rabbitConfig.get('queue:ip'));
+
+        // remove job after completed
+        queues[queueName].on('completed', function (job) {
+            job.remove();
+        });
     }
 
     return queues[queueName];
