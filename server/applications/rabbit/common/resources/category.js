@@ -3,7 +3,6 @@ var mongoose = require('mongoose'),
     ObjectId = Schema.ObjectId,
     log = require('common/log')(module),
     request = require('request'),
-    FeedParser = require('feedparser'),
     Post = require('./post'),
     Q = require('q');
 

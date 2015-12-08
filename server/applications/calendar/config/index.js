@@ -1,6 +1,7 @@
-var nconf = require("nconf");
-var path = require("path");
-var configFile;
+var nconf = require("nconf"),
+    config = new nconf.Provider(),
+    path = require("path"),
+    configFile;
 
 var NODE_ENV = process.env.NODE_ENV;
 
@@ -12,8 +13,8 @@ if ((NODE_ENV == 'development')) {
     configFile = 'production.json'
 }
 
-nconf.file('calendar.main', {file: path.join(__dirname, 'main.json')});
-nconf.file('calendar.secret', {file: path.join(__dirname, 'secret.json')});
-nconf.file('calendar.configFile', {file: path.join(__dirname, configFile)});
+config.file('calendar.main', {file: path.join(__dirname, 'main.json')});
+config.file('calendar.secret', {file: path.join(__dirname, 'secret.json')});
+config.file('calendar.configFile', {file: path.join(__dirname, configFile)});
 
-module.exports = nconf;
+module.exports = config;

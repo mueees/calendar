@@ -30,6 +30,11 @@ describe('account-api', function () {
         });
     });
 
+    after(function (done) {
+        require("common/mongooseConnect").closeConnection();
+        done();
+    });
+
     afterEach(function (done) {
         User.remove(done);
     });

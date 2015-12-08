@@ -1,6 +1,10 @@
 var mongoose = require('mongoose'),
     Q = require('q');
 
+exports.closeConnection = function () {
+    mongoose.connection.close()
+};
+
 exports.initConnection = function (config) {
     var def = Q.defer();
     mongoose.connect('mongodb://' + config.get('db:ip') + '/' + config.get('db:nameDatabase'));

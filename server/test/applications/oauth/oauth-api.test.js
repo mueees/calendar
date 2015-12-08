@@ -18,6 +18,11 @@ describe('oauth-api', function () {
         });
     });
 
+    after(function (done) {
+        require("common/mongooseConnect").closeConnection();
+        done();
+    });
+
     afterEach(function (done) {
         Application.remove(done);
     });

@@ -11,7 +11,7 @@ var userId = '559bfe2016bd17920826b366',
         name: 'Test category'
     },
     testFeed = {
-        url: 'http://www.pcworld.com/index.rss'
+        url: 'https://medium.com/feed/swlh'
     },
     testPost = {
         _id: '559bfe2016bd17920826b366',
@@ -55,12 +55,17 @@ function createUserPostMap() {
     return def.promise;
 }
 
-describe('account-api', function () {
+describe('rabbit-api', function () {
     before(function (done) {
         // database connection
         require("common/mongooseConnect").initConnection(rabbitConfig).then(function () {
             done();
         });
+    });
+
+    after(function (done) {
+        require("common/mongooseConnect").closeConnection();
+        done();
     });
 
     afterEach(function (done) {
@@ -155,7 +160,7 @@ describe('account-api', function () {
 
     it('should find new feed by url', function (done) {
         RabbitRequest.findFeed(testFeed.url, userId).then(function (res) {
-            if (res.body.title) {
+            if (res.body[0].title) {
                 done();
             } else {
                 done(new Error('Cannot find feed by url'));
@@ -167,7 +172,7 @@ describe('account-api', function () {
 
     it('should find feed by title', function (done) {
         RabbitRequest.trackFeed(testFeed, userId).then(function (res) {
-            RabbitRequest.findFeed('pcworld', userId).then(function (res) {
+            RabbitRequest.findFeed('swlh', userId).then(function (res) {
                 if (res.body.length > 0) {
                     done();
                 } else {
@@ -178,23 +183,6 @@ describe('account-api', function () {
             })
         }, function (err) {
             done(new Error(err.body.message));
-        });
-    });
-
-    it('should remove feed from category', function (done) {
-        Q.all([
-            RabbitRequest.trackFeed(testFeed, userId),
-            RabbitRequest.createCategory(testCategory, userId)
-        ]).then(function (results) {
-            var feedId = results[0].body._id;
-
-            RabbitRequest.addFeed(feedId, results[1].body._id, userId).then(function (res) {
-                RabbitRequest.deleteFeed(feedId, userId).then(function () {
-                    done();
-                }, function (res) {
-                    done(new Error(res.body.message));
-                });
-            });
         });
     });
 

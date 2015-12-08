@@ -29,6 +29,11 @@ describe('calendar-api', function () {
         });
     });
 
+    after(function (done) {
+        require("common/mongooseConnect").closeConnection();
+        done();
+    });
+
     afterEach(function (done) {
         Calendar.remove(function () {
             Event.remove(done)
