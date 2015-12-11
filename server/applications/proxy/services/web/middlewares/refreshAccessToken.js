@@ -8,8 +8,7 @@ module.exports = function (request, response, next) {
     if (oauthAccess.isNeedRefresh()) {
         OauthRequest.refresh({
             refresh_token: oauthAccess.refresh_token,
-            privateKey: oauthAccess.privateKey,
-            applicationId: oauthAccess.applicationId
+            privateKey: oauthAccess.privateKey
         }).then(function (res) {
             oauthAccess.last_refresh = new Date();
             oauthAccess.access_token = res.body.access_token;

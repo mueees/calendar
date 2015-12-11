@@ -172,7 +172,7 @@ describe('rabbit-api', function () {
 
     it('should find feed by title', function (done) {
         RabbitRequest.trackFeed(testFeed, userId).then(function (res) {
-            RabbitRequest.findFeed('swlh', userId).then(function (res) {
+            RabbitRequest.findFeed('medium', userId).then(function (res) {
                 if (res.body.length > 0) {
                     done();
                 } else {

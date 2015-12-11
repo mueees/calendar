@@ -17,7 +17,7 @@ MueRequest.request = function (options) {
 
     options.headers = options.headers || {};
 
-    options.headers['mue-inner-request'] = 'true';
+    options.headers['mue-inner-request'] = 'mue-inner-request';
 
     request(options, function (err, response, body) {
         if (err) {

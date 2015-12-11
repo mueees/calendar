@@ -134,8 +134,7 @@ describe('oauth-api', function () {
             }).then(function (data) {
                 OauthRequest.exchange({
                     ticket: data.body,
-                    privateKey: application.privateKey,
-                    applicationId: application.applicationId
+                    privateKey: application.privateKey
                 }).then(function (data) {
                     if (data.body.access_token) {
                         done();

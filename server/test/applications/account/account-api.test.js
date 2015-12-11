@@ -1,15 +1,18 @@
 var AccountRequest = require('common/request/account'),
     User = require('common/resources/user'),
     Q = require('q'),
+    _ = require('underscore'),
     accountConfig = require('applications/account/server/config');
 
-var testUser = {
-    email: 'test@gmail.com',
-    passwords: '123123'
-};
-
-function createUser() {
+function createUser(user) {
     var def = Q.defer();
+
+    var defaultUser = {
+        email: 'test@gmail.com',
+        passwords: '123123'
+    };
+
+    var testUser = _.extend(_.clone(defaultUser), user);
 
     User.signup(testUser.email, testUser.password, function (err, user) {
         if (err) {

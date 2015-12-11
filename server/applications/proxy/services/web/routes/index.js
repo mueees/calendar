@@ -78,8 +78,7 @@ module.exports = function (app) {
         function exchangeTicket(application, callback) {
             OauthRequest.exchange({
                 ticket: request.query.ticket,
-                privateKey: application.privateKey,
-                applicationId: application.applicationId
+                privateKey: application.privateKey
             }).then(function (res) {
                 callback(null, application, res.body);
             }, function (res) {
@@ -87,9 +86,17 @@ module.exports = function (app) {
             });
         }
 
-        function getUserEmail(application, tokens, callback) {
+        function getUserId(application, tokens, callback){
+            OauthRequest.getPermissionByAccessToken(tokens.access_token).then(function (res) {
+                callback(null, application, tokens, res.body.userId);
+            }, function (res) {
+                callback(res.body.message);
+            });
+        }
+
+        function getUserEmail(application, tokens, userId, callback) {
             AccountRequest.getUser({
-                userId: application.userId
+                userId: userId
             }).then(function (res) {
                 callback(null, application, tokens, res.body.email);
             }, function (res) {
@@ -163,6 +170,7 @@ module.exports = function (app) {
         async.waterfall([
             getApplication,
             exchangeTicket,
+            getUserId,
             getUserEmail,
             createOrUpdateOauthAccess,
             createToken

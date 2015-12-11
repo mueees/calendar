@@ -1,5 +1,6 @@
 var Application = require('common/resources/application'),
     Permission = require('common/resources/permission'),
+    internalRequests = require('common/middlewares/internal-requests'),
     log = require('common/log')(module),
     async = require('async'),
     HttpError = require('common/errors/HttpError');
@@ -9,7 +10,7 @@ var expiredTime = 1000 * 60 * 3 * 1000000000000000000000000000000000000000000000
 
 module.exports = function (app) {
     // create application
-    app.put(prefix + '/applications', function (request, response, next) {
+    app.put(prefix + '/applications', [internalRequests, function (request, response, next) {
         var data = request.body;
 
         if (!data.name || !data.name.length) {
@@ -39,7 +40,7 @@ module.exports = function (app) {
                 description: application.description
             });
         });
-    });
+    }]);
 
     // edit application
     app.post(prefix + '/applications/:id', function (request, response, next) {
@@ -246,15 +247,10 @@ module.exports = function (app) {
             return next(new HttpError(400, "Invalid private key"));
         }
 
-        if (!data.applicationId) {
-            return next(new HttpError(400, "Invalid application id"));
-        }
-
         async.waterfall([
             function (cb) {
                 Application.findOne({
-                    privateKey: data.privateKey,
-                    applicationId: data.applicationId
+                    privateKey: data.privateKey
                 }, null, function (err, application) {
                     if (err) {
                         return cb('Server error');
@@ -269,8 +265,7 @@ module.exports = function (app) {
             },
             function (application, cb) {
                 Permission.findOne({
-                    ticket: data.ticket,
-                    applicationId: data.applicationId
+                    ticket: data.ticket
                 }, null, function (err, permission) {
                     if (err) {
                         return cb('Server error');
@@ -321,15 +316,10 @@ module.exports = function (app) {
             return next(new HttpError(400, "Invalid refresh token"));
         }
 
-        if (!data.applicationId) {
-            return next(new HttpError(400, "Invalid application id"));
-        }
-
         async.waterfall([
             function (cb) {
                 Application.findOne({
-                    privateKey: data.privateKey,
-                    applicationId: data.applicationId
+                    privateKey: data.privateKey
                 }, null, function (err, application) {
                     if (err) {
                         return cb('Server error');
@@ -344,8 +334,7 @@ module.exports = function (app) {
             },
             function (application, cb) {
                 Permission.findOne({
-                    refresh_token: data.refresh_token,
-                    applicationId: data.applicationId
+                    refresh_token: data.refresh_token
                 }, null, function (err, permission) {
                     if (err) {
                         return cb('Server error');
@@ -393,7 +382,7 @@ module.exports = function (app) {
     });
 
     // get permission by accessToken
-    app.get(prefix + '/permissions/accessToken/:accessToken', function (request, response, next) {
+    app.get(prefix + '/permissions/accessToken/:accessToken', [internalRequests, function (request, response, next) {
         Permission.findOne({
             access_token: request.params.accessToken,
         }, null, function (err, permission) {
@@ -411,5 +400,5 @@ module.exports = function (app) {
 
             response.send(permission);
         });
-    });
+    }]);
 };
