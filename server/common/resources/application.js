@@ -15,7 +15,7 @@ var applicationSchema = new Schema({
     },
     applicationId: {
         type: String,
-        require: heplers.util.getUUID()
+        require: true
     },
     useProxy: {
         type: Boolean,
@@ -54,7 +54,7 @@ var applicationSchema = new Schema({
 });
 
 applicationSchema.statics.create = function (data, cb) {
-    data.applicationId = heplers.util.getUUID();
+    data.applicationId = data.applicationId || heplers.util.getUUID();
     data.privateKey = heplers.util.getUUID();
     data.oauthKey = heplers.util.getUUID();
 
@@ -78,14 +78,14 @@ applicationSchema.statics.refreshPrivateKey = function (applicationId, cb) {
             return cb('Server error');
         }
 
-        if(!application){
+        if (!application) {
             return cb('Cannot find application');
         }
 
         application.privateKey = heplers.util.getUUID();
 
         application.save(function (err, application) {
-            if (err){
+            if (err) {
                 log.error(err);
                 return cb('Server error');
             }

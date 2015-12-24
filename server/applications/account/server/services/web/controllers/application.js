@@ -1,8 +1,9 @@
 var async = require('async'),
     HttpError = require('common/errors/HttpError'),
     log = require('common/log')(module),
+    configuration = require("configuration"),
     OauthRequest = require('common/request/oauth'),
-    _ = require("underscore");
+    _ = require("lodash");
 
 var controller = {
     getByApplicationId: function (request, response, next) {
@@ -19,7 +20,8 @@ var controller = {
                     date_create: application.date_create,
                     redirectUrl: application.redirectUrl,
                     description: application.description,
-                    applicationId: application.applicationId
+                    applicationId: application.applicationId,
+                    auth: _.contains(application.applicationId, configuration.get('whiteAppList'))
                 });
             }, function (response) {
                 log.error(response.body.message);

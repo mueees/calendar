@@ -10,7 +10,7 @@ var prefix = '/api';
 module.exports = function (app) {
 
     /*HOME*/
-    app.get('/', rootController.home);
+    // app.get('/', rootController.home);
 
     /*USER*/
     app.post(prefix + '/sign', userController.sign);
