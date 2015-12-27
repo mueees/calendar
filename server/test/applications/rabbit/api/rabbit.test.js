@@ -4,6 +4,10 @@ var RabbitRequest = require('common/request/rabbit'),
     Post = require('applications/rabbit/common/resources/post'),
     UserPostMap = require('applications/rabbit/common/resources/userPostMap'),
     Q = require('q'),
+    _ = require('lodash'),
+    assert = require('chai').assert,
+    expect = require('chai').expect,
+    testHelpers = require('../../../helpers'),
     rabbitConfig = require('applications/rabbit/config');
 
 var userId = '559bfe2016bd17920826b366',
@@ -11,7 +15,7 @@ var userId = '559bfe2016bd17920826b366',
         name: 'Test category'
     },
     testFeed = {
-        url: 'https://medium.com/feed/swlh'
+        url: 'http://feeds.feedburner.com/Techcrunch'
     },
     testPost = {
         _id: '559bfe2016bd17920826b366',
@@ -26,6 +30,15 @@ var userId = '559bfe2016bd17920826b366',
         feedId: '559bfe2016bd17920826b366',
         userId: userId
     };
+
+var feeds = [
+    {
+        url: 'http://feeds.feedburner.com/Techcrunch'
+    },
+    {
+        url: 'http://www.vice.com/rss'
+    }
+];
 
 function createPost() {
     var def = Q.defer();
@@ -69,24 +82,10 @@ describe('rabbit-api', function () {
     });
 
     afterEach(function (done) {
-        Category.remove({}, function (err) {
-            if (err) {
-                return done(new Error(err.message));
-            }
-
-            Post.remove({}, function (err) {
-                if (err) {
-                    return done(new Error(err.message));
-                }
-
-                UserPostMap.remove({}, function (err) {
-                    if (err) {
-                        return done(new Error(err.message));
-                    }
-
-                    Feed.remove({}, done);
-                });
-            });
+        testHelpers.cleanRabbitDb().then(function () {
+            done();
+        }, function (err) {
+            done(new Error(err));
         });
     });
 
@@ -155,7 +154,7 @@ describe('rabbit-api', function () {
             });
         }, function (err) {
             done(new Error(err.body.message));
-        })
+        });
     });
 
     it('should find new feed by url', function (done) {
@@ -172,7 +171,7 @@ describe('rabbit-api', function () {
 
     it('should find feed by title', function (done) {
         RabbitRequest.trackFeed(testFeed, userId).then(function (res) {
-            RabbitRequest.findFeed('medium', userId).then(function (res) {
+            RabbitRequest.findFeed('Techcrunch', userId).then(function (res) {
                 if (res.body.length > 0) {
                     done();
                 } else {
@@ -220,6 +219,32 @@ describe('rabbit-api', function () {
             }, function (res) {
                 done(new Error(res.body.message));
             });
+        });
+    });
+
+    it('should return popular feeds', function (done) {
+        var savedFeeds;
+
+        Q.all(_.map(feeds, function (feed) {
+            return RabbitRequest.trackFeed(feed, userId)
+        })).then(function (feeds) {
+            savedFeeds = _.map(feeds, function (response) {
+                return response.body;
+            });
+
+            return RabbitRequest.createCategory(testCategory, userId);
+        }).then(function (response) {
+            return RabbitRequest.addFeed(savedFeeds[0]._id, response.body._id, userId);
+        }).then(function () {
+            return RabbitRequest.updateFollowedCount(userId);
+        }).then(function () {
+            return RabbitRequest.getPopularFeeds(userId, 2);
+        }).then(function (response) {
+            expect(response.body.length).to.equal(1);
+
+            done();
+        }).catch(function (err) {
+            done(new Error(err.message));
         });
     });
 });

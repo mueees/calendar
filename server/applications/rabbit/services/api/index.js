@@ -13,6 +13,13 @@ app.use(bodyParser.json({
     strict: false
 }));
 
+process.on('uncaughtException', function(err) {
+    // handle the error safely
+    console.log(err);
+
+    process.exit();
+});
+
 app.use(require("common/middlewares/sendHttpError"));
 app.use(require("common/middlewares/extractUserId"));
 
@@ -25,11 +32,15 @@ app.use(function (err, req, res, next) {
     } else if (err instanceof HttpError) {
 
     } else {
+        log.error(err);
+
         err = new HttpError(500, 'Fatal server error');
     }
 
     res.sendHttpError(err);
 });
+
+
 
 // connect to database
 require("common/mongooseConnect").initConnection(rabbitConfig);

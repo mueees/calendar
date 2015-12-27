@@ -2,12 +2,14 @@ var log = require('common/log')(module),
     _ = require('underscore'),
     Q = require('q'),
     async = require('async'),
+    FeedManager = require('common/modules/feedManager'),
     Feed = require('../../../common/resources/feed'),
     Post = require('../../../common/resources/post'),
     Category = require('../../../common/resources/category'),
     UserPostMap = require('../../../common/resources/userPostMap'),
     FeedStatistic = require('../../../common/resources/feedStatistic'),
     HttpError = require('common/errors/HttpError'),
+    RabbitRequest = require('common/request/rabbit'),
     validator = require('validator'),
     prefix = '/api/rabbit';
 
@@ -100,6 +102,7 @@ module.exports = function (app) {
             response.send(feed);
         }, function (err) {
             log.error(err);
+
             next(new HttpError(400, err));
         });
     });
@@ -215,7 +218,9 @@ module.exports = function (app) {
                 if (feed) {
                     def.resolve([feed]);
                 } else {
-                    Feed.isValidFeed(query).then(function () {
+                    FeedManager.isValidFeed({
+                        url: query
+                    }).then(function () {
                         Feed.create({
                             url: query
                         }, function (err, feed) {
@@ -308,8 +313,77 @@ module.exports = function (app) {
         });
     });
 
-    // todo: need test for this api request
+    // find most popular feeds
+    app.get(prefix + '/feeds/popular', function (request, response, next) {
+        var countFeeds = request.query.count || 3;
 
+        async.parallel([
+            function (cb) {
+                RabbitRequest.feedsStatistic().then(function (data) {
+                    var statisticFeeds = data.body;
+
+                    statisticFeeds = _.sortBy(statisticFeeds, 'followedByUser').reverse();
+
+                    cb(null, statisticFeeds);
+                }, function (err) {
+                    cb(err);
+                });
+            },
+            function (cb) {
+                Category.getUserFeedIds(request.userId).then(function (userFeedIds) {
+                    cb(null, userFeedIds);
+                }, function (err) {
+                    cb(err);
+                });
+            }
+        ], function (err, results) {
+            if (err) {
+                log.error(err);
+
+                return next(new HttpError(500, err))
+            }
+
+            var statisticFeeds = results[0],
+                userFeedIds = results[1],
+                popularFeedIds = [];
+
+            var i = 0;
+
+            while (popularFeedIds.length < countFeeds && i < statisticFeeds.length) {
+                // if user doesn't have feedId, push it to popular array
+                if (!_.contains(userFeedIds, statisticFeeds[i].feedId)) {
+                    popularFeedIds.push(statisticFeeds[i].feedId);
+                }
+
+                i++;
+            }
+
+            Feed.find({
+                _id: {
+                    $in: popularFeedIds
+                }
+            }, function (err, popularFeeds) {
+                if (err) {
+                    log.error(err);
+
+                    return next(new HttpError(500, 'Server error'));
+                }
+
+                popularFeeds.forEach(function (feed) {
+                    var statisticFeed = _.find(statisticFeeds, {
+                        feedId: String(feed._id)
+                    });
+
+                    feed.isFollowed = true;
+                    feed.statistic = _.pick(statisticFeed, ['countPosts', 'countPostPerMonth']);
+                });
+
+                response.send(popularFeeds);
+            });
+        });
+    });
+
+    // todo: need test for this api request
     // get feed by id
     app.get(prefix + '/feeds/:id', function (request, response, next) {
         Feed.findOne({
@@ -422,7 +496,6 @@ module.exports = function (app) {
     });
 
     // todo: need test for this api request
-
     app.post(prefix + '/posts/:id/read', function (request, response, next) {
         UserPostMap.findOne({
             userId: request.userId,
@@ -453,7 +526,6 @@ module.exports = function (app) {
     });
 
     // todo: need test for this api request
-
     app.post(prefix + '/posts/:id/unread', function (request, response, next) {
         UserPostMap.findOne({
             userId: request.userId,
@@ -484,7 +556,6 @@ module.exports = function (app) {
     });
 
     // todo: need test for this api request
-
     app.post(prefix + '/posts/unread', function (request, response, next) {
         UserPostMap.find({
             userId: request.userId,
@@ -527,7 +598,6 @@ module.exports = function (app) {
     });
 
     // todo: need test for this api request
-
     app.post(prefix + '/posts/read', function (request, response, next) {
         UserPostMap.find({
             userId: request.userId,

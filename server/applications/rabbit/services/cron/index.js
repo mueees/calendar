@@ -5,7 +5,6 @@ var Queue = require('../../common/queue'),
     _ = require('underscore'),
     log = require('common/log')(module),
     async = require('async'),
-    cheerio = require('cheerio'),
     rabbitConfig = require('../../config'),
     cronJob = require('cron').CronJob;
 
@@ -37,33 +36,6 @@ function updateFeedInfo() {
             if (err) {
                 log.error(err);
             }
-        });
-    });
-}
-
-function updatePostInfo() {
-    Post.find({
-        title_image: ''
-    }, {
-        title_image: 1,
-        body: 1
-    }, function (err, posts) {
-        if (err) {
-            return log.error(err);
-        }
-
-        log.info('Posts without title_image: ' + posts.length);
-
-        _.forEach(posts, function (post) {
-            post.title_image = cheerio.load(post.body)('img').eq(0).attr('src') || '';
-
-            log.info('Post img: ' + post.title_image);
-
-            post.save(function (err) {
-                if (err) {
-                    log.error(err);
-                }
-            });
         });
     });
 }

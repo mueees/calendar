@@ -1529,6 +1529,7 @@ require("common/mongooseConnect").initConnection(rabbitConfig).then(function () 
         Feed.create(prepearedFeeds, function (err) {
             if (err) {
                 log.error(err.message);
+                process.exit();
                 return;
             }
 

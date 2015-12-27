@@ -13,10 +13,6 @@ var userPostSchema = new Schema({
         type: ObjectId,
         required: true
     },
-    /*feedId: {
-        type: ObjectId,
-        required: true
-    },*/
     isRead: {
         type: Boolean,
         default: false

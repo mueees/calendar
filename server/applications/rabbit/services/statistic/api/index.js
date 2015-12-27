@@ -24,6 +24,8 @@ app.use(function (err, req, res, next) {
     } else if (err instanceof HttpError) {
 
     } else {
+        log.error(err);
+
         err = new HttpError(500, 'Fatal server error');
     }
 

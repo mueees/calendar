@@ -66,7 +66,7 @@
         "statistic": {
           "name": "Calculate Rabbit statistic",
           "status": true,
-          "port": 9011
+          "port": 9012
         },
         "api": {
           "name": "Rabbit api",

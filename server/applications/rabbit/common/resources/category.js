@@ -4,6 +4,7 @@ var mongoose = require('mongoose'),
     log = require('common/log')(module),
     request = require('request'),
     Post = require('./post'),
+    _ = require('lodash'),
     Q = require('q');
 
 var feedSchema = new Schema({
@@ -65,6 +66,36 @@ categorySchema.statics.isExist = function (id, userId) {
         } else {
             def.reject('Cannot find category');
         }
+    });
+
+    return def.promise;
+};
+
+categorySchema.statics.getUserFeedIds = function (userId) {
+    var def = Q.defer();
+
+    this.find({
+        userId: userId
+    }, function (err, categories) {
+        if (err) {
+            log.error(err.message);
+
+            return def.reject('Server error');
+        }
+
+        var feedIds = [];
+
+        _.each(categories, function (category) {
+            _.each(category.feeds, function (feed) {
+                var feedId = String(feed.feedId);
+
+                if (!_.contains(feedIds, feedId)) {
+                    feedIds.push(feedId);
+                }
+            });
+        });
+
+        def.resolve(feedIds);
     });
 
     return def.promise;

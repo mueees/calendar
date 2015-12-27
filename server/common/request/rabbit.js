@@ -3,7 +3,7 @@ var MueRequest = require('./index'),
     statisticService = 'statistic',
     apiService = 'api';
 
-function findPosts(queryString, userId){
+function findPosts(queryString, userId) {
     return MueRequest.request({
         app: app,
         service: apiService,
@@ -15,7 +15,7 @@ function findPosts(queryString, userId){
     });
 }
 
-function findFeed(query, userId){
+function findFeed(query, userId) {
     return MueRequest.request({
         app: app,
         service: apiService,
@@ -138,6 +138,32 @@ function setLastUpdateDate(feedId) {
     });
 }
 
+function getPopularFeeds(userId, feedCount) {
+    feedCount = feedCount || 3;
+
+    return MueRequest.request({
+        app: app,
+        service: apiService,
+        method: 'GET',
+        url: '/feeds/popular?count=' + feedCount,
+        headers: {
+            userid: userId
+        }
+    });
+}
+
+function updateFollowedCount(userId) {
+    return MueRequest.request({
+        app: app,
+        service: statisticService,
+        method: 'GET',
+        url: '/statistic/updateFollowedCount',
+        headers: {
+            userid: userId
+        }
+    });
+}
+
 exports.findPosts = findPosts;
 exports.findFeed = findFeed;
 exports.addFeed = addFeed;
@@ -149,3 +175,5 @@ exports.deleteCategory = deleteCategory;
 exports.feedStatistic = feedStatistic;
 exports.feedsStatistic = feedsStatistic;
 exports.setLastUpdateDate = setLastUpdateDate;
+exports.getPopularFeeds = getPopularFeeds;
+exports.updateFollowedCount = updateFollowedCount;

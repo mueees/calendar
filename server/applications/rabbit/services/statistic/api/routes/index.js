@@ -3,6 +3,8 @@ var log = require('common/log')(module),
     async = require('async'),
     Q = require('q'),
     HttpError = require('common/errors/HttpError'),
+    internalRequests = require('common/middlewares/internal-requests'),
+    StatisticHandlers = require('../../common/handlers'),
     FeedStatistic = require('../../../../common/resources/feedStatistic'),
     prefix = '/api/rabbit';
 
@@ -24,6 +26,7 @@ function getFeedStatistic(feedId) {
             }, function (err, feedStatistic) {
                 if (err) {
                     log.error(err.message);
+
                     def.reject('Cannot get feedStatistic during mongo error');
                     return;
                 }
@@ -43,6 +46,7 @@ module.exports = function (app) {
         FeedStatistic.find({}, function (err, feedStatistics) {
             if (err) {
                 log.error(err.message);
+
                 return next(new HttpError(400, 'Server error'));
             }
 
@@ -83,4 +87,12 @@ module.exports = function (app) {
             next(new HttpError(500, err))
         });
     });
+
+    app.get(prefix + '/statistic/updateFollowedCount', [internalRequests, function (request, response, next) {
+        StatisticHandlers.updateFollowedCount().then(function () {
+           response.send({});
+        }, function (err) {
+            next(new HttpError(400, err.message));
+        });
+    }]);
 };

@@ -1,6 +1,7 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId,
+    FeedManager = require('common/modules/feedManager'),
     log = require('common/log')(module),
     request = require('request'),
     validator = require('validator'),
@@ -31,10 +32,12 @@ var feedSchema = new Schema({
         default: ''
     },
 
-    // base64
-    ico: {
-        type: String,
-        default: ''
+    // url to img
+    title_img: {
+        type: String
+    },
+    domain: {
+        type: String
     },
     create_date: {
         type: Date,
@@ -126,28 +129,6 @@ feedSchema.statics.getFirstPost = function (feedId) {
     return def.promise;
 };
 
-feedSchema.statics.isValidFeed = function (url) {
-    var def = Q.defer();
-
-    request({
-        url: url,
-        timeout: 2000
-    }).on('error', function (error) {
-        log.error(error.message);
-
-        def.reject('Wrong url');
-    })
-        .pipe(new FeedParser())
-        .on('error', function (error) {
-            log.error(error.message);
-            def.reject('This is not feed');
-        }).on('readable', function () {
-            def.resolve();
-        });
-
-    return def.promise;
-};
-
 feedSchema.statics.findByQuery = function (query) {
     var def = Q.defer();
 
@@ -188,18 +169,17 @@ feedSchema.statics.track = function (url) {
         return def.reject('Its not url');
     }
 
-    Feed.isValidFeed(url).then(function () {
-        Feed.create({url: url}, function (err, feed) {
+    FeedManager.isValidFeed({
+        url: url
+    }).then(function (feedInfo) {
+        Feed.create(feedInfo, function (err, feed) {
             if (err) {
                 log.error(err.message);
+
                 return def.reject('Server error');
             }
 
-            feed.updateInfo().then(function (feed) {
-                def.resolve(feed);
-            }, function () {
-                def.reject('Cannot update feed');
-            });
+            def.resolve(feed);
         });
     }, function (err) {
         def.reject(err);
@@ -212,33 +192,28 @@ feedSchema.methods.updateInfo = function () {
     var def = Q.defer(),
         me = this;
 
-    request({
-        url: this.url,
-        timeout: 2000
-    }).on('error', function (error) {
-        log.error(error.message);
+    FeedManager.getFeedInfo({
+        url: this.url
+    }).then(function (feedInfo) {
+        me.title = feedInfo.title ? feedInfo.title : me.title;
+        me.description = feedInfo.description ? feedInfo.description : me.description;
+        me.author = feedInfo.author ? feedInfo.author : me.author;
+        me.language = feedInfo.language ? feedInfo.language : me.language;
+        me.title_img = feedInfo.title_img ? feedInfo.title_img : me.title_img;
+        me.domain = feedInfo.domain ? feedInfo.domain : me.domain;
 
-        def.reject('Wrong url');
-    })
-        .pipe(new FeedParser())
-        .on('error', function (error) {
-            log.error(error.message);
-            def.reject('This is not feed');
-        }).on('readable', function () {
-            me.title = this.meta.title ? this.meta.title : me.title;
-            me.description = this.meta.description ? this.meta.description : me.description;
-            me.author = this.meta.author ? this.meta.author : me.author;
-            me.language = this.meta.author ? this.meta.language : me.language;
+        me.save(function (err) {
+            if (err) {
+                log.error(err.message);
 
-            me.save(function (err) {
-                if (err) {
-                    log.error(err.message);
-                    return def.reject(err.message);
-                }
+                return def.reject(err.message);
+            }
 
-                def.resolve(me);
-            });
+            def.resolve(me);
         });
+    }, function (err) {
+        def.reject(err);
+    });
 
     return def.promise;
 };

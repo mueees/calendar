@@ -3,7 +3,6 @@ var mongoose = require('mongoose'),
     ObjectId = Schema.ObjectId,
     log = require('common/log')(module),
     request = require('request'),
-    FeedParser = require('feedparser'),
     Post = require('./post'),
     Q = require('q');
 
@@ -20,6 +19,12 @@ var feedStatisticSchema = new Schema({
         default: 0
     },
     countPostPerMonth: {
+        type: Number,
+        default: 0
+    },
+
+    // how many users follow this feed
+    followedByUser: {
         type: Number,
         default: 0
     }
