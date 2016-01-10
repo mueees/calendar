@@ -3,10 +3,10 @@ var mongoose = require('mongoose'),
     ObjectId = Schema.ObjectId,
     FeedManager = require('common/modules/feedManager'),
     log = require('common/log')(module),
-    request = require('request'),
     validator = require('validator'),
-    FeedParser = require('feedparser'),
     Post = require('./post'),
+    async = require('async'),
+    _ = require('lodash'),
     Q = require('q');
 
 var feedSchema = new Schema({
@@ -34,10 +34,12 @@ var feedSchema = new Schema({
 
     // url to img
     title_img: {
-        type: String
+        type: String,
+        default: ''
     },
     domain: {
-        type: String
+        type: String,
+        default: ''
     },
     create_date: {
         type: Date,
@@ -50,39 +52,18 @@ var feedSchema = new Schema({
 });
 
 feedSchema.statics.getPostsFromUrl = function (options) {
-    var posts = [],
-        def = Q.defer();
+    var def = Q.defer();
 
-    request({
-        url: options.url,
-        timeout: options.timeout || 10000
-    }).on('error', function (error) {
-        log.error(error.message);
-        def.reject(error.message);
-    })
-        .pipe(new FeedParser())
-        .on('error', function (error) {
-            log.error(error.message);
-            def.reject(error.message);
-        })
-        .on('readable', function () {
-            var post,
-                stream = this;
-            while (post = stream.read()) {
-                posts.push({
-                    title: post.title || "",
-                    body: post.summary || "",
-                    link: post.link || "",
-                    public_date: new Date(post.pubdate) || null,
-                    guid: post.guid || "",
-                    title_image: post.image || "",
-                    feedId: options.feedId
-                });
-            }
-        })
-        .on('end', function () {
-            def.resolve(posts);
-        });
+    FeedManager.getPostsFromFeed({
+        url: options.url
+    }).then(function (posts) {
+        def.resolve(_.map(posts, function (post) {
+            post.feedId = options.feedId;
+            return post;
+        }));
+    }, function (err) {
+        def.reject(err);
+    });
 
     return def.promise;
 };
@@ -174,15 +155,111 @@ feedSchema.statics.track = function (url) {
     }).then(function (feedInfo) {
         Feed.create(feedInfo, function (err, feed) {
             if (err) {
-                log.error(err.message);
+                log.error(err);
 
                 return def.reject('Server error');
             }
 
-            def.resolve(feed);
+            feed.updateInfo().then(function (feed) {
+                def.resolve(feed);
+            }, function () {
+                def.resolve(feed);
+            });
         });
     }, function (err) {
+        log.error(err);
+
         def.reject(err);
+    });
+
+    return def.promise;
+};
+
+feedSchema.methods.getPosts = function (limit) {
+    var def = Q.defer(),
+        limit = limit || 5;
+
+    Post.find({
+        feedId: this._id
+    }, {}, {
+        limit: limit,
+        sort: {
+            public_date: -1
+        }
+    }, function (err, posts) {
+        if (err) {
+            logger.error(err);
+
+            return def.reject(err.message);
+        }
+
+        def.resolve(posts);
+    });
+
+    return def.promise;
+};
+
+feedSchema.methods.getImageFromDomain = function () {
+    var def = Q.defer();
+
+    if (this.domain) {
+        FeedManager.getPageInfo({
+            url: this.domain
+        }).then(function (pageInfo) {
+            def.resolve(pageInfo.image);
+        }, function (err) {
+            def.resolve(null);
+        });
+    } else {
+        def.resolve(null);
+    }
+
+    return def.promise;
+};
+
+feedSchema.methods.getImageFromPosts = function (countPosts) {
+    var def = Q.defer(),
+        me = this;
+
+    me.getPosts(countPosts).then(function (posts) {
+        var postImages = _(posts)
+            .map('title_image')
+            .compact()
+            .value();
+
+        def.resolve(postImages[0]);
+    }, function (err) {
+        def.resolve(null);
+    });
+
+    return def.promise;
+};
+
+feedSchema.methods.getImage = function () {
+    var def = Q.defer(),
+        me = this;
+
+    async.series([
+        function (cb) {
+            me.getImageFromPosts(10).then(function (imageLink) {
+                cb(null, imageLink);
+            }, function () {
+                cb(null);
+            });
+        },
+        function (cb) {
+            me.getImageFromDomain().then(function (imageLink) {
+                cb(null, imageLink);
+            }, function () {
+                cb(null);
+            });
+        }
+    ], function (err, results) {
+        if (err) {
+            return def.resolve(null);
+        }
+
+        def.resolve(results[0] || results[1]);
     });
 
     return def.promise;
@@ -192,27 +269,56 @@ feedSchema.methods.updateInfo = function () {
     var def = Q.defer(),
         me = this;
 
-    FeedManager.getFeedInfo({
-        url: this.url
-    }).then(function (feedInfo) {
-        me.title = feedInfo.title ? feedInfo.title : me.title;
-        me.description = feedInfo.description ? feedInfo.description : me.description;
-        me.author = feedInfo.author ? feedInfo.author : me.author;
-        me.language = feedInfo.language ? feedInfo.language : me.language;
-        me.title_img = feedInfo.title_img ? feedInfo.title_img : me.title_img;
-        me.domain = feedInfo.domain ? feedInfo.domain : me.domain;
-
-        me.save(function (err) {
-            if (err) {
-                log.error(err.message);
-
-                return def.reject(err.message);
-            }
-
-            def.resolve(me);
+    function getFeedImg(cb) {
+        me.getImage().then(function (imageLink) {
+            cb(null, imageLink);
+        }, function (err) {
+            cb(null);
         });
-    }, function (err) {
-        def.reject(err);
+    }
+
+    function getFeedInfo(cb) {
+        FeedManager.getFeedInfo({
+            url: me.url
+        }).then(function (feedInfo) {
+            cb(null, feedInfo);
+        }, function (err) {
+            cb('Cannot load feed');
+        });
+    }
+
+    async.parallel([
+        getFeedInfo,
+        getFeedImg
+    ], function (err, results) {
+        if (err) {
+            return def.reject(err);
+        }
+
+        var feedImg = results[1],
+            feedInfo = results[0];
+
+        if (feedImg || feedInfo) {
+            me.title = feedInfo.title ? feedInfo.title : me.title;
+            me.description = feedInfo.description ? feedInfo.description : me.description;
+            me.author = feedInfo.author ? feedInfo.author : me.author;
+            me.language = feedInfo.language ? feedInfo.language : me.language;
+            me.domain = feedInfo.domain ? feedInfo.domain : me.domain;
+            me.title_img = feedImg ? feedImg : me.title_img;
+
+            me.save(function (err) {
+                if (err) {
+                    log.error(err.message)
+                    log.error('some error')
+
+                    return def.reject(err.message);
+                }
+
+                def.resolve(me);
+            });
+        } else {
+            def.resolve(me);
+        }
     });
 
     return def.promise;

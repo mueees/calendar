@@ -28,10 +28,13 @@ function processJob(job, done) {
 
             log.info('Description: ' + post.description.length + '. Post ' + post.guid + ' was prepared.');
 
+            if(post.title_image){
+                log.error('Cannot find title_img for post');
+            }
         }, function (err) {
             inQueue--;
 
-            log.error(err.message);
+            log.error(err);
         });
     } else {
         log.info('So many jobs: ' + inQueue);

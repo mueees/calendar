@@ -75,11 +75,6 @@ pm2 start index.js --name rabbit-delivery
 cd /home/mue/web/projects/calendar/server/applications/rabbit/services/cron
 pm2 start index.js --name rabbit-cron
 
-export NODE_ENV=test
-export NODE_PATH=/home/mue/web/projects/calendar/server/
-cd /home/mue/web/projects/calendar/server/test;
-mocha -t 2000
-
 LIVE
 -------------------
 

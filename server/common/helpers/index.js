@@ -1,3 +1,5 @@
+var _ = require('lodash');
+
 var util = {
     getUUID: function () {
         function s4() {
@@ -5,7 +7,16 @@ var util = {
                 .toString(16)
                 .substring(1);
         }
+
         return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+    },
+
+    cutUrlSlash: function (url) {
+        if (_.endsWith(url, '/')) {
+            url = url.slice(0, -1);
+        }
+
+        return url;
     }
 };
 

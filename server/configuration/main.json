@@ -51,7 +51,7 @@
         "web": {
           "name": "Proxy",
           "port": 10002,
-          "approvalUrlDev": "http://localhost:10000/#approval",
+          "approvalUrlDev": "http://localhost:9004/app/index.html#approval",
           "approvalUrl": "http://mue.in.ua/#approval"
         }
       }

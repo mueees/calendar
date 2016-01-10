@@ -15,7 +15,6 @@ module.exports = function (app) {
      * User enter to this router when he want to get access token from account app
      * We have to find applicationId by oauthKey and redirect to account approval page
      * */
-
     app.get('/provide/:oauthKey', function (request, response) {
         OauthRequest.getApplicationByOauthKey(request.params.oauthKey).then(function (res) {
             var approvalUrl;
@@ -43,8 +42,8 @@ module.exports = function (app) {
     });
 
     /*
-     * In this account application redirect user with ticket, after user confirmed
-     * that he wants to give access to client application to his user data.
+     * This is URL after user confirmed that he wants to give
+     * access to client application to his user data.
      *
      * We have to exchange ticket to access and refresh tokens
      *

@@ -1,62 +1,102 @@
-var request = require('request'),
+var hyperquest = require('hyperquest'),
+    hyperquestTimeout = require('hyperquest-timeout'),
+    eventStream = require('event-stream'),
+    fastFeed = require('fast-feed'),
+    unfluff = require('unfluff'),
+    sanitizeHtml = require('sanitize-html'),
+
+    util = require('common/helpers').util,
     log = require('common/log')(module),
     Q = require('q'),
-    unfluff = require('unfluff'),
-    FeedParser = require('feedparser'),
+    url = require('url'),
+    path = require('path'),
+    async = require('async'),
+    cheerio = require('cheerio'),
     _ = require('lodash');
 
+var rssTypes = ['application/atom+xml', 'application/rss+xml'];
+
 var defaults = {
-    timeout: 30000
+    timeout: 5000,
+    method: 'GET'
 };
+
+function getDomain(link) {
+    var domain = '';
+
+    if (link) {
+        var parsed = url.parse(link);
+
+        domain = (parsed.protocol && parsed.host) ? parsed.protocol + '//' + parsed.host : '';
+    }
+
+    return domain;
+}
+
+function findFeedUrl(options) {
+    var def = Q.defer();
+
+    var domain = util.cutUrlSlash(getDomain(options.url));
+
+    options = _.assign(defaults, options);
+
+    loadPage({
+        url: domain,
+        timeout: options.timeout
+    }).then(function (data) {
+        var body = data.body,
+            rssLink;
+
+        var link = _.find(cheerio.load(body)('link'), function (link) {
+            return _.contains(rssTypes, link.attribs.type);
+        });
+
+        if (link) {
+            if (_.contains(link.attribs.href, 'http') || _.contains(link.attribs.href, 'https')) {
+                rssLink = link.attribs.href;
+            } else {
+                rssLink = domain + path.normalize('/' + link.attribs.href);
+            }
+        }
+
+        if (rssLink && options.checkFeedUrl) {
+            isValidFeed({
+                url: rssLink
+            }).then(function (feedInfo) {
+                def.resolve(rssLink);
+            }, function (err) {
+                log.error(err);
+
+                def.resolve(null);
+            });
+        } else {
+            def.resolve(rssLink);
+        }
+    }, function (err) {
+        def.reject(err);
+    });
+
+    return def.promise;
+}
 
 function getFeedInfo(options) {
     var def = Q.defer();
 
-    options = _.assign(defaults, options);
+    loadPage(options)
+        .then(function (data) {
+            extractFeedInfo(data).then(function (feedInfo) {
+                feedInfo.url = options.url;
 
-    request({
-        url: options.url,
-        timeout: options.timeout
-    }).on('error', function (error) {
-        log.error(error.message);
-
-        def.reject('Wrong url');
-    })
-        .pipe(new FeedParser())
-        .on('error', function (error) {
-            log.error(error.message);
-
-            def.reject('Cannot load feed info');
-        })
-        .on('readable', function () {
-            var matches = this.read().meta.link.match(/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/);
-
-            var feedInfo = {
-                url: options.url,
-                title: this.meta.title,
-                description: this.meta.description,
-                author: this.meta.author,
-                language: this.meta.language,
-                favicon: this.meta.favicon,
-                domain: matches[1] + matches[2] + '.' + matches[3]
-            };
-
-            if (feedInfo.domain) {
-                getPageInfo({
-                    url: feedInfo.domain,
-                    lazy: true
-                }).then(function (pageInfo) {
-                    if (pageInfo.image) {
-                        feedInfo.title_img = pageInfo.image();
-                    }
-
-                    def.resolve(feedInfo);
-                }, function () {
-                    def.resolve(feedInfo);
-                });
-            } else {
                 def.resolve(feedInfo);
-            }
+            }, function (err) {
+                log.error(err);
+
+                def.reject(err);
+            });
+        }, function (err) {
+            log.error(err);
+
+            def.reject(err);
         });
 
     return def.promise;
@@ -84,61 +124,37 @@ function getPageInfo(options) {
 
     options = _.assign(defaults, getPageOptions, options);
 
-    request({
-        url: options.url,
-        timeout: options.timeout
-    }, function (err, response, body) {
-        if (err) {
-            log.error(err.message);
+    loadPage(options).then(function (data) {
+        data.body = sanitizeHtml(data.body, {
+            allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img'])
+        });
 
-            def.reject('Connection problem');
-        }
+        var pageData = options.lazy ? unfluff.lazy(data.body, 'en') : unfluff(data.body, 'en');
 
-        var pageInfo = options.lazy ? unfluff.lazy(body) : unfluff(body);
-
-        def.resolve(pageInfo);
+        def.resolve(pageData);
+    }, function (err) {
+        def.reject(err);
     });
 
     return def.promise;
 }
 
 function getPostsFromFeed(options) {
-    var def = Q.defer(),
-        posts = [];
+    var def = Q.defer();
 
-    options = _.assign(defaults, options);
+    loadPage(options)
+        .then(function (data) {
+            extractPostsFromFeed(data).then(function (posts) {
+                def.resolve(posts);
+            }, function (err) {
+                log.error(err);
 
-    request({
-        url: options.url,
-        timeout: options.timeout
-    }).on('error', function (error) {
-        log.error(error.message);
+                def.reject(err);
+            });
+        }, function (err) {
+            log.error(err);
 
-        def.reject(error.message);
-    })
-        .pipe(new FeedParser())
-        .on('error', function (error) {
-            log.error(error.message);
-
-            def.reject(error.message);
-        })
-        .on('readable', function () {
-            var post,
-                stream = this;
-
-            while (post = stream.read()) {
-                posts.push({
-                    title: post.title || "",
-                    body: post.summary || "",
-                    link: post.link || "",
-                    public_date: new Date(post.pubdate) || null,
-                    guid: post.guid || "",
-                    title_image: post.image || ""
-                });
-            }
-        })
-        .on('end', function () {
-            def.resolve(posts);
+            def.reject(err);
         });
 
     return def.promise;
@@ -148,10 +164,140 @@ function isValidFeed(options) {
     return getFeedInfo(options);
 }
 
+function loadPage(options) {
+    var def = Q.defer();
+
+    options = _.assign(defaults, options);
+
+    var req = hyperquest(options.url, options, function (err, response) {
+        if (err) {
+            log.error(err);
+
+            return def.reject('Cannot load page');
+        }
+
+        if (response.statusCode != 200) {
+            return def.reject('Unsuccessfully response from ' + options.url + ' Status: ' + response.statusCode);
+        } else {
+            response.pipe(eventStream.wait(function (err, body) {
+                if (err) {
+                    return def.reject('Unexpected error during load page');
+                }
+
+                def.resolve({
+                    body: body,
+                    response: response
+                });
+            }));
+        }
+    });
+
+    hyperquestTimeout(req, options.timeout);
+
+    return def.promise;
+}
+
+function extractFeedInfo(options) {
+    var def = Q.defer();
+
+    options = _.assign(defaults, options);
+
+    fastFeed.parse(options.body, {content: false}, function (err, feed) {
+        if (err) {
+            log.error(err);
+
+            return def.reject('Cannot parse RSS');
+        }
+
+        def.resolve({
+            domain: feed.link,
+            title: feed.title,
+            description: feed.description
+        });
+    });
+
+    return def.promise;
+}
+
+function extractPostsFromFeed(options) {
+    var def = Q.defer();
+
+    options = _.assign(defaults, options);
+
+    fastFeed.parse(options.body, function (err, feed) {
+        if (err) {
+            log.error(err);
+
+            return def.reject('Cannot parse RSS');
+        }
+
+        var posts = _.map(feed.items, function (post) {
+            return {
+                title: post.title || "",
+                body: post.summary || post.description || "",
+                link: post.link,
+                public_date: new Date(post.date) || null,
+                guid: post.guid || post.id || ""
+            }
+        });
+
+        def.resolve(posts);
+    });
+
+    return def.promise;
+}
+
+function findFirstImageFromUrls(urls) {
+    var def = Q.defer();
+
+    var imageLink,
+        i = 0;
+
+    async.whilst(
+        function () {
+            return !imageLink && i < urls.length;
+        },
+        function (callback) {
+            getPageInfo({
+                url: urls[i],
+                lazy: true,
+                timeout: defaults.timeout
+            }).then(function (pageInfo) {
+                i++;
+
+                var link = pageInfo.image();
+
+                if (link) {
+                    imageLink = link;
+                }
+
+                callback(null, imageLink);
+            }, function () {
+                i++;
+
+                callback(null);
+            });
+        },
+        function (err, n) {
+            if (err) {
+                return def.reject(err);
+            }
+
+            def.resolve(imageLink);
+        }
+    );
+
+    return def.promise;
+}
+
 module.exports = {
+    extractFeedInfo: extractFeedInfo,
+    loadPage: loadPage,
     isValidFeed: isValidFeed,
     getFeedInfo: getFeedInfo,
     getPageInfo: getPageInfo,
-
-    getPostsFromFeed: getPostsFromFeed
+    getDomain: getDomain,
+    findFeedUrl: findFeedUrl,
+    getPostsFromFeed: getPostsFromFeed,
+    findFirstImageFromUrls: findFirstImageFromUrls
 };

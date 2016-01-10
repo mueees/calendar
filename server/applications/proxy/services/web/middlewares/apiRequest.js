@@ -12,7 +12,7 @@ module.exports = function (req, res, next) {
             Authorization: 'Bearer ' + req.user.access_token
         },
         json: true,
-        timeout: 15000
+        timeout: 30000
     };
 
     if (!request.development) {

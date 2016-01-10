@@ -17,25 +17,52 @@ function updateFeedInfo() {
             return log.error(err.message);
         }
 
-        var series = [];
+        var series = [],
+            i = 0,
+            countFailedFeeds = 0,
+            successFeeds = [];
 
         _.each(feeds, function (feed) {
             series.push(function (cb) {
+                log.info('Start ' + i + ' feed with url ' + feed.url);
+                log.info(countFailedFeeds + ' was failed');
+
                 feed.updateInfo().then(function () {
-                    log.info(feed.title + ' was updated');
+                    log.info('Updated ' + feed.url);
+                    i++;
+                    successFeeds.push(feed.url);
 
                     cb();
                 }, function (err) {
                     log.error(err);
+                    i++;
+                    countFailedFeeds++;
+
                     cb();
                 });
             });
         });
 
-        async.series(series, function (err, results) {
+        console.log('Start update ' + series.length + ' feeds');
+
+        var start = new Date();
+
+        // parallelLimit
+        async.series(series,  function (err, results) {
+            log.info('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+
+
+            log.info('Success feeds');
+            log.info(successFeeds);
+
+            log.info(countFailedFeeds + ' was failed');
+            log.info(successFeeds + ' was success');
+
             if (err) {
                 log.error(err);
             }
+
+            log.info('All feeds were updated. It takes ' + ((new Date()).getTime() - start)/1000 + ' seconds.');
         });
     });
 }

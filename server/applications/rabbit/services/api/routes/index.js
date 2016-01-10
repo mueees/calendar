@@ -1,5 +1,6 @@
 var log = require('common/log')(module),
     _ = require('underscore'),
+    lodash = require('lodash'),
     Q = require('q'),
     async = require('async'),
     FeedManager = require('common/modules/feedManager'),
@@ -86,7 +87,52 @@ module.exports = function (app) {
                 return next(new HttpError(500, 'Server error'));
             }
 
-            response.send(categories);
+            categories = _.map(categories, function (category) {
+                category = category.toObject();
+
+                return category;
+            });
+
+            var feedIds = _.reduce(categories, function (result, category) {
+                result = result.concat(_.map(category.feeds, function (feed) {
+                    return String(feed.feedId);
+                }));
+
+                return result;
+            }, []);
+
+            feedIds = _.uniq(feedIds);
+
+            Feed.find({
+                _id: {
+                    $in: feedIds
+                }
+            }, function (err, feeds) {
+                if (!err) {
+                    feeds = _.map(feeds, function (feed) {
+                        feed = feed.toObject();
+                        feed._id = String(feed._id);
+
+                        return feed;
+                    });
+
+                    _.each(categories, function (category) {
+                        _.each(category.feeds, function (feed) {
+                            var fullFeed = _.find(feeds, {
+                                _id: String(feed.feedId)
+                            });
+
+                            if (fullFeed) {
+                                feed.domain = fullFeed.domain;
+                            }
+                        });
+                    });
+                } else {
+                    log.error(err);
+                }
+
+                response.send(categories);
+            });
         });
     });
 
@@ -197,7 +243,6 @@ module.exports = function (app) {
     });
 
     // find feeds by query
-
     function findFeeds(query) {
         var isUrl = validator.isURL(query, {
                 require_protocol: true
@@ -207,36 +252,46 @@ module.exports = function (app) {
         if (!query) {
             def.reject('Cannot find query');
         } else if (isUrl) {
+            /*
+             * 1. try to find existing feed
+             * 2. suppose this is feed url
+             * 3. suppose this is just page
+             * */
             Feed.findOne({
                 url: query
             }, function (err, feed) {
                 if (err) {
                     log.error(err.message);
+
                     return def.reject('Server error');
                 }
 
                 if (feed) {
                     def.resolve([feed]);
                 } else {
-                    FeedManager.isValidFeed({
-                        url: query
-                    }).then(function () {
-                        Feed.create({
-                            url: query
-                        }, function (err, feed) {
-                            if (err) {
-                                log.error(err.message);
-                                return def.reject('Server error');
-                            }
-
-                            feed.updateInfo().then(function (feed) {
-                                def.resolve([feed]);
-                            }, function () {
-                                def.reject('Cannot update feed');
-                            });
-                        });
+                    Feed.track(query).then(function (feed) {
+                        def.resolve([feed]);
                     }, function () {
-                        def.resolve([]);
+                        FeedManager.findFeedUrl({
+                            url: query,
+                            checkFeedUrl: true
+                        }).then(function (feedUrl) {
+                            if (feedUrl) {
+                                Feed.track(feedUrl).then(function (feed) {
+                                    def.resolve([feed]);
+                                }, function (err) {
+                                    log.error(err);
+
+                                    def.resolve([]);
+                                });
+                            } else {
+                                def.resolve([]);
+                            }
+                        }, function (err) {
+                            log.error(err);
+
+                            def.resolve([]);
+                        });
                     });
                 }
             });
@@ -282,6 +337,7 @@ module.exports = function (app) {
         ], function (err, results) {
             if (err) {
                 log.error(err);
+
                 return next(new HttpError(err));
             }
 
@@ -305,7 +361,7 @@ module.exports = function (app) {
                 });
 
                 if (feedStatistic) {
-                    currentFeed.statistic = _.pick(feedStatistic, 'countPosts', 'countPostPerMonth');
+                    currentFeed.statistic = _.pick(feedStatistic, 'countPosts', 'countPostPerMonth', 'followedByUser');
                 }
             });
 
@@ -347,6 +403,8 @@ module.exports = function (app) {
                 userFeedIds = results[1],
                 popularFeedIds = [];
 
+            statisticFeeds = lodash.sortByOrder(statisticFeeds, ['followedByUser', 'countPostPerMonth'], ['desc', 'desc']);
+
             var i = 0;
 
             while (popularFeedIds.length < countFeeds && i < statisticFeeds.length) {
@@ -369,12 +427,16 @@ module.exports = function (app) {
                     return next(new HttpError(500, 'Server error'));
                 }
 
+                popularFeeds = popularFeeds.map(function (feed) {
+                    return feed.toObject();
+                });
+
                 popularFeeds.forEach(function (feed) {
                     var statisticFeed = _.find(statisticFeeds, {
                         feedId: String(feed._id)
                     });
 
-                    feed.isFollowed = true;
+                    feed.isFollowed = false;
                     feed.statistic = _.pick(statisticFeed, ['countPosts', 'countPostPerMonth']);
                 });
 
@@ -398,7 +460,27 @@ module.exports = function (app) {
                 return next(new HttpError(400, 'Cannot find feed'));
             }
 
-            response.send(feed);
+            feed = feed.toObject();
+
+            Q.all([
+                Category.getUserFeedIds(request.userId),
+                RabbitRequest.feedStatistic(String(feed._id))
+            ]).then(function (result) {
+                var userFeedIds = result[0],
+                    feedStatistic = result[1].body;
+
+                feed.statistic = _.pick(feedStatistic, 'countPostPerMonth', 'countPosts', 'followedByUser');
+
+                if (_.contains(userFeedIds, String(feed._id))) {
+                    feed.isFollowed = true;
+                }
+
+                response.send(feed);
+            }, function (err) {
+                log.error(err);
+
+                return next(new HttpError(500, 'Server error'));
+            });
         });
     });
 

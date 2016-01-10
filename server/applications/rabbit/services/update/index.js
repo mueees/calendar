@@ -14,8 +14,6 @@ function getNewPosts(posts, lastPost) {
         posts.forEach(function (post) {
             var postDate = new Date(post.public_date);
 
-            log.info('Current post public date: ' + postDate);
-
             if (postDate > lastPost.public_date) {
                 result.push(post);
             }
@@ -42,17 +40,13 @@ feedForUpdateQueue.process(function (job, done) {
             var latestPosts = results[0],
                 lastPost = results[1];
 
+            latestPosts = _.filter(latestPosts, 'link');
+
             if (lastPost) {
                 lastPost.public_date = new Date(lastPost.public_date);
             }
 
             log.info('Got ' + latestPosts.length + ' posts from ' + job.data.feed.url);
-
-            if (lastPost) {
-                log.info('Last post public date was ' + lastPost.public_date);
-            } else {
-                log.info('Last post is not exist');
-            }
 
             var newPosts = getNewPosts(latestPosts, lastPost);
 
@@ -69,6 +63,9 @@ feedForUpdateQueue.process(function (job, done) {
             }
 
             done();
+        }, function (err) {
+            log.error(err);
+            done(err);
         })
         .catch(function (err) {
             log.error(err);

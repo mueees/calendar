@@ -1,61 +1,31 @@
-var log = log = require('common/log')(module),
-    unfluff = require('unfluff'),
-    cheerio = require('cheerio'),
+var log = require('common/log')(module),
     Q = require('q'),
-    request = require('request'),
-    sanitizeHtml = require('sanitize-html');
-
-function findImg(html) {
-    return cheerio.load(html)('img').eq(0).attr('src') || '';
-}
-
-function getDescription(html) {
-    return sanitizeHtml(html, {
-        allowedTags: ['p', 'div', 'span', 'b', 'i', 'em', 'strong'],
-        transformTags: {
-            p: 'span',
-            div: 'span',
-            b: 'span',
-            em: 'span',
-            strong: 'span',
-            i: 'span'
-        }
-    });
-}
+    _ = require('lodash'),
+    FeedManager = require('common/modules/feedManager');
 
 function prepare(post) {
     var def = Q.defer();
 
-    request({
-        url: post.link,
-        timeout: 10000
-    }, function (err, response, body) {
-        if (err) {
-            log.error(err.message);
+    if (post.link) {
+        FeedManager.getPageInfo({
+            url: post.link,
+            timeout: 10000,
+            lazy: true
+        }).then(function (data) {
+            post.title_img = data.image() || '';
+            post.description = data.description() || '';
 
-            post.title_image = findImg(post.body);
-
-            post.description = getDescription(post.body);
-        } else {
-            var data = unfluff.lazy(body),
-                image = data.image(),
-                description = data.description();
-
-            if (!image) {
-                log.error('Unfluff cannot find img');
+            if (post.text && !post.description) {
+                post.description = post.text.slice(0, 100);
             }
 
-            if (!description) {
-                log.error('Unfluff cannot find description');
-            }
-
-            post.title_image = image ? image : findImg(post.body);
-
-            post.description = description ? description : getDescription(post.body);
-        }
-
+            def.resolve(post);
+        }, function (err) {
+            def.reject(err);
+        });
+    } else {
         def.resolve(post);
-    });
+    }
 
     return def.promise;
 }
