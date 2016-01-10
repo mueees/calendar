@@ -70,7 +70,7 @@ describe('Feed Manager', function () {
         expect(FeedManager.getDomain('http://in.ua/test/one/two')).to.equal('http://in.ua');
     });
 
-    it.only('should find feed url by url', function (done) {
+    it('should find feed url by url', function (done) {
         FeedManager.findFeedUrl({
             url: 'http://www.adme.ru/',
             checkFeedUrl: true
