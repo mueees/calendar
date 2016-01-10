@@ -16,12 +16,11 @@ var controller = {
                     _id: application._id,
                     name: application.name,
                     status: application.status,
-                    privateKey: application.privateKey,
                     date_create: application.date_create,
                     redirectUrl: application.redirectUrl,
                     description: application.description,
                     applicationId: application.applicationId,
-                    auth: _.contains(application.applicationId, configuration.get('whiteAppList'))
+                    auth: _.contains(configuration.get('whiteAppList'), application.applicationId)
                 });
             }, function (response) {
                 log.error(response.body.message);
