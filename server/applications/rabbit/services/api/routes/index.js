@@ -462,15 +462,7 @@ module.exports = function (app) {
 
             feed = feed.toObject();
 
-            Q.all([
-                Category.getUserFeedIds(request.userId),
-                RabbitRequest.feedStatistic(String(feed._id))
-            ]).then(function (result) {
-                var userFeedIds = result[0],
-                    feedStatistic = result[1].body;
-
-                feed.statistic = _.pick(feedStatistic, 'countPostPerMonth', 'countPosts', 'followedByUser');
-
+            Category.getUserFeedIds(request.userId).then(function (userFeedIds) {
                 if (_.contains(userFeedIds, String(feed._id))) {
                     feed.isFollowed = true;
                 }
