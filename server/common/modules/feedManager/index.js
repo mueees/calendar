@@ -51,11 +51,23 @@ function findFeedUrl(options) {
             return _.contains(rssTypes, link.attribs.type);
         });
 
+        var parsedUrl = url.parse(domain);
+
         if (link) {
             if (_.contains(link.attribs.href, 'http') || _.contains(link.attribs.href, 'https')) {
                 rssLink = link.attribs.href;
             } else {
-                rssLink = domain + path.normalize('/' + link.attribs.href);
+                var relativeRssLink;
+
+                if (_.contains(link.attribs.href, parsedUrl.host)) {
+                    var domainPosition = link.attribs.href.indexOf(parsedUrl.host);
+
+                    relativeRssLink = link.attribs.href.slice(domainPosition + parsedUrl.host.length);
+                } else {
+                    relativeRssLink = link.attribs.href;
+                }
+
+                rssLink = domain + path.normalize('/' + relativeRssLink);
             }
         }
 
