@@ -41,7 +41,7 @@ function findFeedUrl(options) {
     options = _.assign(defaults, options);
 
     loadPage({
-        url: domain,
+        url: options.url,
         timeout: options.timeout
     }).then(function (data) {
         var body = data.body,
