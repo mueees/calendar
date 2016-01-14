@@ -6,7 +6,7 @@ var RabbitRequest = require('common/request/rabbit'),
     log = require('common/log')(module);
 
 var settings = {
-    timeBeforeUpdateSameFeed: 60 * 30 // seconds*minutes
+    timeBeforeUpdateSameFeed: 60 * 50 // seconds*minutes
 };
 
 

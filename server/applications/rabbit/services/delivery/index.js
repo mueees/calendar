@@ -10,7 +10,7 @@ var Queue = require('../../common/queue'),
 var settings = {
     maxJobInFeedForUpdateQueue: 0,
     maxJobInQueues: 50,
-    deliveryFeedTimeout: 1500
+    deliveryFeedTimeout: 5000
 };
 
 // connect to database
