@@ -68,6 +68,11 @@
           "status": true,
           "port": 9012
         },
+        "error": {
+          "name": "Handle Rabbit errors",
+          "status": true,
+          "port": 9013
+        },
         "api": {
           "name": "Rabbit api",
           "status": true,

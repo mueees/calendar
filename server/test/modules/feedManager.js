@@ -40,29 +40,6 @@ describe('Feed Manager', function () {
         });
     });
 
-    it('should find first Image from urls', function (done) {
-        FeedManager.findFirstImageFromUrls([
-            'http://fake.url',
-            testPage.url
-        ]).then(function (imageLink) {
-            done();
-        }, function (err) {
-            done(new Error(err))
-        });
-    });
-
-    it('should find first Image from urls 2', function (done) {
-        FeedManager.findFirstImageFromUrls([
-            'http://fake.url',
-            'https://medium.com/@johnbattelle/one-year-ago-i-made-a-dozen-predictions-how-d-i-do-52256e4400eb#.c07wbp7jq'
-        ]).then(function (imageLink) {
-            console.log(imageLink)
-            done();
-        }, function (err) {
-            done(new Error(err))
-        });
-    });
-
     it('should return domain', function () {
         expect(FeedManager.getDomain('https://rabbit.mue.in.ua/test/one/two')).to.equal('https://rabbit.mue.in.ua');
         expect(FeedManager.getDomain('http://rabbit.mue.in.ua/test/one/two')).to.equal('http://rabbit.mue.in.ua');
@@ -107,6 +84,19 @@ describe('Feed Manager', function () {
             done();
         }, function (err) {
             done(new Error(err));
+        })
+    });
+
+    it('should return error from getPostsFromFeed in right format ', function (done) {
+        FeedManager.getPostsFromFeed({
+            url: 'http://mue.in.ua'
+        }).then(function (posts) {
+            done(new Error('Something wrong'));
+        }, function (err) {
+            expect(err.errorCode).to.be.ok;
+            expect(err.data).to.be.ok;
+
+            done();
         })
     });
 });

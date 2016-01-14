@@ -28,6 +28,9 @@ pm2 start index.js --name rabbit-statistic
 cd /home/mue/web/projects/calendar/server/applications/rabbit/services/api
 pm2 start index.js --name rabbit-api
 
+cd /home/mue/web/projects/calendar/server/applications/rabbit/services/error
+pm2 start index.js --name rabbit-error
+
 UBUNTU
 -------------
 
@@ -75,48 +78,5 @@ pm2 start index.js --name rabbit-delivery
 cd /home/mue/web/projects/calendar/server/applications/rabbit/services/cron
 pm2 start index.js --name rabbit-cron
 
-LIVE
--------------------
-
-export NODE_ENV=production
-export NODE_PATH=/home/mue/web/public/calendar/server
-
-cd /home/mue/web/public/calendar/server/applications/oauth-server/services/api
-pm2 start index.js --name oauth-api
-
-cd /home/mue/web/public/calendar/server/applications/account/server/services/api
-pm2 start index.js --name account-api
-
-cd /home/mue/web/public/calendar/server/applications/calendar/services/api
-pm2 start index.js --name calendar-api
-
-cd /home/mue/web/public/calendar/server/applications/api/services/web
-pm2 start index.js --name api
-
-cd /home/mue/web/public/calendar/server/applications/proxy/services/web
-pm2 start index.js --name proxy
-
-cd /home/mue/web/public/calendar/server/applications/account/server/services/web
-pm2 start index.js --name account
-
-# RABBIT
-cd /home/mue/web/public/calendar/server/applications/rabbit/services/statistic
-pm2 start index.js --name rabbit-statistic
-
-cd /home/mue/web/public/calendar/server/applications/rabbit/services/save
-pm2 start index.js --name rabbit-save
-
-cd /home/mue/web/public/calendar/server/applications/rabbit/services/prepare
-pm2 start index.js --name rabbit-prepare
-
-cd /home/mue/web/public/calendar/server/applications/rabbit/services/update
-pm2 start index.js --name rabbit-update
-
-cd /home/mue/web/public/calendar/server/applications/rabbit/services/delivery
-pm2 start index.js --name rabbit-delivery
-
-cd /home/mue/web/public/calendar/server/applications/rabbit/services/api
-pm2 start index.js --name rabbit-api
-
-cd /home/mue/web/public/calendar/server/applications/rabbit/services/cron
-pm2 start index.js --name rabbit-cron
+cd /home/mue/web/projects/calendar/server/applications/rabbit/services/error
+pm2 start index.js --name rabbit-error

@@ -1,6 +1,7 @@
 var MueRequest = require('./index'),
     app = 'rabbit',
     statisticService = 'statistic',
+    errorService = 'error',
     apiService = 'api';
 
 function findPosts(queryString, userId) {
@@ -164,6 +165,25 @@ function updateFollowedCount(userId) {
     });
 }
 
+function sendErrorReport(data) {
+    return MueRequest.request({
+        app: app,
+        service: errorService,
+        method: 'PUT',
+        url: '/error/error',
+        body: data
+    });
+}
+
+function getAllFeedErrors() {
+    return MueRequest.request({
+        app: app,
+        service: errorService,
+        method: 'GET',
+        url: '/error/error/feeds'
+    });
+}
+
 exports.findPosts = findPosts;
 exports.findFeed = findFeed;
 exports.addFeed = addFeed;
@@ -177,3 +197,5 @@ exports.feedsStatistic = feedsStatistic;
 exports.setLastUpdateDate = setLastUpdateDate;
 exports.getPopularFeeds = getPopularFeeds;
 exports.updateFollowedCount = updateFollowedCount;
+exports.sendErrorReport = sendErrorReport;
+exports.getAllFeedErrors = getAllFeedErrors;

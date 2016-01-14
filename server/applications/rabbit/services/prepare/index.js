@@ -26,15 +26,15 @@ function processJob(job, done) {
                 post: post
             });
 
-            log.info('Description: ' + post.description.length + '. Post ' + post.guid + ' was prepared.');
+            log.info(post.description.length + ' description.');
 
-            if(post.title_image){
+            if (post.title_image) {
                 log.error('Cannot find title_img for post');
             }
         }, function (err) {
             inQueue--;
 
-            log.error(err);
+            log.error('Cannot prepare post');
         });
     } else {
         log.info('So many jobs: ' + inQueue);

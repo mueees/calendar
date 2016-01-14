@@ -4,6 +4,7 @@ var hyperquest = require('hyperquest'),
     fastFeed = require('fast-feed'),
     unfluff = require('unfluff'),
     sanitizeHtml = require('sanitize-html'),
+    ERRORS = require('./errors'),
 
     util = require('common/helpers').util,
     log = require('common/log')(module),
@@ -96,6 +97,14 @@ function getFeedInfo(options) {
 
     loadPage(options)
         .then(function (data) {
+            if (data.response.statusCode != 200) {
+                return def.reject({
+                    module: 'feedModule',
+                    errorCode: 2,
+                    data: data
+                });
+            }
+
             extractFeedInfo(data).then(function (feedInfo) {
                 feedInfo.url = options.url;
 
@@ -106,8 +115,6 @@ function getFeedInfo(options) {
                 def.reject(err);
             });
         }, function (err) {
-            log.error(err);
-
             def.reject(err);
         });
 
@@ -137,6 +144,14 @@ function getPageInfo(options) {
     options = _.assign(defaults, getPageOptions, options);
 
     loadPage(options).then(function (data) {
+        if (data.response.statusCode != 200) {
+            return def.reject({
+                module: 'feedManager',
+                errorCode: 2,
+                data: data
+            });
+        }
+
         data.body = sanitizeHtml(data.body, {
             allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img'])
         });
@@ -156,16 +171,20 @@ function getPostsFromFeed(options) {
 
     loadPage(options)
         .then(function (data) {
+            if (data.response.statusCode != 200) {
+                return def.reject({
+                    module: 'feedModule',
+                    errorCode: 2,
+                    data: data
+                });
+            }
+
             extractPostsFromFeed(data).then(function (posts) {
                 def.resolve(posts);
             }, function (err) {
-                log.error(err);
-
                 def.reject(err);
             });
         }, function (err) {
-            log.error(err);
-
             def.reject(err);
         });
 
@@ -185,23 +204,33 @@ function loadPage(options) {
         if (err) {
             log.error(err);
 
-            return def.reject('Cannot load page');
-        }
-
-        if (response.statusCode != 200) {
-            return def.reject('Unsuccessfully response from ' + options.url + ' Status: ' + response.statusCode);
-        } else {
-            response.pipe(eventStream.wait(function (err, body) {
-                if (err) {
-                    return def.reject('Unexpected error during load page');
+            return def.reject({
+                module: 'feedModule',
+                errorCode: 1,
+                data: {
+                    error: err
                 }
-
-                def.resolve({
-                    body: body,
-                    response: response
-                });
-            }));
+            });
         }
+
+        response.pipe(eventStream.wait(function (err, body) {
+            if (err) {
+                log.error(err);
+
+                return def.reject({
+                    module: 'feedModule',
+                    errorCode: 1,
+                    data: {
+                        error: err
+                    }
+                });
+            }
+
+            def.resolve({
+                body: body,
+                response: response
+            });
+        }));
     });
 
     hyperquestTimeout(req, options.timeout);
@@ -218,7 +247,13 @@ function extractFeedInfo(options) {
         if (err) {
             log.error(err);
 
-            return def.reject('Cannot parse RSS');
+            return def.reject({
+                module: 'feedModule',
+                errorCode: 4,
+                data: {
+                    error: err
+                }
+            });
         }
 
         def.resolve({
@@ -240,7 +275,13 @@ function extractPostsFromFeed(options) {
         if (err) {
             log.error(err);
 
-            return def.reject('Cannot parse RSS');
+            return def.reject({
+                module: 'feedModule',
+                errorCode: 3,
+                data: {
+                    error: err
+                }
+            });
         }
 
         var posts = _.map(feed.items, function (post) {
@@ -259,49 +300,6 @@ function extractPostsFromFeed(options) {
     return def.promise;
 }
 
-function findFirstImageFromUrls(urls) {
-    var def = Q.defer();
-
-    var imageLink,
-        i = 0;
-
-    async.whilst(
-        function () {
-            return !imageLink && i < urls.length;
-        },
-        function (callback) {
-            getPageInfo({
-                url: urls[i],
-                lazy: true,
-                timeout: defaults.timeout
-            }).then(function (pageInfo) {
-                i++;
-
-                var link = pageInfo.image();
-
-                if (link) {
-                    imageLink = link;
-                }
-
-                callback(null, imageLink);
-            }, function () {
-                i++;
-
-                callback(null);
-            });
-        },
-        function (err, n) {
-            if (err) {
-                return def.reject(err);
-            }
-
-            def.resolve(imageLink);
-        }
-    );
-
-    return def.promise;
-}
-
 module.exports = {
     extractFeedInfo: extractFeedInfo,
     loadPage: loadPage,
@@ -311,5 +309,5 @@ module.exports = {
     getDomain: getDomain,
     findFeedUrl: findFeedUrl,
     getPostsFromFeed: getPostsFromFeed,
-    findFirstImageFromUrls: findFirstImageFromUrls
+    ERRORS: ERRORS
 };

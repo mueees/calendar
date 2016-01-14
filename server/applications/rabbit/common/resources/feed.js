@@ -51,23 +51,6 @@ var feedSchema = new Schema({
     }
 });
 
-feedSchema.statics.getPostsFromUrl = function (options) {
-    var def = Q.defer();
-
-    FeedManager.getPostsFromFeed({
-        url: options.url
-    }).then(function (posts) {
-        def.resolve(_.map(posts, function (post) {
-            post.feedId = options.feedId;
-            return post;
-        }));
-    }, function (err) {
-        def.reject(err);
-    });
-
-    return def.promise;
-};
-
 feedSchema.statics.getLastPost = function (feedId) {
     var def = Q.defer();
 

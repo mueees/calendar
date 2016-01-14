@@ -1,6 +1,7 @@
 var Category = require('applications/rabbit/common/resources/category'),
     Feed = require('applications/rabbit/common/resources/feed'),
     Post = require('applications/rabbit/common/resources/post'),
+    Error = require('applications/rabbit/common/resources/error'),
     UserPostMap = require('applications/rabbit/common/resources/userPostMap'),
     FeedStatistic = require('applications/rabbit/common/resources/feedStatistic'),
     async = require('async'),
@@ -12,6 +13,9 @@ function cleanRabbitDb() {
     async.parallel([
         function (cb) {
             Category.remove({}, cb);
+        },
+        function (cb) {
+            Error.remove({}, cb);
         },
         function (cb) {
             Post.remove({}, cb);
