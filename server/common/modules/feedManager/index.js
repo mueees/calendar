@@ -146,7 +146,7 @@ function getPageInfo(options) {
     loadPage(options).then(function (data) {
         if (data.response.statusCode != 200) {
             return def.reject({
-                module: 'feedManager',
+                module: 'feedModule',
                 errorCode: 2,
                 data: data
             });

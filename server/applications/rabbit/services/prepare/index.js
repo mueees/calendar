@@ -3,7 +3,9 @@ var Queue = require('../../common/queue'),
     Q = require('q'),
     log = require('common/log')(module),
     request = require('request'),
+    RABBIT_ERRORS = require('../../common/error/errors'),
     PreparePost = require('../../common/modules/prepare-post'),
+    rabbitErrorHelper = require('../../common/error/helper'),
     rabbitConfig = require('../../config'),
     preparePostQueue = Queue.getQueue('preparePost'),
     savePostQueue = Queue.getQueue('savePost');
@@ -12,8 +14,6 @@ var inQueue = 0,
     maxInQueue = 3;
 
 function processJob(job, done) {
-    log.info('Jobs in queue: ' + inQueue);
-
     if (inQueue < maxInQueue) {
         done();
 
@@ -31,10 +31,33 @@ function processJob(job, done) {
             if (post.title_image) {
                 log.error('Cannot find title_img for post');
             }
-        }, function (err) {
+        }, function (error) {
             inQueue--;
 
-            log.error('Cannot prepare post');
+            savePostQueue.add({
+                post: job.data.post
+            });
+
+            var err = {
+                data: {
+                    post: job.data.post
+                }
+            };
+
+            if (error.module == 'feedModule') {
+                switch (error.errorCode) {
+                    case 1:
+                        err.errorCode = RABBIT_ERRORS.post_prepare_unexpected_load_page.code;
+                        break;
+                    case 2:
+                        err.errorCode = RABBIT_ERRORS.post_prepare_bad_status_load_page.code;
+                        break;
+                }
+
+                log.error(error.data.error.message);
+            }
+
+            rabbitErrorHelper.sendError(err);
         });
     } else {
         log.info('So many jobs: ' + inQueue);

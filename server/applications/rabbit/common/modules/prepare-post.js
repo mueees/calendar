@@ -9,7 +9,6 @@ function prepare(post) {
     if (post.link) {
         FeedManager.getPageInfo({
             url: post.link,
-            timeout: 10000,
             lazy: true
         }).then(function (data) {
             post.title_img = data.image() || '';
