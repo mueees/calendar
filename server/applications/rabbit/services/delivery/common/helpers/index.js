@@ -67,30 +67,11 @@ function _getFeedForUpdate(feeds, statisticFeeds, errorFeeds) {
                 return new Date(a.last_update_date) - new Date(b.last_update_date);
             });
 
-            /*
-            var feedsForUpdate = statisticFeedsWithoutError.filter(function (feed) {
-                if (feed.last_update_date) {
-                    feed.last_update_date = new Date(feed.last_update_date);
-
-                    var countTimeSinceLastUpdate = ((new Date()) - feed.last_update_date) / 1000 * 60; // minutes
-
-                    log.info(countTimeSinceLastUpdate + ' minutes');
-
-                    return countTimeSinceLastUpdate > settings.timeBeforeUpdateSameFeed
-                }
-            });
-
-            feedsForUpdate = _.compact(feedsForUpdate);
-
-            log.info(feedsForUpdate.length + ' can be updated');
-
-             */
-
             if (statisticFeedsWithoutError[0]) {
                 if (statisticFeedsWithoutError[0].last_update_date) {
                     statisticFeedsWithoutError[0].last_update_date = new Date(statisticFeedsWithoutError[0].last_update_date);
 
-                    var countTimeSinceLastUpdate = (new Date() - statisticFeedsWithoutError[0].last_update_date) / 1000 * 60; // minutes
+                    var countTimeSinceLastUpdate = ((new Date() - statisticFeedsWithoutError[0].last_update_date) / 1000) / 60; // minutes
 
                     if (countTimeSinceLastUpdate > settings.timeBeforeUpdateSameFeed) {
                         log.info(countTimeSinceLastUpdate + ' minutes from last update');
