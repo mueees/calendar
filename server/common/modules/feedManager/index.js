@@ -5,6 +5,7 @@ var hyperquest = require('common/modules/hyperdirect').request,
     unfluff = require('unfluff'),
     sanitizeHtml = require('sanitize-html'),
     ERRORS = require('./errors'),
+    zlib = require('zlib'),
 
     util = require('common/helpers').util,
     log = require('common/log')(module),
@@ -209,7 +210,17 @@ function loadPage(options) {
             });
         }
 
-        response.pipe(eventStream.wait(function (err, body) {
+        var stream = response;
+
+        if (response.headers['content-encoding']) {
+            var gzip = zlib.createGunzip();
+
+            response.pipe(gzip);
+
+            stream = gzip;
+        }
+
+        stream.pipe(eventStream.wait(function (err, body) {
             if (err) {
                 log.error(err);
 

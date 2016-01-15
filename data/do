@@ -5,3 +5,10 @@
 6. send warning when system can extract 0 posts from feed4
 
 2. add handlers for each errorCode
+
+1. each feed should has one or several topics _id
+2. topics are predefined and can editing in future admin panel
+3. create api
+    - getting all topics
+    - getting all feeds related to topics
+        - add skip and limit parameters
