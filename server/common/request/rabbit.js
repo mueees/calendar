@@ -184,6 +184,25 @@ function getAllFeedErrors() {
     });
 }
 
+function createTopic(topic) {
+    return MueRequest.request({
+        app: app,
+        service: apiService,
+        method: 'PUT',
+        url: '/topics',
+        body: topic
+    });
+}
+
+function getTopics() {
+    return MueRequest.request({
+        app: app,
+        service: apiService,
+        method: 'GET',
+        url: '/topics'
+    });
+}
+
 exports.findPosts = findPosts;
 exports.findFeed = findFeed;
 exports.addFeed = addFeed;
@@ -199,3 +218,5 @@ exports.getPopularFeeds = getPopularFeeds;
 exports.updateFollowedCount = updateFollowedCount;
 exports.sendErrorReport = sendErrorReport;
 exports.getAllFeedErrors = getAllFeedErrors;
+exports.createTopic = createTopic;
+exports.getTopics = getTopics;

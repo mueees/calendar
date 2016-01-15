@@ -29,6 +29,9 @@ var userId = '559bfe2016bd17920826b366',
         postId: testPost._id,
         feedId: '559bfe2016bd17920826b366',
         userId: userId
+    },
+    testTopic = {
+        title: 'Programming'
     };
 
 var feeds = [
@@ -245,6 +248,38 @@ describe('rabbit-api', function () {
             done();
         }).catch(function (err) {
             done(new Error(err.message));
+        });
+    });
+
+    it('should create topic', function (done) {
+        RabbitRequest.createTopic(testTopic).then(function (res) {
+            if (res.body._id) {
+                done();
+            } else {
+                done(new Error('Cannot create new topic'));
+            }
+        }, function (err) {
+            done(new Error(err.body.message));
+        });
+    });
+
+    it.only('should return all topic', function (done) {
+        Q.all([
+            RabbitRequest.createTopic({title: '1'}),
+            RabbitRequest.createTopic({title: '2'})
+        ]).then(function () {
+            RabbitRequest.getTopics().then(function (res) {
+
+                console.log(res.body)
+
+                if (res.body.length == 2) {
+                    done()
+                } else {
+                    done(new Error('Cannot get all topics'));
+                }
+            }, function (err) {
+                done(new Error(err.body.message));
+            });
         });
     });
 });

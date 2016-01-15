@@ -21,7 +21,6 @@ process.on('uncaughtException', function(err) {
 });
 
 app.use(require("common/middlewares/sendHttpError"));
-app.use(require("common/middlewares/extractUserId"));
 
 //routing
 route(app);
@@ -39,8 +38,6 @@ app.use(function (err, req, res, next) {
 
     res.sendHttpError(err);
 });
-
-
 
 // connect to database
 require("common/mongooseConnect").initConnection(rabbitConfig);

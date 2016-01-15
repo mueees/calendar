@@ -2,6 +2,7 @@ var Category = require('applications/rabbit/common/resources/category'),
     Feed = require('applications/rabbit/common/resources/feed'),
     Post = require('applications/rabbit/common/resources/post'),
     Error = require('applications/rabbit/common/resources/error'),
+    Topic = require('applications/rabbit/common/resources/topic'),
     UserPostMap = require('applications/rabbit/common/resources/userPostMap'),
     FeedStatistic = require('applications/rabbit/common/resources/feedStatistic'),
     async = require('async'),
@@ -19,6 +20,9 @@ function cleanRabbitDb() {
         },
         function (cb) {
             Post.remove({}, cb);
+        },
+        function (cb) {
+            Topic.remove({}, cb);
         },
         function (cb) {
             UserPostMap.remove({}, cb);

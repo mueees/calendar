@@ -5,6 +5,7 @@ var log = require('common/log')(module),
     async = require('async'),
     FeedManager = require('common/modules/feedManager'),
     Feed = require('../../../common/resources/feed'),
+    Topic = require('../../../common/resources/topic'),
     Post = require('../../../common/resources/post'),
     Category = require('../../../common/resources/category'),
     UserPostMap = require('../../../common/resources/userPostMap'),
@@ -12,14 +13,14 @@ var log = require('common/log')(module),
     HttpError = require('common/errors/HttpError'),
     RabbitRequest = require('common/request/rabbit'),
     validator = require('validator'),
+    extractUserId = require('common/middlewares/extractUserId'),
+    internalRequests = require('common/middlewares/internal-requests'),
     prefix = '/api/rabbit';
 
 module.exports = function (app) {
 
-    /* CATEGORY */
-
     // create category
-    app.put(prefix + '/categories', function (request, response, next) {
+    app.put(prefix + '/categories', [extractUserId, function (request, response, next) {
         var categoryData = request.body;
 
         if (!categoryData.name) {
@@ -38,10 +39,10 @@ module.exports = function (app) {
                 _id: category._id
             });
         });
-    });
+    }]);
 
     // edit category
-    app.post(prefix + '/categories/:id', function (request, response, next) {
+    app.post(prefix + '/categories/:id', [extractUserId, function (request, response, next) {
         var updateData = _.pick(request.body, [
             'name',
             'open',
@@ -60,10 +61,10 @@ module.exports = function (app) {
 
             response.send(updateData);
         });
-    });
+    }]);
 
     // delete category
-    app.delete(prefix + '/categories/:id', function (request, response, next) {
+    app.delete(prefix + '/categories/:id', [extractUserId, function (request, response, next) {
         Category.remove({
             _id: request.params.id,
             userId: request.userId
@@ -75,10 +76,10 @@ module.exports = function (app) {
 
             response.send({});
         });
-    });
+    }]);
 
     // return all user categories
-    app.get(prefix + '/categories', function (request, response, next) {
+    app.get(prefix + '/categories', [extractUserId, function (request, response, next) {
         Category.find({
             userId: request.userId
         }, function (err, categories) {
@@ -88,9 +89,7 @@ module.exports = function (app) {
             }
 
             categories = _.map(categories, function (category) {
-                category = category.toObject();
-
-                return category;
+                return category.toObject();
             });
 
             var feedIds = _.reduce(categories, function (result, category) {
@@ -134,12 +133,10 @@ module.exports = function (app) {
                 response.send(categories);
             });
         });
-    });
-
-    /* FEED*/
+    }]);
 
     // add feed for tracking
-    app.put(prefix + '/feeds/track', function (request, response, next) {
+    app.put(prefix + '/feeds/track', [extractUserId, function (request, response, next) {
         if (!request.body.url) {
             return next(new HttpError('Cannot find url'));
         }
@@ -151,10 +148,10 @@ module.exports = function (app) {
 
             next(new HttpError(400, err));
         });
-    });
+    }]);
 
     // delete feed from category
-    app.delete(prefix + '/feeds', function (request, response, next) {
+    app.delete(prefix + '/feeds', [extractUserId, function (request, response, next) {
         if (!request.body.feedId) {
             return next(new HttpError(400, 'Cannot find feed id'));
         }
@@ -180,7 +177,7 @@ module.exports = function (app) {
 
             response.send({});
         });
-    });
+    }]);
 
     // add feed to category
     app.put(prefix + '/feeds', function (request, response, next) {
@@ -710,6 +707,46 @@ module.exports = function (app) {
             });
 
             response.send({});
+        });
+    });
+
+    // create topic
+    app.put(prefix + '/topics', [internalRequests, function (request, response, next) {
+        var topicData = request.body;
+
+        if (!topicData.title) {
+            return next(new HttpError(400, 'Title should exist'));
+        }
+
+        Topic.create(topicData, function (err, topic) {
+            if (err) {
+                log.error(err.message);
+
+                return next(new HttpError(500, 'Server error'));
+            }
+
+            response.send({
+                _id: topic._id
+            });
+        });
+    }]);
+
+    // return all user categories
+    app.get(prefix + '/topics', function (request, response, next) {
+        Topic.find({}, function (err, topics) {
+            if (err) {
+                log.error(err.message);
+
+                return next(new HttpError(500, 'Server error'));
+            }
+
+            topics = lodash.map(topics, function (topic) {
+                topic = topic.toObject();
+
+                return lodash.pick(topic, ['_id', 'title', 'title_img', 'related_topic']);
+            });
+
+            response.send(topics);
         });
     });
 };

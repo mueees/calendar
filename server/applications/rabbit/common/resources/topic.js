@@ -5,9 +5,13 @@ var mongoose = require('mongoose'),
 var topicSchema = new Schema({
     title: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
-    related_topic: {
+    title_img: {
+        type: String
+    },
+    related_topics: {
         type: [ObjectId],
         default: []
     }
