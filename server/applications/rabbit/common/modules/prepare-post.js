@@ -11,7 +11,7 @@ function prepare(post) {
             url: post.link,
             lazy: true
         }).then(function (data) {
-            post.title_img = data.image() || '';
+            post.title_image = data.image() || '';
             post.description = data.description() || '';
 
             if (post.text && !post.description) {
