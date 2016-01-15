@@ -25,12 +25,6 @@ function processJob(job, done) {
             savePostQueue.add({
                 post: post
             });
-
-            log.info(post.description.length + ' description.');
-
-            if (post.title_image) {
-                log.error('Cannot find title_img for post');
-            }
         }, function (error) {
             inQueue--;
 
