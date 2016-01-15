@@ -44,6 +44,7 @@
     "hyperquest-timeout": "1.1.0",
     "event-stream": "3.0.5",
     "fast-feed": "latest",
+    "through": "latest",
 
     "mocha": "2.2.5",
     "chai": "3.4.1"

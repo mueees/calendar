@@ -17,6 +17,9 @@ var errorSchema = new Schema({
         type: Boolean,
         default: false
     },
+    fixing_date: {
+        type: Date
+    },
     create_date: {
         type: Date,
         default: new Date()
@@ -38,6 +41,25 @@ errorSchema.statics.getAllFeedErrors = function () {
         }
 
         def.resolve(feedErrors);
+    });
+
+    return def.promise;
+};
+
+errorSchema.methods.setForHuman = function () {
+    var def = Q.defer();
+
+    this.forHumanBeing = true;
+    this.fixing_date = new Date();
+
+    this.save(function (err) {
+        if(err){
+            log.error(err);
+
+            return def.reject(err.message);
+        }
+
+        def.resolve();
     });
 
     return def.promise;

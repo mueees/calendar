@@ -1,4 +1,4 @@
-var hyperquest = require('hyperquest'),
+var hyperquest = require('common/modules/hyperdirect').request,
     hyperquestTimeout = require('hyperquest-timeout'),
     eventStream = require('event-stream'),
     fastFeed = require('fast-feed'),
@@ -151,10 +151,6 @@ function getPageInfo(options) {
                 data: data
             });
         }
-
-        data.body = sanitizeHtml(data.body, {
-            allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img'])
-        });
 
         var pageData = options.lazy ? unfluff.lazy(data.body, 'en') : unfluff(data.body, 'en');
 

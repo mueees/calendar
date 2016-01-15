@@ -12,7 +12,6 @@ var RabbitRequest = require('common/request/rabbit'),
     testHelpers = require('../../../helpers'),
     rabbitConfig = require('applications/rabbit/config');
 
-
 describe('rabbit-error service', function () {
     before(function (done) {
         // database connection
@@ -82,10 +81,10 @@ describe('rabbit-error service', function () {
         ]).then(function () {
             RabbitRequest.getAllFeedErrors().then(function (data) {
                 expect(data.body.length).to.equal(2);
-                done()
+                done();
             }, function (err) {
                 done(new Error(err.body));
-            })
+            });
         });
     });
 });

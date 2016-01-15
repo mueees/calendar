@@ -93,6 +93,7 @@ describe('Feed Manager', function () {
         }).then(function (posts) {
             done(new Error('Something wrong'));
         }, function (err) {
+            expect(err.errorCode).to.equal(3);
             expect(err.errorCode).to.be.ok;
             expect(err.data).to.be.ok;
 

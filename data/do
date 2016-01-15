@@ -1,8 +1,7 @@
 1. send error, when system cannot prepare post
-2. add handlers for each errorCode
 3. send error when system cannot extract posts
 4. send warning when system cannot find description for post
 5. send warning when system cannot find img for post
-6. send warning when system can extract 0 posts from feed
+6. send warning when system can extract 0 posts from feed4
 
-7. A lot of posts cannot be prepared. Look at this bug first.
+2. add handlers for each errorCode
