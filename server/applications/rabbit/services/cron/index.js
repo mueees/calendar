@@ -67,6 +67,6 @@ function updateFeedInfo() {
     });
 }
 
-new cronJob('00 00 12 * * *', function () {
+new cronJob('00 00 12 1,25 * *', function () {
     updateFeedInfo();
 }, null, true);
