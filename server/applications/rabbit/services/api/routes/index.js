@@ -731,7 +731,7 @@ module.exports = function (app) {
         });
     }]);
 
-    // return all user categories
+    // return all user topics
     app.get(prefix + '/topics', function (request, response, next) {
         Topic.find({}, function (err, topics) {
             if (err) {

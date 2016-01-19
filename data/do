@@ -12,3 +12,20 @@
     - getting all topics
     - getting all feeds related to topics
         - add skip and limit parameters
+
+Admin panel:
+- edit feed
+    - title
+    - title_img
+    - description
+    - url
+- show all feeds
+- filter feeds
+    - without topics
+    - add, delete topics
+- remove feed and clear all data related to that feed
+- show all errors
+- remove errors
+- CRUD topics
+- show statistic
+    - users list

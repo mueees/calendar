@@ -7,6 +7,11 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
 
+var USER_GROUPS = {
+    user: 'user',
+    admin: 'admin'
+};
+
 var userSchema = new Schema({
     email: {
         type: String,
@@ -45,6 +50,11 @@ var userSchema = new Schema({
     token_account: {
         type: [tokenSchema],
         default: []
+    },
+
+    group: {
+        type: String,
+        defalut: USER_GROUPS.user
     }
 });
 
@@ -78,17 +88,17 @@ userSchema.statics.isRightCredential = function (email, password, cb) {
             me.isUserExist(email, cb);
         },
         function (user, cb) {
-            if(!user){
+            if (!user) {
                 return cb("Wrong login or password");
             }
-            if(User.comparePassword(password, user.password, user.email)){
+            if (User.comparePassword(password, user.password, user.email)) {
                 cb(null, user);
-            }else{
+            } else {
                 cb("Wrong login or password");
             }
         }
     ], function (err, user) {
-        if(err){
+        if (err) {
             console.log(err);
             return cb(err);
         }
@@ -97,7 +107,7 @@ userSchema.statics.isRightCredential = function (email, password, cb) {
     });
 };
 
-userSchema.statics.comparePassword = function(password, userPassword, userEmail){
+userSchema.statics.comparePassword = function (password, userPassword, userEmail) {
     var sha1 = crypto.createHash('sha1');
     sha1.update(password + userEmail + password);
     var password = sha1.digest('hex');
@@ -106,66 +116,66 @@ userSchema.statics.comparePassword = function(password, userPassword, userEmail)
 };
 
 userSchema.statics.isUserExist = function (email, cb) {
-    this.find({email: email}, null, function(err, users){
-        if( err ){
+    this.find({email: email}, null, function (err, users) {
+        if (err) {
             return cb("Server error");
         }
 
-        if( users.length === 0 ){
+        if (users.length === 0) {
             cb(null, false);
-        }else{
+        } else {
             cb(null, users[0]);
         }
     });
 };
 
-userSchema.statics.isHaveConfirmationId = function(confirmationId, cb){
-    this.find({confirmationId: confirmationId}, null, function(err, users){
-        if( err ){
+userSchema.statics.isHaveConfirmationId = function (confirmationId, cb) {
+    this.find({confirmationId: confirmationId}, null, function (err, users) {
+        if (err) {
             return cb("Server error");
         }
 
-        if( users.length === 0 ){
+        if (users.length === 0) {
             cb(null, false);
-        }else{
+        } else {
             cb(null, users[0]);
         }
     });
 };
 
-userSchema.statics.getUserByAccountToken = function(token, cb){
+userSchema.statics.getUserByAccountToken = function (token, cb) {
     this.find({
         token_account: {
             $all: [
                 {
-                    "$elemMatch" : {
+                    "$elemMatch": {
                         token: token
                     }
                 }
             ]
         }
-    }, null, function(err, users){
-        if( err ){
+    }, null, function (err, users) {
+        if (err) {
             return cb("Server error");
         }
 
-        if(!users){
+        if (!users) {
             cb(null, false);
-        } else if( users.length === 0 ){
+        } else if (users.length === 0) {
             cb(null, false);
-        }else{
+        } else {
             cb(null, users[0]);
         }
     });
 };
 
-userSchema.methods.confirm = function(cb){
+userSchema.methods.confirm = function (cb) {
     this.update({
         confirmationId: null,
         date_confirm: new Date(),
         status: 200
-    }, function(err, user){
-        if(err){
+    }, function (err, user) {
+        if (err) {
             return cb("Server error");
         }
 
@@ -173,7 +183,7 @@ userSchema.methods.confirm = function(cb){
     });
 };
 
-userSchema.methods.createApplication = function(name, description, cb){
+userSchema.methods.createApplication = function (name, description, cb) {
     var application = {
         name: name,
         description: description || '',
@@ -184,7 +194,7 @@ userSchema.methods.createApplication = function(name, description, cb){
     this.applications.push(application);
 
     this.save(function (err, user) {
-        if(err){
+        if (err) {
             return cb('Server error');
         }
 
@@ -196,7 +206,11 @@ userSchema.methods.isConfirm = function () {
     return this.status == 200;
 };
 
-userSchema.methods.removeApplication = function(id, cb){
+userSchema.methods.isAdmin = function () {
+    return this.group == USER_GROUPS.admin;
+};
+
+userSchema.methods.removeApplication = function (id, cb) {
     User.update(
         {
             _id: this._id
@@ -209,7 +223,7 @@ userSchema.methods.removeApplication = function(id, cb){
             }
         },
         function (err) {
-            if(err){
+            if (err) {
                 return cb('Server error');
             }
 
@@ -222,13 +236,13 @@ userSchema.methods.generateAccountToken = function (cb) {
     var date = new Date(),
         token = {
             token: heplers.util.getUUID(),
-            date_expired: new Date( date.setDate(date.getDate() + 31) )
+            date_expired: new Date(date.setDate(date.getDate() + 31))
         };
 
     this.token_account.push(token);
 
     this.save(function (err, user) {
-        if(err){
+        if (err) {
             return cb("Server error");
         }
 
