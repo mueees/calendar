@@ -110,9 +110,8 @@ userSchema.statics.isRightCredential = function (email, password, cb) {
 userSchema.statics.comparePassword = function (password, userPassword, userEmail) {
     var sha1 = crypto.createHash('sha1');
     sha1.update(password + userEmail + password);
-    var password = sha1.digest('hex');
 
-    return (password == userPassword) ? true : false;
+    return sha1.digest('hex') == userPassword;
 };
 
 userSchema.statics.isUserExist = function (email, cb) {

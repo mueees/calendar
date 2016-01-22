@@ -13,14 +13,15 @@ var log = require('common/log')(module),
     HttpError = require('common/errors/HttpError'),
     RabbitRequest = require('common/request/rabbit'),
     validator = require('validator'),
-    extractUserId = require('common/middlewares/extractUserId'),
-    internalRequests = require('common/middlewares/internal-requests'),
+    onlyForUsers = require('common/middlewares/onlyForUsers'),
     prefix = '/api/rabbit';
 
 module.exports = function (app) {
+    // api for admin requests
+    require('../controllers/admin-controller')(app);
 
     // create category
-    app.put(prefix + '/categories', [extractUserId, function (request, response, next) {
+    app.put(prefix + '/categories', [onlyForUsers, function (request, response, next) {
         var categoryData = request.body;
 
         if (!categoryData.name) {
@@ -42,7 +43,7 @@ module.exports = function (app) {
     }]);
 
     // edit category
-    app.post(prefix + '/categories/:id', [extractUserId, function (request, response, next) {
+    app.post(prefix + '/categories/:id', [onlyForUsers, function (request, response, next) {
         var updateData = _.pick(request.body, [
             'name',
             'open',
@@ -64,7 +65,7 @@ module.exports = function (app) {
     }]);
 
     // delete category
-    app.delete(prefix + '/categories/:id', [extractUserId, function (request, response, next) {
+    app.delete(prefix + '/categories/:id', [onlyForUsers, function (request, response, next) {
         Category.remove({
             _id: request.params.id,
             userId: request.userId
@@ -79,7 +80,7 @@ module.exports = function (app) {
     }]);
 
     // return all user categories
-    app.get(prefix + '/categories', [extractUserId, function (request, response, next) {
+    app.get(prefix + '/categories', [onlyForUsers, function (request, response, next) {
         Category.find({
             userId: request.userId
         }, function (err, categories) {
@@ -136,7 +137,8 @@ module.exports = function (app) {
     }]);
 
     // add feed for tracking
-    app.put(prefix + '/feeds/track', [extractUserId, function (request, response, next) {
+    // only for user because of security issues
+    app.put(prefix + '/feeds/track', [onlyForUsers, function (request, response, next) {
         if (!request.body.url) {
             return next(new HttpError('Cannot find url'));
         }
@@ -151,7 +153,7 @@ module.exports = function (app) {
     }]);
 
     // delete feed from category
-    app.delete(prefix + '/feeds', [extractUserId, function (request, response, next) {
+    app.delete(prefix + '/feeds', [onlyForUsers, function (request, response, next) {
         if (!request.body.feedId) {
             return next(new HttpError(400, 'Cannot find feed id'));
         }
@@ -180,7 +182,7 @@ module.exports = function (app) {
     }]);
 
     // add feed to category
-    app.put(prefix + '/feeds', function (request, response, next) {
+    app.put(prefix + '/feeds', [onlyForUsers, function (request, response, next) {
         var data = request.body;
 
         if (!data.feedId) {
@@ -237,7 +239,7 @@ module.exports = function (app) {
                 response.send({});
             });
         });
-    });
+    }]);
 
     // find feeds by query
     function findFeeds(query) {
@@ -303,7 +305,7 @@ module.exports = function (app) {
         return def.promise;
     }
 
-    app.post(prefix + '/feeds/find', function (request, response, next) {
+    app.post(prefix + '/feeds/find', [onlyForUsers, function (request, response, next) {
         async.parallel([
             function (cb) {
                 findFeeds(request.body.query).then(function (feeds) {
@@ -364,10 +366,10 @@ module.exports = function (app) {
 
             response.send(feeds);
         });
-    });
+    }]);
 
     // find most popular feeds
-    app.get(prefix + '/feeds/popular', function (request, response, next) {
+    app.get(prefix + '/feeds/popular', [onlyForUsers, function (request, response, next) {
         var countFeeds = request.query.count || 3;
 
         async.parallel([
@@ -440,16 +442,17 @@ module.exports = function (app) {
                 response.send(popularFeeds);
             });
         });
-    });
+    }]);
 
     // todo: need test for this api request
     // get feed by id
-    app.get(prefix + '/feeds/:id', function (request, response, next) {
+    app.get(prefix + '/feeds/:id', [onlyForUsers, function (request, response, next) {
         Feed.findOne({
             _id: request.params.id
         }, function (err, feed) {
             if (err) {
                 log.error(err.message);
+
                 return next(new Error(err.message));
             }
 
@@ -459,19 +462,25 @@ module.exports = function (app) {
 
             feed = feed.toObject();
 
-            Category.getUserFeedIds(request.userId).then(function (userFeedIds) {
-                if (_.contains(userFeedIds, String(feed._id))) {
-                    feed.isFollowed = true;
-                }
+            delete feed.__v;
 
+            if (request.user) {
+                Category.getUserFeedIds(request.userId).then(function (userFeedIds) {
+                    if (_.contains(userFeedIds, String(feed._id))) {
+                        feed.isFollowed = true;
+                    }
+
+                    response.send(feed);
+                }, function (err) {
+                    log.error(err);
+
+                    return next(new HttpError(500, 'Server error'));
+                });
+            } else {
                 response.send(feed);
-            }, function (err) {
-                log.error(err);
-
-                return next(new HttpError(500, 'Server error'));
-            });
+            }
         });
-    });
+    }]);
 
     /**
      * Find posts by cretirea
@@ -484,7 +493,7 @@ module.exports = function (app) {
      * /posts?readLater=true
      *
      * */
-    app.get(prefix + '/posts', function (request, response, next) {
+    app.get(prefix + '/posts', [onlyForUsers, function (request, response, next) {
         var postQuery = _.pick(request.query, [
             'feedId'
         ]);
@@ -564,10 +573,10 @@ module.exports = function (app) {
                 response.send(posts);
             });
         }
-    });
+    }]);
 
     // todo: need test for this api request
-    app.post(prefix + '/posts/:id/read', function (request, response, next) {
+    app.post(prefix + '/posts/:id/read', [onlyForUsers, function (request, response, next) {
         UserPostMap.findOne({
             userId: request.userId,
             postId: request.params.id
@@ -594,10 +603,10 @@ module.exports = function (app) {
 
             response.send({});
         });
-    });
+    }]);
 
     // todo: need test for this api request
-    app.post(prefix + '/posts/:id/unread', function (request, response, next) {
+    app.post(prefix + '/posts/:id/unread', [onlyForUsers, function (request, response, next) {
         UserPostMap.findOne({
             userId: request.userId,
             postId: request.params.id
@@ -624,10 +633,10 @@ module.exports = function (app) {
 
             response.send({});
         });
-    });
+    }]);
 
     // todo: need test for this api request
-    app.post(prefix + '/posts/unread', function (request, response, next) {
+    app.post(prefix + '/posts/unread', [onlyForUsers, function (request, response, next) {
         UserPostMap.find({
             userId: request.userId,
             postId: {
@@ -666,10 +675,10 @@ module.exports = function (app) {
 
             response.send({});
         });
-    });
+    }]);
 
     // todo: need test for this api request
-    app.post(prefix + '/posts/read', function (request, response, next) {
+    app.post(prefix + '/posts/read', [onlyForUsers, function (request, response, next) {
         UserPostMap.find({
             userId: request.userId,
             postId: {
@@ -708,30 +717,9 @@ module.exports = function (app) {
 
             response.send({});
         });
-    });
-
-    // create topic
-    app.put(prefix + '/topics', [internalRequests, function (request, response, next) {
-        var topicData = request.body;
-
-        if (!topicData.title) {
-            return next(new HttpError(400, 'Title should exist'));
-        }
-
-        Topic.create(topicData, function (err, topic) {
-            if (err) {
-                log.error(err.message);
-
-                return next(new HttpError(500, 'Server error'));
-            }
-
-            response.send({
-                _id: topic._id
-            });
-        });
     }]);
 
-    // return all user topics
+    // return all topics
     app.get(prefix + '/topics', function (request, response, next) {
         Topic.find({}, function (err, topics) {
             if (err) {
@@ -743,7 +731,7 @@ module.exports = function (app) {
             topics = lodash.map(topics, function (topic) {
                 topic = topic.toObject();
 
-                return lodash.pick(topic, ['_id', 'title', 'title_img', 'related_topic']);
+                return lodash.pick(topic, ['_id', 'title', 'title_img', 'related_topics']);
             });
 
             response.send(topics);

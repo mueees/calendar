@@ -8,7 +8,8 @@ var User = require('common/resources/user'),
 
 var user = {
     email: 'mue.miv@gmail.com',
-    password: 123123
+    password: 123123,
+    group: 'admin'
 };
 
 var application = {
@@ -29,6 +30,7 @@ function createUser() {
 
             application.userId = user._id;
 
+            user.group = 'admin';
             user.status = 200;
             user.confirmationId = '';
             user.date_confirm = new Date();
@@ -60,8 +62,3 @@ function createApplication() {
 }
 
 createUser().then(createApplication);
-
-
-
-
-

@@ -158,6 +158,28 @@ feedSchema.statics.track = function (url) {
     return def.promise;
 };
 
+feedSchema.statics.removeTopic = function (topicId) {
+    var def = Q.defer();
+
+    Feed.update({}, {
+        $pull: {
+            topics: topicId
+        }
+    }, {
+        multi: true
+    }, function (err) {
+        if (err) {
+            log.error(err);
+
+            return def.reject(err);
+        }
+
+        def.resolve();
+    });
+
+    return def.promise;
+};
+
 feedSchema.methods.getPosts = function (limit) {
     var def = Q.defer(),
         limit = limit || 5;

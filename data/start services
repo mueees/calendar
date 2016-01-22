@@ -63,6 +63,8 @@ pm2 start index.js --name rabbit-statistic
 cd /home/mue/web/projects/calendar/server/applications/rabbit/services/api
 pm2 start index.js --name rabbit-api
 
+
+
 cd /home/mue/web/projects/calendar/server/applications/rabbit/services/save
 pm2 start index.js --name rabbit-save
 

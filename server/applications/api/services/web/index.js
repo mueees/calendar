@@ -23,11 +23,14 @@ app.use(require("common/middlewares/enviroment"));
 route(app);
 
 app.use(function (err, req, res, next) {
+
     if (typeof err == "number") {
         err = new HttpError(err);
     } else if (err instanceof HttpError) {
 
     } else {
+        log.error(err);
+
         err = new HttpError(500, 'Fatal server error');
     }
 

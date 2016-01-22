@@ -20,7 +20,10 @@ process.on('uncaughtException', function(err) {
     process.exit();
 });
 
+
 app.use(require("common/middlewares/sendHttpError"));
+app.use(require("common/middlewares/isInternalRequest"));
+app.use(require("common/middlewares/extractUser"));
 
 //routing
 route(app);
