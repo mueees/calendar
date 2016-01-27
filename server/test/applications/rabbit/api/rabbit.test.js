@@ -3,6 +3,7 @@ var RabbitRequest = require('common/request/rabbit'),
     Feed = require('applications/rabbit/common/resources/feed'),
     Post = require('applications/rabbit/common/resources/post'),
     UserPostMap = require('applications/rabbit/common/resources/userPostMap'),
+    log = require('common/log')(module),
     Q = require('q'),
     _ = require('lodash'),
     assert = require('chai').assert,
@@ -263,7 +264,7 @@ describe('rabbit-api', function () {
         });
     });
 
-    it.only('should return all topic', function (done) {
+    it('should return all topic', function (done) {
         Q.all([
             RabbitRequest.createTopic({title: '1'}),
             RabbitRequest.createTopic({title: '2'})

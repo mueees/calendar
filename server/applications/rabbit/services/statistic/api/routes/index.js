@@ -8,39 +8,6 @@ var log = require('common/log')(module),
     FeedStatistic = require('../../../../common/resources/feedStatistic'),
     prefix = '/api/rabbit';
 
-function getFeedStatistic(feedId) {
-    var def = Q.defer();
-
-    FeedStatistic.findOne({
-        feedId: feedId
-    }, function (err, feedStatistic) {
-        if (err) {
-            log.error(err.message);
-            def.reject('Cannot get feedStatistic during mongo error');
-            return;
-        }
-
-        if (!feedStatistic) {
-            FeedStatistic.create({
-                feedId: feedId
-            }, function (err, feedStatistic) {
-                if (err) {
-                    log.error(err.message);
-
-                    def.reject('Cannot get feedStatistic during mongo error');
-                    return;
-                }
-
-                def.resolve(feedStatistic);
-            });
-        } else {
-            def.resolve(feedStatistic);
-        }
-    });
-
-    return def.promise;
-}
-
 module.exports = function (app) {
     app.get(prefix + '/statistic/feeds', function (request, response, next) {
         FeedStatistic.find({}, function (err, feedStatistics) {
@@ -72,19 +39,18 @@ module.exports = function (app) {
     });
 
     app.post(prefix + '/statistic/feeds/:id/lastUpdateTime', function (request, response, next) {
-        getFeedStatistic(request.params.id).then(function (feedStatistic) {
-            feedStatistic.last_update_date = new Date();
+        response.send({});
 
-            feedStatistic.save(function (err) {
-                if (err) {
-                    log.error(err.message);
-                    return;
-                }
-
-                response.send({});
-            });
-        }, function (err) {
-            next(new HttpError(500, err))
+        FeedStatistic.update({
+            feedId: request.params.id
+        }, {
+            last_update_date: new Date()
+        }, {
+            upsert: true
+        }, function(err){
+            if (err) {
+                log.error(err.message);
+            }
         });
     });
 

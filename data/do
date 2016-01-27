@@ -22,10 +22,14 @@ Admin panel:
 - show all feeds
 - filter feeds
     - without topics
-    - add, delete topics
 - remove feed and clear all data related to that feed
 - show all errors
 - remove errors
-- CRUD topics
 - show statistic
     - users list
+
+// get all topics
+
+- feeds without topic
+- feeds without posts
+- feeds with post that at last time was updated more then month ago 

@@ -151,12 +151,4 @@ module.exports = function (app) {
             response.send(updateData);
         });
     }]);
-
-    // COMMAND
-
-    // check existing feed ( can retrive info )
-
-    // get posts from existing feed
-
-    // +
 };

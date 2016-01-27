@@ -241,6 +241,35 @@ module.exports = function (app) {
         });
     }]);
 
+    // return all feeds
+    app.get(prefix + '/feeds', [onlyForUsers, function (request, response, next) {
+        Feed.find({}, function (err, feeds) {
+            if (err) {
+                log.error(err);
+
+                return next(new HttpError(500, 'Server error'));
+            }
+
+            feeds = _.map(feeds, function (feed) {
+                feed = feed.toObject();
+
+                return _.pick(feed,
+                    'title',
+                    '_id',
+                    'description',
+                    'url',
+                    'language',
+                    'author',
+                    'title_img',
+                    'domain',
+                    'create_date',
+                    'topics');
+            });
+
+            response.send(feeds);
+        });
+    }]);
+
     // find feeds by query
     function findFeeds(query) {
         var isUrl = validator.isURL(query, {
@@ -444,6 +473,40 @@ module.exports = function (app) {
         });
     }]);
 
+    app.get(prefix + '/feeds/topic/:id', [onlyForUsers, function(request, response, next){
+        async.parallel([
+                function(cb){
+                    Feed.findByTopicId(request.params.id).then(function(feeds){
+                        cb(null, feeds);
+                    }, function(err){
+                        cb(err);
+                    });
+                },
+                function(cb){
+                    RabbitRequest.feedsStatistic().then(function (data) {
+                        var statisticFeeds = data.body;
+
+                        statisticFeeds = _.sortBy(statisticFeeds, 'followedByUser').reverse();
+
+                        cb(null, statisticFeeds);
+                    }, function (err) {
+                        cb(err);
+                    });
+                }
+            ], function(err, results){
+            if (err) {
+                log.error(err);
+
+                return next(new HttpError(500, 'Server error'));
+            }
+
+            var feeds = results[0],
+                statisticFeeds = results[1];
+
+            response.send(feeds);
+        });
+    }]);
+
     // todo: need test for this api request
     // get feed by id
     app.get(prefix + '/feeds/:id', [onlyForUsers, function (request, response, next) {
@@ -453,7 +516,7 @@ module.exports = function (app) {
             if (err) {
                 log.error(err.message);
 
-                return next(new Error(err.message));
+                return next(new HttpError(500, err.message));
             }
 
             if (!feed) {
@@ -735,6 +798,21 @@ module.exports = function (app) {
             });
 
             response.send(topics);
+        });
+    });
+
+    // return topic by id
+    app.get(prefix + '/topics/:id', function (request, response, next) {
+        Topic.findOne({
+            _id: request.param.id
+        }, function (err, topic) {
+            if (err) {
+                log.error(err.message);
+
+                return next(new HttpError(500, 'Server error'));
+            }
+
+            response.send(topic);
         });
     });
 };
