@@ -22,6 +22,7 @@ module.exports = function (req, res, next) {
 
     r.on('error', function (err) {
         log.error(err.body);
+
         next(new HttpError(400, 'Request timeout'));
     });
 

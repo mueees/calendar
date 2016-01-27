@@ -20,8 +20,10 @@ process.on('uncaughtException', function(err) {
     process.exit();
 });
 
+
 app.use(require("common/middlewares/sendHttpError"));
-app.use(require("common/middlewares/extractUserId"));
+app.use(require("common/middlewares/isInternalRequest"));
+app.use(require("common/middlewares/extractUser"));
 
 //routing
 route(app);
@@ -39,8 +41,6 @@ app.use(function (err, req, res, next) {
 
     res.sendHttpError(err);
 });
-
-
 
 // connect to database
 require("common/mongooseConnect").initConnection(rabbitConfig);

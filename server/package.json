@@ -45,6 +45,7 @@
     "event-stream": "3.0.5",
     "fast-feed": "latest",
     "through": "latest",
+    "v8-profiler": "latest",
 
     "mocha": "2.2.5",
     "chai": "3.4.1"

@@ -7,10 +7,7 @@ function getUser(data) {
         app: app,
         service: service,
         method: 'GET',
-        url: '/user',
-        headers: {
-            userid: data.userId
-        }
+        url: '/user/' + data.userId
     });
 }
 

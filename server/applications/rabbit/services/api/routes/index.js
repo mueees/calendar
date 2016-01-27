@@ -5,6 +5,7 @@ var log = require('common/log')(module),
     async = require('async'),
     FeedManager = require('common/modules/feedManager'),
     Feed = require('../../../common/resources/feed'),
+    Topic = require('../../../common/resources/topic'),
     Post = require('../../../common/resources/post'),
     Category = require('../../../common/resources/category'),
     UserPostMap = require('../../../common/resources/userPostMap'),
@@ -12,14 +13,15 @@ var log = require('common/log')(module),
     HttpError = require('common/errors/HttpError'),
     RabbitRequest = require('common/request/rabbit'),
     validator = require('validator'),
+    onlyForUsers = require('common/middlewares/onlyForUsers'),
     prefix = '/api/rabbit';
 
 module.exports = function (app) {
-
-    /* CATEGORY */
+    // api for admin requests
+    require('../controllers/admin-controller')(app);
 
     // create category
-    app.put(prefix + '/categories', function (request, response, next) {
+    app.put(prefix + '/categories', [onlyForUsers, function (request, response, next) {
         var categoryData = request.body;
 
         if (!categoryData.name) {
@@ -38,10 +40,10 @@ module.exports = function (app) {
                 _id: category._id
             });
         });
-    });
+    }]);
 
     // edit category
-    app.post(prefix + '/categories/:id', function (request, response, next) {
+    app.post(prefix + '/categories/:id', [onlyForUsers, function (request, response, next) {
         var updateData = _.pick(request.body, [
             'name',
             'open',
@@ -60,10 +62,10 @@ module.exports = function (app) {
 
             response.send(updateData);
         });
-    });
+    }]);
 
     // delete category
-    app.delete(prefix + '/categories/:id', function (request, response, next) {
+    app.delete(prefix + '/categories/:id', [onlyForUsers, function (request, response, next) {
         Category.remove({
             _id: request.params.id,
             userId: request.userId
@@ -75,10 +77,10 @@ module.exports = function (app) {
 
             response.send({});
         });
-    });
+    }]);
 
     // return all user categories
-    app.get(prefix + '/categories', function (request, response, next) {
+    app.get(prefix + '/categories', [onlyForUsers, function (request, response, next) {
         Category.find({
             userId: request.userId
         }, function (err, categories) {
@@ -88,9 +90,7 @@ module.exports = function (app) {
             }
 
             categories = _.map(categories, function (category) {
-                category = category.toObject();
-
-                return category;
+                return category.toObject();
             });
 
             var feedIds = _.reduce(categories, function (result, category) {
@@ -134,12 +134,11 @@ module.exports = function (app) {
                 response.send(categories);
             });
         });
-    });
-
-    /* FEED*/
+    }]);
 
     // add feed for tracking
-    app.put(prefix + '/feeds/track', function (request, response, next) {
+    // only for user because of security issues
+    app.put(prefix + '/feeds/track', [onlyForUsers, function (request, response, next) {
         if (!request.body.url) {
             return next(new HttpError('Cannot find url'));
         }
@@ -151,10 +150,10 @@ module.exports = function (app) {
 
             next(new HttpError(400, err));
         });
-    });
+    }]);
 
     // delete feed from category
-    app.delete(prefix + '/feeds', function (request, response, next) {
+    app.delete(prefix + '/feeds', [onlyForUsers, function (request, response, next) {
         if (!request.body.feedId) {
             return next(new HttpError(400, 'Cannot find feed id'));
         }
@@ -180,10 +179,10 @@ module.exports = function (app) {
 
             response.send({});
         });
-    });
+    }]);
 
     // add feed to category
-    app.put(prefix + '/feeds', function (request, response, next) {
+    app.put(prefix + '/feeds', [onlyForUsers, function (request, response, next) {
         var data = request.body;
 
         if (!data.feedId) {
@@ -240,7 +239,36 @@ module.exports = function (app) {
                 response.send({});
             });
         });
-    });
+    }]);
+
+    // return all feeds
+    app.get(prefix + '/feeds', [onlyForUsers, function (request, response, next) {
+        Feed.find({}, function (err, feeds) {
+            if (err) {
+                log.error(err);
+
+                return next(new HttpError(500, 'Server error'));
+            }
+
+            feeds = _.map(feeds, function (feed) {
+                feed = feed.toObject();
+
+                return _.pick(feed,
+                    'title',
+                    '_id',
+                    'description',
+                    'url',
+                    'language',
+                    'author',
+                    'title_img',
+                    'domain',
+                    'create_date',
+                    'topics');
+            });
+
+            response.send(feeds);
+        });
+    }]);
 
     // find feeds by query
     function findFeeds(query) {
@@ -306,7 +334,7 @@ module.exports = function (app) {
         return def.promise;
     }
 
-    app.post(prefix + '/feeds/find', function (request, response, next) {
+    app.post(prefix + '/feeds/find', [onlyForUsers, function (request, response, next) {
         async.parallel([
             function (cb) {
                 findFeeds(request.body.query).then(function (feeds) {
@@ -367,10 +395,10 @@ module.exports = function (app) {
 
             response.send(feeds);
         });
-    });
+    }]);
 
     // find most popular feeds
-    app.get(prefix + '/feeds/popular', function (request, response, next) {
+    app.get(prefix + '/feeds/popular', [onlyForUsers, function (request, response, next) {
         var countFeeds = request.query.count || 3;
 
         async.parallel([
@@ -443,17 +471,52 @@ module.exports = function (app) {
                 response.send(popularFeeds);
             });
         });
-    });
+    }]);
+
+    app.get(prefix + '/feeds/topic/:id', [onlyForUsers, function(request, response, next){
+        async.parallel([
+                function(cb){
+                    Feed.findByTopicId(request.params.id).then(function(feeds){
+                        cb(null, feeds);
+                    }, function(err){
+                        cb(err);
+                    });
+                },
+                function(cb){
+                    RabbitRequest.feedsStatistic().then(function (data) {
+                        var statisticFeeds = data.body;
+
+                        statisticFeeds = _.sortBy(statisticFeeds, 'followedByUser').reverse();
+
+                        cb(null, statisticFeeds);
+                    }, function (err) {
+                        cb(err);
+                    });
+                }
+            ], function(err, results){
+            if (err) {
+                log.error(err);
+
+                return next(new HttpError(500, 'Server error'));
+            }
+
+            var feeds = results[0],
+                statisticFeeds = results[1];
+
+            response.send(feeds);
+        });
+    }]);
 
     // todo: need test for this api request
     // get feed by id
-    app.get(prefix + '/feeds/:id', function (request, response, next) {
+    app.get(prefix + '/feeds/:id', [onlyForUsers, function (request, response, next) {
         Feed.findOne({
             _id: request.params.id
         }, function (err, feed) {
             if (err) {
                 log.error(err.message);
-                return next(new Error(err.message));
+
+                return next(new HttpError(500, err.message));
             }
 
             if (!feed) {
@@ -462,19 +525,25 @@ module.exports = function (app) {
 
             feed = feed.toObject();
 
-            Category.getUserFeedIds(request.userId).then(function (userFeedIds) {
-                if (_.contains(userFeedIds, String(feed._id))) {
-                    feed.isFollowed = true;
-                }
+            delete feed.__v;
 
+            if (request.user) {
+                Category.getUserFeedIds(request.userId).then(function (userFeedIds) {
+                    if (_.contains(userFeedIds, String(feed._id))) {
+                        feed.isFollowed = true;
+                    }
+
+                    response.send(feed);
+                }, function (err) {
+                    log.error(err);
+
+                    return next(new HttpError(500, 'Server error'));
+                });
+            } else {
                 response.send(feed);
-            }, function (err) {
-                log.error(err);
-
-                return next(new HttpError(500, 'Server error'));
-            });
+            }
         });
-    });
+    }]);
 
     /**
      * Find posts by cretirea
@@ -487,7 +556,7 @@ module.exports = function (app) {
      * /posts?readLater=true
      *
      * */
-    app.get(prefix + '/posts', function (request, response, next) {
+    app.get(prefix + '/posts', [onlyForUsers, function (request, response, next) {
         var postQuery = _.pick(request.query, [
             'feedId'
         ]);
@@ -567,10 +636,10 @@ module.exports = function (app) {
                 response.send(posts);
             });
         }
-    });
+    }]);
 
     // todo: need test for this api request
-    app.post(prefix + '/posts/:id/read', function (request, response, next) {
+    app.post(prefix + '/posts/:id/read', [onlyForUsers, function (request, response, next) {
         UserPostMap.findOne({
             userId: request.userId,
             postId: request.params.id
@@ -597,10 +666,10 @@ module.exports = function (app) {
 
             response.send({});
         });
-    });
+    }]);
 
     // todo: need test for this api request
-    app.post(prefix + '/posts/:id/unread', function (request, response, next) {
+    app.post(prefix + '/posts/:id/unread', [onlyForUsers, function (request, response, next) {
         UserPostMap.findOne({
             userId: request.userId,
             postId: request.params.id
@@ -627,10 +696,10 @@ module.exports = function (app) {
 
             response.send({});
         });
-    });
+    }]);
 
     // todo: need test for this api request
-    app.post(prefix + '/posts/unread', function (request, response, next) {
+    app.post(prefix + '/posts/unread', [onlyForUsers, function (request, response, next) {
         UserPostMap.find({
             userId: request.userId,
             postId: {
@@ -669,10 +738,10 @@ module.exports = function (app) {
 
             response.send({});
         });
-    });
+    }]);
 
     // todo: need test for this api request
-    app.post(prefix + '/posts/read', function (request, response, next) {
+    app.post(prefix + '/posts/read', [onlyForUsers, function (request, response, next) {
         UserPostMap.find({
             userId: request.userId,
             postId: {
@@ -710,6 +779,40 @@ module.exports = function (app) {
             });
 
             response.send({});
+        });
+    }]);
+
+    // return all topics
+    app.get(prefix + '/topics', function (request, response, next) {
+        Topic.find({}, function (err, topics) {
+            if (err) {
+                log.error(err.message);
+
+                return next(new HttpError(500, 'Server error'));
+            }
+
+            topics = lodash.map(topics, function (topic) {
+                topic = topic.toObject();
+
+                return lodash.pick(topic, ['_id', 'title', 'title_img', 'related_topics']);
+            });
+
+            response.send(topics);
+        });
+    });
+
+    // return topic by id
+    app.get(prefix + '/topics/:id', function (request, response, next) {
+        Topic.findOne({
+            _id: request.param.id
+        }, function (err, topic) {
+            if (err) {
+                log.error(err.message);
+
+                return next(new HttpError(500, 'Server error'));
+            }
+
+            response.send(topic);
         });
     });
 };

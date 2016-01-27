@@ -7,6 +7,7 @@ module.exports = function (request, response, next) {
 
     if (!service) {
         log.error('Application "' + request.params.application + '" is not exist.');
+
         return next(new HttpError(400, 'Application "' + request.params.application + '" is not exist.'));
     }
 

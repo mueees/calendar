@@ -14,7 +14,7 @@ app.use(bodyParser.json({
 }));
 
 app.use(require("common/middlewares/sendHttpError"));
-app.use(require("common/middlewares/extractUserId"));
+app.use(require("common/middlewares/onlyForUsers"));
 
 //routing
 route(app);

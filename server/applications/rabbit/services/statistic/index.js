@@ -4,6 +4,8 @@ var statisticHandlers = require('./common/handlers'),
 // add api module
 require('./api');
 
+// require('common/modules/heapDump').init(__dirname + '/dump');
+
 new cronJob('00 00 07,23 * * *', function () {
     statisticHandlers.updateCountPosts();
 }, null, true);
@@ -11,4 +13,3 @@ new cronJob('00 00 07,23 * * *', function () {
 new cronJob('00 00 06,22 * * *', function () {
     statisticHandlers.updateFollowedCount();
 }, null, true);
-

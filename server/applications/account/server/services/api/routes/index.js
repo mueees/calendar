@@ -6,12 +6,15 @@ var Application = require('common/resources/application'),
     _ = require('underscore'),
     async = require('async'),
     HttpError = require('common/errors/HttpError'),
+    onlyForAdmin = require('common/middlewares/onlyForAdmin'),
+    onlyForUsers = require('common/middlewares/onlyForUsers'),
     prefix = '/api/account';
 
 module.exports = function (app) {
+
     // get user information
-    app.get(prefix + '/user', function (request, response, next) {
-        var userId = request.userId;
+    app.get(prefix + '/user', [onlyForUsers, function (request, response, next) {
+        var userId = request.user._id;
 
         async.parallel([
             function (cb) {
@@ -64,5 +67,60 @@ module.exports = function (app) {
                 applications: apps
             });
         });
-    });
+    }]);
+
+    // get user information by id
+    app.get(prefix + '/user/:id', [onlyForAdmin, function (request, response, next) {
+        var userId = request.params.id;
+
+        async.parallel([
+            function (cb) {
+                User.findOne({
+                    _id: userId
+                }, function (err, user) {
+                    if (err) {
+                        return cb('Server error');
+                    }
+
+                    if (!user) {
+                        return cb('Cannot find user');
+                    }
+
+                    cb(null, user);
+                });
+            },
+            function (cb) {
+                OauthRequest.getApplications({
+                    userId: userId
+                }).then(function (res) {
+                    cb(null, res.body);
+                }, function (res) {
+                    cb(res.body.message);
+                });
+            }
+        ], function (err, results) {
+            if (err) {
+                log.error(err);
+                return next(new HttpError(400, err));
+            }
+
+            var user = results[0],
+                applications = results[1];
+
+            user.applications = _.map(applications, function (app) {
+                return {
+                    _id: app._id,
+                    name: app.name,
+                    status: app.status,
+                    privateKey: app.privateKey,
+                    date_create: app.date_create,
+                    redirectUrl: app.redirectUrl,
+                    description: app.description,
+                    applicationId: app.applicationId
+                }
+            });
+
+            response.send(user);
+        });
+    }]);
 };

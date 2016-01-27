@@ -62,7 +62,7 @@ feedSchema.statics.getLastPost = function (feedId) {
         }
     }, function (err, lastPost) {
         if (err) {
-            logger.error(err);
+            log.error(err);
             return def.reject(err.message);
         }
 
@@ -83,7 +83,7 @@ feedSchema.statics.getFirstPost = function (feedId) {
         }
     }, function (err, firstPost) {
         if (err) {
-            logger.error(err);
+            log.error(err);
             return def.reject(err.message);
         }
 
@@ -92,6 +92,26 @@ feedSchema.statics.getFirstPost = function (feedId) {
 
     return def.promise;
 };
+
+feedSchema.statics.findByTopicId = function(topicId){
+    var def = Q.defer();
+
+    Feed.find({
+        topics: {
+            $all: topicId
+        }
+    }, function(err, feeds){
+        if (err) {
+            log.error(err);
+
+            return def.reject(err.message);
+        }
+
+        def.resolve(feeds);
+    });
+
+    return def.promise;
+}
 
 feedSchema.statics.findByQuery = function (query) {
     var def = Q.defer();
@@ -113,7 +133,7 @@ feedSchema.statics.findByQuery = function (query) {
         ]
     }, function (err, feeds) {
         if (err) {
-            logger.error(err.message);
+            log.error(err.message);
             return def.reject('Server error');
         }
 
@@ -158,6 +178,28 @@ feedSchema.statics.track = function (url) {
     return def.promise;
 };
 
+feedSchema.statics.removeTopic = function (topicId) {
+    var def = Q.defer();
+
+    Feed.update({}, {
+        $pull: {
+            topics: topicId
+        }
+    }, {
+        multi: true
+    }, function (err) {
+        if (err) {
+            log.error(err);
+
+            return def.reject(err);
+        }
+
+        def.resolve();
+    });
+
+    return def.promise;
+};
+
 feedSchema.methods.getPosts = function (limit) {
     var def = Q.defer(),
         limit = limit || 5;
@@ -171,7 +213,7 @@ feedSchema.methods.getPosts = function (limit) {
         }
     }, function (err, posts) {
         if (err) {
-            logger.error(err);
+            log.error(err);
 
             return def.reject(err.message);
         }

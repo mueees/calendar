@@ -211,16 +211,19 @@ module.exports = function (app) {
         refreshAccessToken,
         apiRequest
     ]);
+
     app.post('/api/:application/*', [
         passport.authenticate('bearer', {session: false}),
         refreshAccessToken,
         apiRequest
     ]);
+
     app.put('/api/:application/*', [
         passport.authenticate('bearer', {session: false}),
         refreshAccessToken,
         apiRequest
     ]);
+
     app.delete('/api/:application/*', [
         passport.authenticate('bearer', {session: false}),
         refreshAccessToken,

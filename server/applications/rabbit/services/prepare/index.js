@@ -3,6 +3,7 @@ var Queue = require('../../common/queue'),
     Q = require('q'),
     log = require('common/log')(module),
     request = require('request'),
+    _ = require('lodash'),
     RABBIT_ERRORS = require('../../common/error/errors'),
     PreparePost = require('../../common/modules/prepare-post'),
     rabbitErrorHelper = require('../../common/error/helper'),
@@ -13,28 +14,43 @@ var Queue = require('../../common/queue'),
 var inQueue = 0,
     maxInQueue = 3;
 
+// require('common/modules/heapDump').init(__dirname + '/dump');
+
 function processJob(job, done) {
     if (inQueue < maxInQueue) {
+
+        var post = _.cloneDeep(job.data.post);
+
         done();
+        job.remove();
+        job = null;
 
         inQueue++;
 
-        PreparePost.prepare(job.data.post).then(function (post) {
-            inQueue--;
+        PreparePost.prepare({
+            url: post.url
+        }).then(function (preparedPost) {
+            _.assign(post, preparedPost);
 
             savePostQueue.add({
                 post: post
+            }).then(function(){
+                post = null;
             });
-        }, function (error) {
-            inQueue--;
 
+            inQueue--;
+        }, function (error) {
             savePostQueue.add({
-                post: job.data.post
+                post: post
+            }).then(function(){
+                post = null;
             });
+
+            inQueue--;
 
             var err = {
                 data: {
-                    post: job.data.post
+                    post: post
                 }
             };
 
