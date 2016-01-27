@@ -4,6 +4,8 @@ var HttpError = require('common/errors/HttpError'),
 
 module.exports = function (request, response, next) {
     if (request.headers.userid) {
+        request.userId = request.headers.userid;
+
         AccountRequest.getUser({
             userId: request.headers.userid
         }).then(function (data) {
