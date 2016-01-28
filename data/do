@@ -6,30 +6,11 @@
 
 2. add handlers for each errorCode
 
-1. each feed should has one or several topics _id
-2. topics are predefined and can editing in future admin panel
-3. create api
-    - getting all topics
-    - getting all feeds related to topics
-        - add skip and limit parameters
 
 Admin panel:
-- edit feed
-    - title
-    - title_img
-    - description
-    - url
-- show all feeds
-- filter feeds
-    - without topics
-- remove feed and clear all data related to that feed
-- show all errors
-- remove errors
-- show statistic
-    - users list
+- count post for each feed ?
+- last post ? 
+- is Has error ?
 
-// get all topics
-
-- feeds without topic
-- feeds without posts
-- feeds with post that at last time was updated more then month ago 
+Rabbit:
+- add feed statistic for topic/feed

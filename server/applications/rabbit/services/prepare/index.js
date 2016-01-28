@@ -28,7 +28,7 @@ function processJob(job, done) {
         inQueue++;
 
         PreparePost.prepare({
-            url: post.url
+            link: post.link
         }).then(function (preparedPost) {
             _.assign(post, preparedPost);
 
