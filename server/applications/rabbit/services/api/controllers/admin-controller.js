@@ -9,14 +9,15 @@ var adminPrefix = '/api/admin/rabbit',
 
     Feed = require('../../../common/resources/feed'),
     Topic = require('../../../common/resources/topic'),
+    Error = require('../../../common/resources/error'),
     Post = require('../../../common/resources/post'),
     Category = require('../../../common/resources/category'),
     UserPostMap = require('../../../common/resources/userPostMap'),
     FeedStatistic = require('../../../common/resources/feedStatistic'),
+    FeedManager = require('common/modules/feedManager'),
     HttpError = require('common/errors/HttpError');
 
 module.exports = function (app) {
-
     // edit feed
     app.post(adminPrefix + '/feeds/:id', [onlyForAdmin, function (request, response, next) {
         var updateData = _.pick(request.body, [
@@ -71,6 +72,27 @@ module.exports = function (app) {
             }
 
             response.send({});
+        });
+    }]);
+
+    // request feed info
+    app.get(adminPrefix + '/feeds/:id/info', [onlyForAdmin, function (request, response, next) {
+        Feed.findOne(request.params.id, function (err, feed) {
+            if (err) {
+                log.error(err);
+
+                return next(new HttpError(500, 'Server error'));
+            }
+
+            FeedManager.getFeedInfo({
+                url: feed.url
+            }).then(function (feedInfo) {
+                response.send(feedInfo)
+            }, function (err) {
+                log.error(err);
+
+                next(new HttpError(500, 'Cannot get feed info'));
+            });
         });
     }]);
 
@@ -149,6 +171,32 @@ module.exports = function (app) {
             updateData._id = request.params.id;
 
             response.send(updateData);
+        });
+    }]);
+
+    // ERROR
+
+    // return all errors
+    app.get(adminPrefix + '/errors', [onlyForAdmin, function (request, response, next) {
+        Error.find({}, function (err, errors) {
+            if (err) {
+                log.error(err.message);
+
+                return next(new HttpError(500, 'Server error'));
+            }
+
+            response.send(errors);
+        });
+    }]);
+
+    // delete similar errors by error id
+    app.delete(adminPrefix + '/errors/:id', [onlyForAdmin, function (request, response, next) {
+        Error.removeSimilar(request.params.id).then(function () {
+            response.send({});
+        }, function (err) {
+            log.error(err);
+
+            next(new HttpError(500, 'Server error'));
         });
     }]);
 };

@@ -475,25 +475,25 @@ module.exports = function (app) {
 
     app.get(prefix + '/feeds/topic/:id', [onlyForUsers, function(request, response, next){
         async.parallel([
-                function(cb){
-                    Feed.findByTopicId(request.params.id).then(function(feeds){
-                        cb(null, feeds);
-                    }, function(err){
-                        cb(err);
-                    });
-                },
-                function(cb){
-                    RabbitRequest.feedsStatistic().then(function (data) {
-                        var statisticFeeds = data.body;
+            function(cb){
+                Feed.findByTopicId(request.params.id).then(function(feeds){
+                    cb(null, feeds);
+                }, function(err){
+                    cb(err);
+                });
+            },
+            function(cb){
+                RabbitRequest.feedsStatistic().then(function (data) {
+                    var statisticFeeds = data.body;
 
-                        statisticFeeds = _.sortBy(statisticFeeds, 'followedByUser').reverse();
+                    statisticFeeds = _.sortBy(statisticFeeds, 'followedByUser').reverse();
 
-                        cb(null, statisticFeeds);
-                    }, function (err) {
-                        cb(err);
-                    });
-                }
-            ], function(err, results){
+                    cb(null, statisticFeeds);
+                }, function (err) {
+                    cb(err);
+                });
+            }
+        ], function(err, results){
             if (err) {
                 log.error(err);
 

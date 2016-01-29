@@ -46,6 +46,35 @@ errorSchema.statics.getAllFeedErrors = function () {
     return def.promise;
 };
 
+errorSchema.statics.removeSimilar = function (errorId) {
+    var def = Q.defer();
+
+    Error.findOne({
+        _id: errorId
+    }, function (err, error) {
+        if (err) {
+            log.error(err.message);
+
+            return def.reject(err.message);
+        }
+
+        Error.remove({
+            errorCode: error.errorCode,
+            data: error.data
+        }, function (err) {
+            if(err){
+                log.error(err);
+
+                return def.reject(err.message);
+            }
+
+            def.resolve();
+        });
+    });
+
+    return def.promise;
+};
+
 errorSchema.methods.setForHuman = function () {
     var def = Q.defer();
 
@@ -53,7 +82,7 @@ errorSchema.methods.setForHuman = function () {
     this.fixing_date = new Date();
 
     this.save(function (err) {
-        if(err){
+        if (err) {
             log.error(err);
 
             return def.reject(err.message);
