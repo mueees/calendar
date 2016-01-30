@@ -25,7 +25,8 @@ function getNewPosts(posts, lastPost) {
 module.exports = function (job) {
     return Q.all([
         FeedManager.getPostsFromFeed({
-            url: job.data.feed.url
+            url: job.data.feed.url,
+            timeout: 10000
         }),
         Feed.getLastPost(job.data.feed._id)
     ])
