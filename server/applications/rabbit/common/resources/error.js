@@ -58,18 +58,22 @@ errorSchema.statics.removeSimilar = function (errorId) {
             return def.reject(err.message);
         }
 
-        Error.remove({
-            errorCode: error.errorCode,
-            data: error.data
-        }, function (err) {
-            if (err) {
-                log.error(err);
+        if (error) {
+            Error.remove({
+                errorCode: error.errorCode,
+                data: error.data
+            }, function (err) {
+                if (err) {
+                    log.error(err);
 
-                return def.reject(err.message);
-            }
+                    return def.reject(err.message);
+                }
 
+                def.resolve();
+            });
+        } else {
             def.resolve();
-        });
+        }
     });
 
     return def.promise;
