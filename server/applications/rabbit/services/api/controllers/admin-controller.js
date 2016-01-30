@@ -77,9 +77,6 @@ module.exports = function (app) {
 
     // request feed info
     app.get(adminPrefix + '/feeds/:id/info', [onlyForAdmin, function (request, response, next) {
-
-        log.info(request.params.id);
-
         Feed.findOne({
             _id: request.params.id
         }, function (err, feed) {
@@ -89,14 +86,9 @@ module.exports = function (app) {
                 return next(new HttpError(500, 'Server error'));
             }
 
-            log.info(feed._id);
-            log.info(feed.url);
-
             FeedManager.getFeedInfo({
                 url: feed.url
             }).then(function (feedInfo) {
-                log.info(feedInfo);
-
                 response.send(feedInfo)
             }, function (err) {
                 log.error(err);

@@ -96,8 +96,6 @@ function findFeedUrl(options) {
 function getFeedInfo(options) {
     var def = Q.defer();
 
-    log.info(options);
-
     loadPage(options)
         .then(function (data) {
             if (data.response.statusCode != 200) {
@@ -109,8 +107,6 @@ function getFeedInfo(options) {
             }
 
             extractFeedInfo(data).then(function (feedInfo) {
-                log.info(feedInfo);
-
                 feedInfo.url = options.url;
 
                 def.resolve(feedInfo);
