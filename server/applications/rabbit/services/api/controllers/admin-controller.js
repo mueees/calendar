@@ -80,7 +80,9 @@ module.exports = function (app) {
 
         log.info(request.params.id);
 
-        Feed.findOne(request.params.id, function (err, feed) {
+        Feed.findOne({
+            _id: request.params.id
+        }, function (err, feed) {
             if (err) {
                 log.error(err);
 
