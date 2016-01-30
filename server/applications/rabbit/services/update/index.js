@@ -26,7 +26,6 @@ feedForUpdateQueue.process(function (job, done) {
         done();
 
         var err = {
-            errorCode: RABBIT_ERRORS.unknown_error.code,
             data: {
                 feedId: job.data.feed._id
             }
