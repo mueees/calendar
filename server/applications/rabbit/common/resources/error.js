@@ -31,11 +31,11 @@ errorSchema.statics.getAllFeedErrors = function () {
 
     Error.find({
         errorCode: {
-            $in: [1, 2]
+            $in: [1, 2, 3]
         }
     }, function (err, feedErrors) {
         if (err) {
-            logger.error(err);
+            log.error(err);
 
             return def.reject(err.message);
         }
@@ -62,7 +62,7 @@ errorSchema.statics.removeSimilar = function (errorId) {
             errorCode: error.errorCode,
             data: error.data
         }, function (err) {
-            if(err){
+            if (err) {
                 log.error(err);
 
                 return def.reject(err.message);

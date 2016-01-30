@@ -40,16 +40,17 @@ init().then(function () {
                 upsert: true
             },
             function (err) {
-                if(err){
+                if (err) {
                     processError(err);
                 }
 
                 Error.find({}, function (err, errors) {
-                    if(err){
+                    if (err) {
                         processError(err);
                     }
 
                     log.info(errors);
+                    process.exit();
                 })
             }
         );

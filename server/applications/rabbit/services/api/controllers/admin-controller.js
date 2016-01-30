@@ -201,4 +201,26 @@ module.exports = function (app) {
             next(new HttpError(500, 'Server error'));
         });
     }]);
+
+    // edit error
+    app.post(adminPrefix + '/errors/:id', [onlyForAdmin, function (request, response, next) {
+        var updateData = _.pick(request.body, [
+            'errorCode',
+            'data'
+        ]);
+
+        Error.update({
+            _id: request.params.id
+        }, updateData, function (err) {
+            if (err) {
+                log.error(err);
+
+                return next(new HttpError(400, 'Server error'));
+            }
+
+            updateData._id = request.params.id;
+
+            response.send(updateData);
+        });
+    }]);
 };

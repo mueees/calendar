@@ -12,6 +12,7 @@ module.exports = function (app) {
     app.put(prefix + '/error', [internalRequests, function (request, response, next) {
         if (!errorHelper.isValidError(request.body)) {
             log.error('Invalid error');
+
             return next(new HttpError(400, 'Invalid error'));
         } else {
             response.send({});
@@ -20,7 +21,7 @@ module.exports = function (app) {
 
             ErrorHandler.handle(request.body).then(function (error) {
             }, function (error) {
-                return next(new HttpError(400, error));
+                log.error(error);
             });
         }
     }]);

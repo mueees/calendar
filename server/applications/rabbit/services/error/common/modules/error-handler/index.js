@@ -7,15 +7,21 @@ var _ = require('lodash'),
 module.exports.handle = function (error) {
     var def = Q.defer();
 
-    Error.create(error, function (err, error) {
-        if (err) {
-            log.error(err);
+    Error.update(
+        error,
+        error,
+        {
+            upsert: true
+        },
+        function (err, error) {
+            if (err) {
+                log.error(err);
 
-            return def.reject('Cannot save error');
-        }
+                return def.reject('Cannot save error');
+            }
 
-        def.resolve(error);
-    });
+            def.resolve(error);
+        });
 
     return def.promise;
 };

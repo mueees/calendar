@@ -9,15 +9,10 @@ module.exports = {
         description: 'Feed error. Cannot load page due to error status code',
         fields: ['feedId']
     },
-    3: {
+    feed_cannot_parse_xml: {
         code: 3,
-        description: 'Cannot extract posts from page due to unexpected error',
-        fields: ['feedId']
-    },
-    4: {
-        code: 4,
-        description: 'Cannot extract feed info from page due to unexpected error',
-        fields: ['feedId']
+        description: 'Feed error. Rss xml exist but system cannot parse it.',
+        fields: ['fieldId']
     },
     post_prepare_unexpected_load_page: {
         code: 5,
