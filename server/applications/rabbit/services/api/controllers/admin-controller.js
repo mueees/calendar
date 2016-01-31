@@ -157,6 +157,7 @@ module.exports = function (app) {
     app.post(adminPrefix + '/topics/:id', [onlyForAdmin, function (request, response, next) {
         var updateData = _.pick(request.body, [
             'title',
+            'main',
             'title_img',
             'related_topics'
         ]);

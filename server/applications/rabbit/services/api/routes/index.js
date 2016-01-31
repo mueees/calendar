@@ -473,16 +473,17 @@ module.exports = function (app) {
         });
     }]);
 
-    app.get(prefix + '/feeds/topic/:id', [onlyForUsers, function(request, response, next){
+    // return feeds related to topicId
+    app.get(prefix + '/feeds/topic/:id', [onlyForUsers, function (request, response, next) {
         async.parallel([
-            function(cb){
-                Feed.findByTopicId(request.params.id).then(function(feeds){
+            function (cb) {
+                Feed.findByTopicId(request.params.id).then(function (feeds) {
                     cb(null, feeds);
-                }, function(err){
+                }, function (err) {
                     cb(err);
                 });
             },
-            function(cb){
+            function (cb) {
                 RabbitRequest.feedsStatistic().then(function (data) {
                     var statisticFeeds = data.body;
 
@@ -493,7 +494,7 @@ module.exports = function (app) {
                     cb(err);
                 });
             }
-        ], function(err, results){
+        ], function (err, results) {
             if (err) {
                 log.error(err);
 
@@ -502,6 +503,18 @@ module.exports = function (app) {
 
             var feeds = results[0],
                 statisticFeeds = results[1];
+
+            feeds = feeds.map(function (feed) {
+                return feed.toObject();
+            });
+
+            feeds.forEach(function (feed) {
+                var statisticFeed = _.find(statisticFeeds, {
+                    feedId: String(feed._id)
+                });
+
+                feed.statistic = _.pick(statisticFeed, ['countPosts', 'countPostPerMonth', 'followedByUser']);
+            });
 
             response.send(feeds);
         });
@@ -794,7 +807,7 @@ module.exports = function (app) {
             topics = lodash.map(topics, function (topic) {
                 topic = topic.toObject();
 
-                return lodash.pick(topic, ['_id', 'title', 'title_img', 'related_topics']);
+                return lodash.pick(topic, ['_id', 'title', 'main', 'title_img', 'related_topics']);
             });
 
             response.send(topics);

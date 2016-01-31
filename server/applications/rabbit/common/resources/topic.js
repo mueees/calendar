@@ -13,6 +13,10 @@ var topicSchema = new Schema({
     title_img: {
         type: String
     },
+    main: {
+        type: Boolean,
+        default: false
+    },
     related_topics: {
         type: [ObjectId],
         default: []
