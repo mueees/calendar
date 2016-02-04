@@ -18,7 +18,6 @@ var inQueue = 0,
 
 function processJob(job, done) {
     if (inQueue < maxInQueue) {
-
         var post = _.cloneDeep(job.data.post);
 
         done();
@@ -30,23 +29,23 @@ function processJob(job, done) {
         PreparePost.prepare({
             link: post.link
         }).then(function (preparedPost) {
+            inQueue--;
+
             _.assign(post, preparedPost);
 
             savePostQueue.add({
                 post: post
-            }).then(function(){
+            }).then(function () {
                 post = null;
             });
-
-            inQueue--;
         }, function (error) {
+            inQueue--;
+
             savePostQueue.add({
                 post: post
-            }).then(function(){
+            }).then(function () {
                 post = null;
             });
-
-            inQueue--;
 
             var err = {
                 data: {
@@ -68,6 +67,10 @@ function processJob(job, done) {
             }
 
             rabbitErrorHelper.sendError(err);
+        }).catch(function (error) {
+            inQueue--;
+
+            log.error(error);
         });
     } else {
         log.info('So many jobs: ' + inQueue);

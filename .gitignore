@@ -3,6 +3,7 @@
 
 node_modules
 secret.json
+production.js
 
 bin
 build
